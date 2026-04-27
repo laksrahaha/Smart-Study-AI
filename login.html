@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Super Smart Study Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=La+Belle+Aurore&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #ffffff;
+      color: #101010;
+      font-family: 'Playfair Display', serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV BAR ── */
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 14px 32px;
+      border-bottom: 1.5px solid #222;
+      gap: 12px;
+      background-color: #ffffff;
+    }
+
+    .nav-logo {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .nav-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── WRAPPER ── */
+    .card {
+      width: 100%;
+      max-width: 640px;
+      padding: 48px 60px 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── WELCOME ── */
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 900;
+      letter-spacing: 6px;
+      text-align: center;
+      margin-bottom: 36px;
+      line-height: 1;
+    }
+
+    /* ── FORM ── */
+    .form-group {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 18px 20px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #333;
+      background: #fff;
+      border: 1.5px solid #aaa;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+      text-align: left;
+    }
+
+    input::placeholder {
+      color: #aaa;
+      font-family: 'Playfair Display', serif;
+    }
+
+    input:focus {
+      border-color: #333;
+    }
+
+    /* ── FORGOT PASSWORD ── */
+    .forgot {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      color: #444;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .forgot a {
+      color: #444;
+      text-decoration: none;
+    }
+
+    .forgot a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── ERROR MESSAGE ── */
+    .error-msg {
+      color: #cc0000;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+      display: none;
+      text-align: center;
+    }
+
+    /* ── LOGIN BUTTON ── */
+    .btn-login {
+      background-color: #1a1a1a;
+      color: #f5f3ee;
+      border: none;
+      padding: 18px 80px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 10px;
+      letter-spacing: 1px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-bottom: 32px;
+    }
+
+    .btn-login:hover {
+      background-color: #333;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    /* ── SIGN UP LINK ── */
+    .signup-link {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      font-style: italic;
+      color: #101010;
+      text-align: center;
+    }
+
+    .signup-link a {
+      color: #101010;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
+    <span class="nav-title">Super Smart Study Assistant</span>
+  </nav>
+
+  <main>
+  <div class="card">
+
+    <!-- Title -->
+    <h1>WELCOME</h1>
+
+    <!-- Form -->
+    <div class="form-group">
+      <input type="email" id="email" placeholder="Email Address" />
+    </div>
+
+    <div class="form-group">
+      <input type="password" id="password" placeholder="Password" />
+    </div>
+
+    <!-- Error message -->
+    <p class="error-msg" id="errorMsg">Please fill in all fields.</p>
+
+    <!-- Forgot Password -->
+    <p class="forgot">
+      Forgot password? <a href="forgot-password.html">Click here</a>
+    </p>
+
+    <!-- Login Button -->
+    <button class="btn-login" onclick="handleLogin()">Login</button>
+
+    <!-- Sign Up Link -->
+    <p class="signup-link">
+      Don't have an account? <a href="signup.html">Sign up</a>
+    </p>
+
+  </div>
+  </main>
+
+  <script>
+    async function handleLogin() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+
+    if (!email || !password) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = 'Please fill in all fields.';
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:5134/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('username', data.username);
+            window.location.href = 'dashboard.html';
+        } else {
+            errorMsg.style.display = 'block';
+            errorMsg.textContent = data.message;
+        }
+    } catch (err) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = 'Cannot connect to server. Please try again.';
+    }
+}
+  </script>
+
+</body>
+</html>

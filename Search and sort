@@ -12,9 +12,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
 
-        /* Search box */
         .search-box input {
             padding: 10px;
             width: 250px;
@@ -22,7 +22,6 @@
             border: 1px solid #ccc;
         }
 
-        /* Buttons */
         .sort-buttons {
             display: flex;
             gap: 10px;
@@ -37,27 +36,87 @@
             }
 
                 .sort-buttons button.active {
-                    background: #198754; /* green */
+                    background: #198754;
                     color: white;
                 }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
 
-        <!-- Search -->
+        
         <div class="search-box">
-            <input type="text" placeholder="Search...">
+            <input type="text" id="searchInput" placeholder="Search..." onkeyup="filterItems()">
         </div>
 
-        <!-- Sort Buttons -->
         <div class="sort-buttons">
-            <button class="active">SHOW BY DATE</button>
-            <button>SHOW BY TYPE</button>
+            <button id="sortDate" class="active" onclick="setSort('date')">SHOW BY DATE</button>
+            <button id="sortType" onclick="setSort('type')">SHOW BY TYPE</button>
         </div>
 
     </div>
+
+    
+    <!Example data set>
+    <ul id="itemList">
+        <li data-date="2026-04-20" data-type="Work">Finish report (Work)</li>
+        <li data-date="2026-04-18" data-type="Study">Math revision (Study)</li>
+        <li data-date="2026-04-22" data-type="Personal">Gym (Personal)</li>
+    </ul>
+
+    <script>
+        let currentSort = "date";
+
+        function setSort(type) {
+            currentSort = type;
+
+            document.getElementById("sortDate").classList.remove("active");
+            document.getElementById("sortType").classList.remove("active");
+
+            document.getElementById(type === "date" ? "sortDate" : "sortType")
+                .classList.add("active");
+
+            sortItems();
+        }
+
+        function sortItems() {
+            const list = document.getElementById("itemList");
+            const items = Array.from(list.getElementsByTagName("li"));
+
+            items.sort((a, b) => {
+                if (currentSort === "date") {
+                    return new Date(a.dataset.date) - new Date(b.dataset.date);
+                } else {
+                    return a.dataset.type.localeCompare(b.dataset.type);
+                }
+            });
+
+            items.forEach(item => list.appendChild(item));
+        }
+
+        function filterItems() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const items = document.querySelectorAll("#itemList li");
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+
+        sortItems();
+    </script>
 
 </body>
 </html>

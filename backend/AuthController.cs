@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace StudyAssistantAPI.Controllers
+namespace SmartStudyAI.Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

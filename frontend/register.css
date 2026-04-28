@@ -265,5 +265,231 @@ button:hover {
         font-size: 20px;
     }
 }
+/*Smart study AI landing page */
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+
+
+.landing-navbar {
+    height: 90px;
+    background-color: #3f2f46;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 55px;
+}
+
+.landing-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 36px;
+    color: #f4d9c6;
+}
+
+.landing-logo h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.landing-logo p {
+    margin: 0;
+    font-size: 18px;
+    color: #f4d9c6;
+    font-weight: bold;
+}
+
+.landing-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+}
+
+.landing-nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.landing-nav-links a:hover {
+    color: #f4d9c6;
+}
+
+.signup-nav-btn {
+    background-color: #f4d9c6;
+    color: #3f2f46 !important;
+    padding: 15px 32px;
+    border-radius: 40px;
+}
+
+.signup-nav-btn:hover {
+    background-color: #ead0df;
+}
+
+
+
+.landing-hero {
+    min-height: 690px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 65px;
+
+   
+    background:
+        linear-gradient(rgba(63, 47, 70, 0.55), rgba(63, 47, 70, 0.55)),
+        linear-gradient(135deg, #ead0df 0%, #c8b6d8 45%, #f4d9c6 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    color: white;
+}
+
+.hero-content h2 {
+    font-size: 86px;
+    line-height: 1.12;
+    margin: 0 0 25px 0;
+    font-weight: 900;
+}
+
+.hero-content p {
+    font-size: 22px;
+    line-height: 1.6;
+    max-width: 650px;
+    margin-bottom: 35px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 18px;
+}
+
+.hero-signup-btn,
+.hero-about-btn {
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 40px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.hero-signup-btn {
+    background-color: #f4d9c6;
+    color: #3f2f46;
+}
+
+.hero-about-btn {
+    border: 2px solid white;
+    color: white;
+}
+
+.hero-signup-btn:hover {
+    background-color: #ffffff;
+}
+
+.hero-about-btn:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+
+
+.about-landing-section {
+    background-color: #f8f3f7;
+    padding: 70px 65px;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.about-text h2 {
+    font-size: 42px;
+    color: #3f2f46;
+    margin-bottom: 18px;
+}
+
+.about-text p {
+    color: #5d4b63;
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.about-card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.about-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 16px rgba(63, 47, 70, 0.12);
+    border-left: 6px solid #c8b6d8;
+}
+
+.about-card h3 {
+    margin: 0 0 8px 0;
+    color: #3f2f46;
+    font-size: 24px;
+}
+
+.about-card p {
+    margin: 0;
+    color: #6a5a70;
+    line-height: 1.5;
+}
+
+
+
+@media (max-width: 900px) {
+    .landing-navbar {
+        height: auto;
+        padding: 25px;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .landing-nav-links {
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .landing-hero {
+        min-height: 620px;
+        padding: 45px 30px;
+    }
+
+    .hero-content h2 {
+        font-size: 54px;
+    }
+
+    .hero-content p {
+        font-size: 18px;
+    }
+
+    .about-landing-section {
+        grid-template-columns: 1fr;
+        padding: 50px 30px;
+    }
+}
 

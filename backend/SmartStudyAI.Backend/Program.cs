@@ -18,31 +18,50 @@ app.UseCors("AllowFrontend");
 
 List<RegisteredUser> registeredUsers = new();
 
-app.MapGet("/", () =>
-{
-    return "Smart Study AI Backend is running.";
-});
+
 
 app.MapPost("/api/account/register", (registerRequest request) =>
 {
-    if (string.IsNullOrWhiteSpace(request.FullName) ||
+    if (string.IsNullOrWhiteSpace(request.FirstName) ||
+        string.IsNullOrWhiteSpace(request.LastName) ||
         string.IsNullOrWhiteSpace(request.Email) ||
+        string.IsNullOrWhiteSpace(request.StudyLevel) ||
         string.IsNullOrWhiteSpace(request.Password) ||
         string.IsNullOrWhiteSpace(request.ConfirmPassword))
     {
-        return Results.BadRequest("All registration fields are required.");
+        return Results.BadRequest(new { message = "All registration fields are required." });
+    }
+
+    if (!request.Email.Contains("@") || !request.Email.Contains("."))
+    {
+        return Results.BadRequest(new { message = "Please enter a valid email address." });
+    }
+
+    if (request.Password.Length < 6)
+    {
+        return Results.BadRequest(new { message = "Password must be at least 6 characters long." });
     }
 
     if (request.Password != request.ConfirmPassword)
     {
-        return Results.BadRequest("Passwords do not match.");
+        return Results.BadRequest(new { message = "Passwords do not match." });
+    }
+
+    bool emailExists = registeredUsers.Any(user =>
+        user.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+
+    if (emailExists)
+    {
+        return Results.BadRequest(new { message = "An account with this email already exists." });
     }
 
     RegisteredUser newUser = new RegisteredUser
     {
         UserId = registeredUsers.Count + 1,
-        FullName = request.FullName,
+        FirstName = request.FirstName,
+        LastName = request.LastName,
         Email = request.Email,
+        StudyLevel = request.StudyLevel,
         Password = request.Password
     };
 
@@ -51,31 +70,25 @@ app.MapPost("/api/account/register", (registerRequest request) =>
     userResponse response = new userResponse
     {
         UserId = newUser.UserId,
-        FullName = newUser.FullName,
-        Email = newUser.Email
+        FirstName = newUser.FirstName,
+        LastName = newUser.LastName,
+        Email = newUser.Email,
+        StudyLevel = newUser.StudyLevel,
+        Message = "Account registered successfully."
     };
 
     return Results.Ok(response);
 });
 
-app.MapGet("/api/account/users", () =>
-{
-    var safeUsers = registeredUsers.Select(user => new userResponse
-    {
-        UserId = user.UserId,
-        FullName = user.FullName,
-        Email = user.Email
-    });
-
-    return Results.Ok(safeUsers);
-});
 
 app.Run();
 
 public class RegisteredUser
 {
     public int UserId { get; set; }
-    public string FullName { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string StudyLevel{get; set;} = string.Empty;
     public string Password { get; set; } = string.Empty;
 }

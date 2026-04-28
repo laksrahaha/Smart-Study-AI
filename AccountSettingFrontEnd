@@ -1,0 +1,199 @@
+<div class="settings-container">
+    <h2>Settings</h2>
+
+    <div class="setting-item" onclick="openModal('profileModal')">
+        👤 Profile Settings
+    </div>
+
+    <div class="setting-item" onclick="openModal('passwordModal')">
+        🔒 Change Password
+    </div>
+
+    <div class="setting-item" onclick="openModal('studyModal')">
+        🎯 Study Preferences
+    </div>
+
+    <div class="setting-item" onclick="openModal('textSizeModal')">
+        🔤 Text Size
+    </div>
+
+</div>
+
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <h3>Profile</h3>
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="email" id="email" placeholder="Email">
+        <button onclick="saveProfile()">Save</button>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h3>Change Password</h3>
+
+        <input type="password" id="newPassword" placeholder="New Password">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+
+        <p id="passwordMessage" style="color:red;"></p>
+
+        <button onclick="savePassword()">Save</button>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<div id="studyModal" class="modal">
+    <div class="modal-content">
+        <h3>Study Preferences</h3>
+        <select id="studyLevel">
+            <option>Secondary School</option>
+            <option>NCEA</option>
+            <option>University</option>
+        </select>
+        <button onclick="saveStudy()">Save</button>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<div id="textSizeModal" class="modal">
+    <div class="modal-content">
+        <h3>Text Size</h3>
+        <select id="textSizeSelect">
+            <option value="8">Extra Small</option>
+            <option value="12">Small</option>
+            <option value="16">Normal</option>
+            <option value="20">Large</option>
+            <option value="24">Extra Large</option>
+        </select>
+        <button onclick="saveTextSize()">Save</button>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<style>
+    .settings-container {
+        max-width: 400px;
+        margin: 40px auto;
+    }
+
+    .setting-item {
+        padding: 15px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #fff;
+    }
+
+    .setting-item:hover {
+        background: #f0f0f0;
+    }
+
+ 
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        margin: 15% auto;
+        width: 300px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .modal-content input,
+    .modal-content select {
+         width: 90%;
+         padding: 8px;
+         margin: 10px 0;
+    }
+</style>
+
+<script>
+    
+        function openModal(id) {
+            document.getElementById(id).style.display = "block";
+        }
+
+        function closeModal() {
+            document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+        }
+
+        
+        function saveProfile() {
+         const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+
+        localStorage.setItem("profile", JSON.stringify({name, email}));
+        closeModal();
+        }
+
+        function savePassword() {
+        const password = document.getElementById("newPassword").value;
+        const confirm = document.getElementById("confirmPassword").value;
+        const message = document.getElementById("passwordMessage");
+
+        message.textContent = "";
+
+        // make sure both are filled, was gonna overlook this validation
+        if (!password || !confirm) {
+            message.textContent = "Please fill in both fields.";
+            return;
+        }
+
+        if (password !== confirm) {
+            message.textContent = "Passwords do not match.";
+            return;
+        }
+
+        
+        localStorage.setItem("password", password);
+
+        message.style.color = "green";
+        message.textContent = "Password updated!";
+        }
+
+         function saveStudy() {
+         const studyLevel = document.getElementById("studyLevel").value;
+
+         localStorage.setItem("studyLevel", studyLevel);
+         closeModal();
+         }
+         function saveTextSize() {
+         const size = document.getElementById("textSizeSelect").value;
+
+        
+         document.documentElement.style.fontSize = size + "px";
+
+       
+         localStorage.setItem("textSize", size);
+
+         closeModal();
+         }
+
+    
+        window.addEventListener("DOMContentLoaded", () => {
+        const savedSize = localStorage.getItem("textSize");
+
+        if (savedSize) {
+            document.documentElement.style.fontSize = savedSize + "px";
+
+            const select = document.getElementById("textSizeSelect");
+            if (select) select.value = savedSize;
+        }
+        });
+
+        document.getElementById("textSizeSelect").addEventListener("change", function () {
+        document.documentElement.style.fontSize = this.value + "px";
+        });
+</script>

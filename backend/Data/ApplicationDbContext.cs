@@ -15,7 +15,6 @@ namespace SmartStudyAI.Backend.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Optional: configure relationships, indexes, etc.
             modelBuilder.Entity<Course>()
                 .HasOne(c => c.User)
                 .WithMany()

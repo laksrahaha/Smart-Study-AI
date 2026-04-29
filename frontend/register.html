@@ -3,44 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Study AI - Account Register</title>
+    <title>Smart Study AI - Register</title>
+    <link rel="stylesheet" href="register.css">
 </head>
 <body>
 
-    <header>
-        <h1>Smart Study AI</h1>
-        <p>Create your student account to start organising your study today!</p>
-    </header>
+    <div class="page-wrapper">
 
-    <main>
-        <section>
-            <h2>Account Registration</h2>
+        <!-- left side information panel -->
+        <section class="left-panel">
+            <h1>Smart Study AI</h1>
+            <p class="tagline">
+                Create your student account and start organising your study tasks,
+                notes, and materials in one place.
+            </p>
 
-            <form>
-                <div>
-                    <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" name="fullName">
-                </div>
-
-                <div>
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email">
-                </div>
-
-                <div>
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password">
-                </div>
-
-                <div>
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword">
-                </div>
-
-                <button type="submit">Create Account</button>
-            </form>
+            <div class="feature-list">
+                <p>✓ Personal study workspace</p>
+                <p>✓ Organise notes and materials</p>
+                <p>✓ Prepare for quizzes and tasks</p>
+            </div>
         </section>
-    </main>
 
+        <!-- right side registration card -->
+        <section class="register-card">
+
+            <div class="brand-row">
+                <div class="logo-mark">SS</div>
+                <p>Super Smart Study Assistant</p>
+            </div>
+
+            <h2>WELCOME</h2>
+<form id="registerForm">
+    <input 
+        type="text" 
+        id="firstName" 
+        name="firstName" 
+        placeholder="First Name"
+    >
+
+    <input 
+        type="text" 
+        id="lastName" 
+        name="lastName" 
+        placeholder="Last Name"
+    >
+
+    <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        placeholder="Email Address"
+    >
+
+    <select id="studyLevel" name="studyLevel" required>
+        <option value="" disabled selected>Select Study Level</option>
+        <option value="Secondary School">Secondary School</option>
+        <option value="NCEA">NCEA</option>
+        <option value="University / Tertiary">University / Tertiary</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        placeholder="Password"
+    >
+
+    <input 
+        type="password" 
+        id="confirmPassword" 
+        name="confirmPassword" 
+        placeholder="Confirm Password"
+    >
+
+    <p class="login-text">
+        Already have an account? <a href="#">Login</a>
+    </p>
+
+    <p id="message"></p>
+
+    <button type="submit">Sign up</button>
+</form>
+        </section>
+
+    </div>
+
+    <script src="register.js"></script>
 </body>
 </html>

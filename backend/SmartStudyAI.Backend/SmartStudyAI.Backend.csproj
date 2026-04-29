@@ -18,4 +18,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Data\**\*.cs" />
+    <Compile Include="..\modelArchitecture\**\*.cs" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Notes – Super Smart Study Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=La+Belle+Aurore&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #fff;
+      color: #101010;
+      font-family: 'Playfair Display', serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 14px 32px;
+      border-bottom: 1.5px solid #222;
+      gap: 12px;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo { width: 36px; height: 36px; object-fit: contain; }
+    .nav-title { font-size: 17px; font-weight: 700; letter-spacing: 1.5px; flex: 1; }
+    .nav-back { font-size: 15px; color: #444; text-decoration: none; cursor: pointer; }
+    .nav-back:hover { text-decoration: underline; }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 32px;
+      animation: fadeUp 0.7s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page-wrapper { width: 100%; max-width: 960px; display: flex; flex-direction: column; gap: 28px; }
+
+    .header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: 3px; }
+    .notes-count { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #888; }
+
+    .action-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+    .btn {
+      background: #1a1a1a; color: #f5f3ee; border: none;
+      padding: 12px 28px; font-family: 'Playfair Display', serif;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-radius: 8px; letter-spacing: 0.5px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn:hover { background: #333; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+    .btn:active { transform: translateY(0); box-shadow: none; }
+
+    .btn-outline { background: transparent; color: #1a1a1a; border: 1.5px solid #1a1a1a; }
+    .btn-outline:hover { background: #1a1a1a; color: #f5f3ee; }
+
+    .btn-sm { padding: 8px 16px; font-size: 0.82rem; }
+
+    #fileInput { display: none; }
+
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: #888;
+      margin-right: 4px;
+    }
+
+    .filter-chip {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #555;
+    }
+    .filter-chip:hover { border-color: #333; color: #111; }
+    .filter-chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+    .manage-courses-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      color: #888;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin-left: auto;
+    }
+    .manage-courses-btn:hover { color: #333; }
+
+    hr.divider { border: none; border-top: 1.5px solid #eee; }
+
+    .course-section { display: flex; flex-direction: column; gap: 16px; }
+
+    .course-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #444;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .course-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #eee;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .note-card {
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 18px;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .note-card:hover { border-color: #333; box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+    .note-card-course {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #fff;
+      background: #1a1a1a;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      align-self: flex-start;
+    }
+
+    .note-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #101010;
+      padding-right: 24px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .note-card-preview {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: #777;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .note-card-meta { font-family: 'Inter', sans-serif; font-size: 0.73rem; color: #bbb; margin-top: auto; }
+
+    .note-card-delete {
+      position: absolute; top: 10px; right: 10px;
+      background: none; border: none; cursor: pointer;
+      font-size: 0.78rem; color: #ccc;
+      padding: 2px 5px; border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .note-card-delete:hover { color: #c0392b; background: #fdecea; }
+
+    .no-notes-msg {
+      font-family: 'Inter', sans-serif; font-size: 0.88rem;
+      color: #bbb; padding: 24px 0; grid-column: 1 / -1;
+    }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #fff; border-radius: 14px; padding: 36px 40px;
+      max-width: 420px; width: 90%; text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      animation: fadeUp 0.3s ease both;
+    }
+    .modal h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 12px; }
+    .modal p { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #666; margin-bottom: 20px; line-height: 1.6; }
+    .modal-buttons { display: flex; gap: 12px; justify-content: center; }
+
+    .btn-danger { background: #c0392b; color: #fff; border: none; }
+    .btn-danger:hover { background: #a93226; }
+
+    .courses-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+
+    .course-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border: 1.5px solid #eee; border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+    }
+
+    .course-item-delete {
+      background: none; border: none; cursor: pointer;
+      color: #ccc; font-size: 0.8rem; padding: 2px 6px;
+      border-radius: 4px; transition: color 0.2s, background 0.2s;
+    }
+    .course-item-delete:hover { color: #c0392b; background: #fdecea; }
+
+    .add-course-row {
+      display: flex; gap: 10px;
+    }
+
+    .add-course-input {
+      flex: 1; padding: 10px 14px;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      border: 1.5px solid #ccc; border-radius: 8px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .add-course-input:focus { border-color: #333; }
+    .add-course-input::placeholder { color: #bbb; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
+    <span class="nav-title">Super Smart Study Assistant</span>
+    <a href="dashboard.html" class="nav-back">← Back to Dashboard</a>
+  </nav>
+
+  <main>
+    <div class="page-wrapper">
+
+      <!-- Header -->
+      <div class="header-row">
+        <h1>MY NOTES</h1>
+        <span class="notes-count" id="notesCount">0 notes</span>
+      </div>
+
+      <div class="action-row">
+        <button class="btn" onclick="goNewNote()">+ New Note</button>
+        <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">📄 Upload .txt</button>
+        <input type="file" id="fileInput" accept=".txt" />
+        <button class="manage-courses-btn" onclick="openManageCourses()">⚙ Manage Courses</button>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-chip active" onclick="setFilter('all')">All</button>
+      </div>
+
+      <hr class="divider" />
+
+      <div id="notesContent"></div>
+
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h2>Delete Note?</h2>
+      <p id="deleteModalMsg">This cannot be undone.</p>
+      <div class="modal-buttons">
+        <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="coursesModal">
+    <div class="modal">
+      <h2>Manage Courses</h2>
+      <p>Add or remove courses to categorise your notes.</p>
+      <div class="courses-list" id="coursesList"></div>
+      <div class="add-course-row">
+        <input type="text" class="add-course-input" id="newCourseInput" placeholder="e.g. COMP602" maxlength="40"
+               onkeydown="if(event.key==='Enter') addCourse()" />
+        <button class="btn btn-sm" onclick="addCourse()">Add</button>
+      </div>
+      <br/>
+      <div class="modal-buttons">
+        <button class="btn btn-outline" onclick="closeManageCourses()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const KEYS = {
+      index:   'sss_notes_index',
+      note:    id => `sss_note_${id}`,
+      courses: 'sss_courses',
+    };
+
+    function getCourses() {
+      return JSON.parse(localStorage.getItem(KEYS.courses) || '[]');
+    }
+    function saveCourses(arr) {
+      localStorage.setItem(KEYS.courses, JSON.stringify(arr));
+    }
+    function addCourse() {
+      const input = document.getElementById('newCourseInput');
+      const name = input.value.trim();
+      if (!name) return;
+      const courses = getCourses();
+      if (courses.includes(name)) { input.value = ''; return; }
+      courses.push(name);
+      saveCourses(courses);
+      input.value = '';
+      renderCoursesList();
+      renderFilterBar();
+      renderNotes();
+    }
+    function removeCourse(name) {
+      const courses = getCourses().filter(c => c !== name);
+      saveCourses(courses);
+      getAllNotes().forEach(note => {
+        if (note.course === name) {
+          note.course = '';
+          saveNote(note);
+        }
+      });
+      if (activeFilter === name) activeFilter = 'all';
+      renderCoursesList();
+      renderFilterBar();
+      renderNotes();
+    }
+
+    function getAllNotes() {
+      const index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
+      return index.map(id => {
+        const raw = localStorage.getItem(KEYS.note(id));
+        return raw ? JSON.parse(raw) : null;
+      }).filter(Boolean);
+    }
+    function saveNote(note) {
+      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
+      if (!index.includes(note.id)) index.unshift(note.id);
+      localStorage.setItem(KEYS.index, JSON.stringify(index));
+      localStorage.setItem(KEYS.note(note.id), JSON.stringify(note));
+    }
+    function deleteNote(id) {
+      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
+      index = index.filter(i => i !== id);
+      localStorage.setItem(KEYS.index, JSON.stringify(index));
+      localStorage.removeItem(KEYS.note(id));
+    }
+    function generateId() {
+      return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+    }
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    let activeFilter = 'all';
+
+    function setFilter(course) {
+      activeFilter = course;
+      renderFilterBar();
+      renderNotes();
+    }
+
+    function renderFilterBar() {
+      const courses = getCourses();
+      const bar = document.getElementById('filterBar');
+      bar.innerHTML = `<span class="filter-label">Filter:</span>
+        <button class="filter-chip ${activeFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
+        ${courses.map(c => `
+          <button class="filter-chip ${activeFilter === c ? 'active' : ''}" onclick="setFilter('${escapeHtml(c)}')">${escapeHtml(c)}</button>
+        `).join('')}
+        ${courses.length === 0 ? '<span style="font-family:Inter,sans-serif;font-size:0.82rem;color:#ccc">No courses yet — add one via ⚙ Manage Courses</span>' : ''}
+      `;
+    }
+
+    function renderNotes() {
+      const allNotes = getAllNotes();
+      const filtered = activeFilter === 'all'
+        ? allNotes
+        : allNotes.filter(n => n.course === activeFilter);
+
+      document.getElementById('notesCount').textContent =
+        allNotes.length === 1 ? '1 note' : `${allNotes.length} notes`;
+
+      const container = document.getElementById('notesContent');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="no-notes-msg">${
+          activeFilter === 'all'
+            ? 'No notes yet. Create a new note or upload a .txt file.'
+            : `No notes in "${escapeHtml(activeFilter)}" yet.`
+        }</p>`;
+        return;
+      }
+
+      if (activeFilter === 'all') {
+        const courses = getCourses();
+        const grouped = {};
+        const uncategorised = [];
+
+        filtered.forEach(note => {
+          if (note.course && courses.includes(note.course)) {
+            if (!grouped[note.course]) grouped[note.course] = [];
+            grouped[note.course].push(note);
+          } else {
+            uncategorised.push(note);
+          }
+        });
+
+        let html = '';
+        courses.forEach(course => {
+          if (grouped[course] && grouped[course].length > 0) {
+            html += `<div class="course-section">
+              <div class="course-section-title">${escapeHtml(course)}</div>
+              <div class="notes-grid">${grouped[course].map(noteCard).join('')}</div>
+            </div>`;
+          }
+        });
+        if (uncategorised.length > 0) {
+          html += `<div class="course-section">
+            <div class="course-section-title">Uncategorised</div>
+            <div class="notes-grid">${uncategorised.map(noteCard).join('')}</div>
+          </div>`;
+        }
+        container.innerHTML = `<div style="display:flex;flex-direction:column;gap:32px">${html}</div>`;
+      } else {
+        container.innerHTML = `<div class="notes-grid">${filtered.map(noteCard).join('')}</div>`;
+      }
+    }
+
+    function noteCard(note) {
+      const preview = (note.content || '').trim().replace(/\s+/g, ' ').slice(0, 130);
+      const date = new Date(note.updatedAt).toLocaleDateString('en-NZ', { day:'numeric', month:'short', year:'numeric' });
+      const courseTag = note.course
+        ? `<span class="note-card-course">${escapeHtml(note.course)}</span>`
+        : '';
+      return `
+        <div class="note-card" onclick="openNote('${note.id}')">
+          <button class="note-card-delete" onclick="event.stopPropagation();askDelete('${note.id}')" title="Delete">✕</button>
+          ${courseTag}
+          <div class="note-card-title">${escapeHtml(note.title || 'Untitled')}</div>
+          <div class="note-card-preview">${escapeHtml(preview) || '<em style="color:#ccc">Empty note</em>'}</div>
+          <div class="note-card-meta">Last edited ${date}</div>
+        </div>`;
+    }
+
+    function openNote(id) {
+      localStorage.setItem('sss_editing_id', id);
+      window.location.href = 'notes-editor.html';
+    }
+    function goNewNote() {
+      localStorage.removeItem('sss_editing_id');
+      window.location.href = 'notes-editor.html';
+    }
+
+    document.getElementById('fileInput').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const id = generateId();
+        const title = file.name.replace(/\.txt$/i, '');
+        const note = { id, title, content: ev.target.result, course: '', updatedAt: Date.now() };
+        saveNote(note);
+        localStorage.setItem('sss_editing_id', id);
+        window.location.href = 'notes-editor.html';
+      };
+      reader.readAsText(file);
+    });
+
+    let pendingDeleteId = null;
+    function askDelete(id) {
+      const raw = localStorage.getItem(KEYS.note(id));
+      const note = raw ? JSON.parse(raw) : null;
+      document.getElementById('deleteModalMsg').textContent =
+        `Are you sure you want to delete "${note ? note.title || 'Untitled' : 'this note'}"? This cannot be undone.`;
+      pendingDeleteId = id;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+    function confirmDelete() {
+      if (pendingDeleteId) { deleteNote(pendingDeleteId); pendingDeleteId = null; }
+      closeDeleteModal();
+      renderNotes();
+    }
+
+    function openManageCourses() {
+      renderCoursesList();
+      document.getElementById('coursesModal').classList.add('active');
+    }
+    function closeManageCourses() {
+      document.getElementById('coursesModal').classList.remove('active');
+    }
+    function renderCoursesList() {
+      const courses = getCourses();
+      const list = document.getElementById('coursesList');
+      if (courses.length === 0) {
+        list.innerHTML = '<p style="font-family:Inter,sans-serif;font-size:0.85rem;color:#bbb;text-align:center">No courses added yet.</p>';
+        return;
+      }
+      list.innerHTML = courses.map(c => `
+        <div class="course-item">
+          <span>${escapeHtml(c)}</span>
+          <button class="course-item-delete" onclick="removeCourse('${escapeHtml(c)}')">✕ Remove</button>
+        </div>
+      `).join('');
+    }
+
+    window.addEventListener('load', () => {
+      renderFilterBar();
+      renderNotes();
+    });
+  </script>
+
+</body>
+</html>

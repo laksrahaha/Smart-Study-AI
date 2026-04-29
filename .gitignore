@@ -40,3 +40,7 @@ temp/
 # Package lock files (optional, depending on workflow)
 # package-lock.json
 # yarn.lock
+
+#Ignore these file so the cache changes wont affetct git
+obj/
+bin/

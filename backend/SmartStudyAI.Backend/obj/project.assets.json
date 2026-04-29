@@ -8,19 +8,19 @@
     "net10.0": []
   },
   "packageFolders": {
-    "C:\\Users\\kunap\\.nuget\\packages\\": {}
+    "/Users/husniamosavi/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kunap\\OneDrive - AUT University\\Engineering Year 3\\Sem 1\\Software Team Project\\SmartStudyAI\\backend\\SmartStudyAI.Backend\\SmartStudyAI.Backend.csproj",
+      "projectUniqueName": "/Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/SmartStudyAI.Backend.csproj",
       "projectName": "SmartStudyAI.Backend",
-      "projectPath": "C:\\Users\\kunap\\OneDrive - AUT University\\Engineering Year 3\\Sem 1\\Software Team Project\\SmartStudyAI\\backend\\SmartStudyAI.Backend\\SmartStudyAI.Backend.csproj",
-      "packagesPath": "C:\\Users\\kunap\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kunap\\OneDrive - AUT University\\Engineering Year 3\\Sem 1\\Software Team Project\\SmartStudyAI\\backend\\SmartStudyAI.Backend\\obj\\",
+      "projectPath": "/Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/SmartStudyAI.Backend.csproj",
+      "packagesPath": "/Users/husniamosavi/.nuget/packages/",
+      "outputPath": "/Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\kunap\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/husniamosavi/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -68,7 +68,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

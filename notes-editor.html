@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Note – Super Smart Study Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=La+Belle+Aurore&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #fff;
+      color: #101010;
+      font-family: 'Playfair Display', serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 14px 32px;
+      border-bottom: 1.5px solid #222;
+      gap: 12px;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo { width: 36px; height: 36px; object-fit: contain; }
+    .nav-title { font-size: 17px; font-weight: 700; letter-spacing: 1.5px; flex: 1; }
+    .nav-back { font-size: 15px; color: #444; text-decoration: none; cursor: pointer; }
+    .nav-back:hover { text-decoration: underline; }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 32px;
+      animation: fadeUp 0.7s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-wrapper { width: 100%; max-width: 820px; display: flex; flex-direction: column; gap: 20px; }
+
+    .title-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: 3px; }
+    .file-name { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: #888; font-style: italic; }
+
+    .note-title-input {
+      width: 100%;
+      padding: 14px 18px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: #222; background: #fafafa;
+      border: 1.5px solid #ccc; border-radius: 10px;
+      outline: none; transition: border-color 0.2s; letter-spacing: 0.5px;
+    }
+    .note-title-input:focus { border-color: #333; background: #fff; }
+    .note-title-input::placeholder { color: #bbb; font-weight: 400; }
+
+    .course-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .course-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: #666;
+      white-space: nowrap;
+    }
+
+    .course-select {
+      flex: 1;
+      min-width: 180px;
+      padding: 10px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: #333;
+      background: #fafafa;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .course-select:focus { border-color: #333; }
+
+    .no-courses-hint {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      color: #aaa;
+    }
+    .no-courses-hint a {
+      color: #555;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .toolbar-left { display: flex; gap: 10px; }
+    .toolbar-right { display: flex; gap: 10px; align-items: center; }
+
+    .btn {
+      background: #1a1a1a; color: #f5f3ee; border: none;
+      padding: 12px 28px; font-family: 'Playfair Display', serif;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-radius: 8px; letter-spacing: 0.5px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover { background: #333; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+    .btn:active { transform: translateY(0); box-shadow: none; }
+
+    .btn-outline { background: transparent; color: #1a1a1a; border: 1.5px solid #1a1a1a; }
+    .btn-outline:hover { background: #1a1a1a; color: #f5f3ee; }
+
+    .btn-danger { background: transparent; color: #c0392b; border: 1.5px solid #c0392b; }
+    .btn-danger:hover { background: #c0392b; color: #fff; }
+
+    textarea {
+      width: 100%;
+      min-height: 440px;
+      padding: 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #222;
+      background: #fafafa;
+      border: 1.5px solid #ccc;
+      border-radius: 10px;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: #333; background: #fff; }
+
+    .status-msg {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      text-align: right;
+      color: #777;
+      height: 20px;
+      transition: color 0.3s;
+    }
+    .status-msg.saved { color: #2a7a2a; }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #fff; border-radius: 14px; padding: 36px 40px;
+      max-width: 400px; width: 90%; text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      animation: fadeUp 0.3s ease both;
+    }
+    .modal h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 12px; }
+    .modal p { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #666; margin-bottom: 28px; line-height: 1.6; }
+    .modal-buttons { display: flex; gap: 12px; justify-content: center; }
+    .btn-danger-solid { background: #c0392b; color: #fff; border: none; }
+    .btn-danger-solid:hover { background: #a93226; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
+    <span class="nav-title">Super Smart Study Assistant</span>
+    <a class="nav-back" onclick="goBack()">← Back to Notes</a>
+  </nav>
+
+  <main>
+    <div class="page-wrapper">
+
+      <div class="title-row">
+        <h1>EDIT NOTE</h1>
+        <span class="file-name" id="fileName">New note</span>
+      </div>
+
+      <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note title..." maxlength="80" />
+
+      <div class="course-row">
+        <span class="course-label">📚 Course:</span>
+        <select class="course-select" id="courseSelect" onchange="scheduleAutoSave()">
+          <option value="">— Uncategorised —</option>
+        </select>
+        <span class="no-courses-hint" id="noCourseHint" style="display:none">
+          No courses yet. <a onclick="goManageCourses()">Add one on the Notes board.</a>
+        </span>
+      </div>
+
+      <div class="editor-toolbar">
+        <div class="toolbar-left">
+          <button class="btn" onclick="saveNotes()">Save</button>
+          <button class="btn btn-outline" onclick="clearNotes()">Clear</button>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-danger" onclick="askDelete()">🗑 Delete Note</button>
+        </div>
+      </div>
+
+      <textarea id="noteEditor" placeholder="Start writing your notes here..."></textarea>
+
+      <p class="status-msg" id="statusMsg"></p>
+
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h2>Delete Note?</h2>
+      <p id="deleteModalMsg">This cannot be undone.</p>
+      <div class="modal-buttons">
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger-solid" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const KEYS = {
+      index:   'sss_notes_index',
+      note:    id => `sss_note_${id}`,
+      courses: 'sss_courses',
+    };
+
+    function getCourses() {
+      return JSON.parse(localStorage.getItem(KEYS.courses) || '[]');
+    }
+    function saveNote(note) {
+      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
+      if (!index.includes(note.id)) index.unshift(note.id);
+      localStorage.setItem(KEYS.index, JSON.stringify(index));
+      localStorage.setItem(KEYS.note(note.id), JSON.stringify(note));
+    }
+    function deleteNote(id) {
+      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
+      index = index.filter(i => i !== id);
+      localStorage.setItem(KEYS.index, JSON.stringify(index));
+      localStorage.removeItem(KEYS.note(id));
+    }
+    function generateId() {
+      return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+    }
+
+    let currentNoteId = null;
+
+    const noteEditor     = document.getElementById('noteEditor');
+    const noteTitleInput = document.getElementById('noteTitleInput');
+    const fileName       = document.getElementById('fileName');
+    const statusMsg      = document.getElementById('statusMsg');
+    const courseSelect   = document.getElementById('courseSelect');
+
+    function populateCourseSelect(selectedCourse) {
+      const courses = getCourses();
+      courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
+      courses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        if (c === selectedCourse) opt.selected = true;
+        courseSelect.appendChild(opt);
+      });
+
+      const hint = document.getElementById('noCourseHint');
+      hint.style.display = courses.length === 0 ? 'inline' : 'none';
+    }
+
+    window.addEventListener('load', () => {
+      const editingId = localStorage.getItem('sss_editing_id');
+      if (editingId) {
+        const raw = localStorage.getItem(KEYS.note(editingId));
+        if (raw) {
+          const note = JSON.parse(raw);
+          currentNoteId        = note.id;
+          noteEditor.value     = note.content || '';
+          noteTitleInput.value = note.title   || '';
+          fileName.textContent = note.title   || 'Untitled';
+          populateCourseSelect(note.course || '');
+          return;
+        }
+      }
+      currentNoteId = generateId();
+      fileName.textContent = 'New note';
+      populateCourseSelect('');
+      noteTitleInput.focus();
+    });
+
+    function saveNotes() {
+      if (!currentNoteId) currentNoteId = generateId();
+      const note = {
+        id:        currentNoteId,
+        title:     noteTitleInput.value.trim() || 'Untitled',
+        content:   noteEditor.value,
+        course:    courseSelect.value,
+        updatedAt: Date.now(),
+      };
+      saveNote(note);
+      fileName.textContent = note.title;
+      showStatus('Saved successfully!', true);
+      window.location.href = 'notes-board.html';
+    }
+
+    let autoSaveTimer;
+    function scheduleAutoSave() {
+      clearTimeout(autoSaveTimer);
+      statusMsg.textContent = 'Saving...';
+      statusMsg.className   = 'status-msg';
+      autoSaveTimer = setTimeout(() => {
+        if (!currentNoteId) currentNoteId = generateId();
+        const note = {
+          id:        currentNoteId,
+          title:     noteTitleInput.value.trim() || 'Untitled',
+          content:   noteEditor.value,
+          course:    courseSelect.value,
+          updatedAt: Date.now(),
+        };
+        saveNote(note);
+        fileName.textContent = note.title;
+        showStatus('Auto-saved ✓', true);
+      }, 1000);
+    }
+
+    noteEditor.addEventListener('input', scheduleAutoSave);
+    noteTitleInput.addEventListener('input', scheduleAutoSave);
+
+    function clearNotes() {
+      if (confirm('Clear all content in this note?')) {
+        noteEditor.value = '';
+        showStatus('Content cleared.');
+      }
+    }
+
+    function askDelete() {
+      const title = noteTitleInput.value.trim() || 'Untitled';
+      document.getElementById('deleteModalMsg').textContent =
+        `Are you sure you want to delete "${title}"? This cannot be undone.`;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+    function closeModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+    function confirmDelete() {
+      if (currentNoteId) deleteNote(currentNoteId);
+      localStorage.removeItem('sss_editing_id');
+      window.location.href = 'notes-board.html';
+    }
+
+    function goBack() {
+      saveNotes();
+      localStorage.removeItem('sss_editing_id');
+      window.location.href = 'notes-board.html';
+    }
+
+    function goManageCourses() {
+      saveNotes();
+      localStorage.removeItem('sss_editing_id');
+      window.location.href = 'notes-board.html';
+    }
+
+    function showStatus(msg, success = false) {
+      statusMsg.textContent = msg;
+      statusMsg.className   = 'status-msg' + (success ? ' saved' : '');
+      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
+    }
+  </script>
+
+</body>
+</html>

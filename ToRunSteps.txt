@@ -1,0 +1,3 @@
+# cd backend\SmartStudyAI.Backend
+# dotnet run
+# run 2 above command in terminal so that the program is runing and ready to connect to database

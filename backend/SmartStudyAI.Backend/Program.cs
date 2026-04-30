@@ -4,6 +4,10 @@ using SmartStudyAI.Backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Auto-migrate database on startup
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -20,6 +24,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+// Auto-migrate database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+    
+    // Seed sample data if database is empty
+    if (!db.Users.Any())
+    {
+        // Run seed script
+        var seedSql = File.ReadAllText("seed-data.sql");
+        db.Database.ExecuteSqlRaw(seedSql);
+        Console.WriteLine("Sample data seeded from seed-data.sql!");
+    }
+}
 
 app.UseCors();
 

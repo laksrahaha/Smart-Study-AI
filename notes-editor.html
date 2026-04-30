@@ -4,15 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Edit Note – Super Smart Study Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=La+Belle+Aurore&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --grad-start: #2d2d2d;
+      --grad-end: #4e73df;
+      --accent: #4e73df;
+      --accent-dark: #3a5bbf;
+      --danger: #e74c3c;
+      --text-dark: #1a1a2e;
+      --text-mid: #555577;
+      --text-light: #9999bb;
+      --border: rgba(255,255,255,0.15);
+      --shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
     body {
       min-height: 100vh;
-      background: #fff;
-      color: #101010;
-      font-family: 'Playfair Display', serif;
+      background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
       display: flex;
       flex-direction: column;
     }
@@ -20,49 +34,92 @@
     nav {
       display: flex;
       align-items: center;
-      padding: 14px 32px;
-      border-bottom: 1.5px solid #222;
-      gap: 12px;
-      background: #fff;
+      padding: 16px 36px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 100;
+      gap: 14px;
     }
     .nav-logo { width: 36px; height: 36px; object-fit: contain; }
-    .nav-title { font-size: 17px; font-weight: 700; letter-spacing: 1.5px; flex: 1; }
-    .nav-back { font-size: 15px; color: #444; text-decoration: none; cursor: pointer; }
-    .nav-back:hover { text-decoration: underline; }
+    .nav-brand { font-size: 15px; font-weight: 800; letter-spacing: 1.5px; flex: 1; color: #fff; opacity: 0.95; }
+    .nav-back {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.25);
+      transition: all 0.2s;
+    }
+    .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
     main {
       flex: 1;
+      padding: 40px 32px 60px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 32px;
-      animation: fadeUp 0.7s ease both;
+      animation: fadeUp 0.6s ease both;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .page-wrapper { width: 100%; max-width: 820px; display: flex; flex-direction: column; gap: 20px; }
+    .page-wrapper { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 20px; }
 
-    .title-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: 3px; }
-    .file-name { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: #888; font-style: italic; }
+    .header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      color: #fff;
+      letter-spacing: 1px;
+      line-height: 1;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+    .file-name {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 700;
+      font-style: italic;
+    }
+
+    .editor-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      color: var(--text-dark);
+    }
 
     .note-title-input {
       width: 100%;
       padding: 14px 18px;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem; font-weight: 700;
-      color: #222; background: #fafafa;
-      border: 1.5px solid #ccc; border-radius: 10px;
-      outline: none; transition: border-color 0.2s; letter-spacing: 0.5px;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--text-dark);
+      background: #f7f8fc;
+      border: 1.5px solid #e8eaf0;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
     }
-    .note-title-input:focus { border-color: #333; background: #fff; }
-    .note-title-input::placeholder { color: #bbb; font-weight: 400; }
+    .note-title-input:focus { border-color: var(--accent); background: #fff; }
+    .note-title-input::placeholder { color: #c5c8d8; font-style: italic; }
 
     .course-row {
       display: flex;
@@ -70,40 +127,38 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-
     .course-label {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
-      color: #666;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-mid);
       white-space: nowrap;
+      letter-spacing: 0.3px;
     }
-
     .course-select {
       flex: 1;
       min-width: 180px;
       padding: 10px 14px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      color: #333;
-      background: #fafafa;
-      border: 1.5px solid #ccc;
-      border-radius: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      background: #f7f8fc;
+      border: 1.5px solid #e8eaf0;
+      border-radius: 10px;
       outline: none;
       cursor: pointer;
       transition: border-color 0.2s;
     }
-    .course-select:focus { border-color: #333; }
+    .course-select:focus { border-color: var(--accent); }
 
     .no-courses-hint {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      color: #aaa;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      font-weight: 600;
     }
-    .no-courses-hint a {
-      color: #555;
-      cursor: pointer;
-      text-decoration: underline;
-    }
+    .no-courses-hint a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+    .card-divider { border: none; border-top: 1px solid #eef0f8; }
 
     .editor-toolbar {
       display: flex;
@@ -112,112 +167,158 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    .toolbar-left { display: flex; gap: 10px; }
-    .toolbar-right { display: flex; gap: 10px; align-items: center; }
+    .toolbar-left { display: flex; gap: 8px; }
+    .toolbar-right { display: flex; gap: 8px; align-items: center; }
 
     .btn {
-      background: #1a1a1a; color: #f5f3ee; border: none;
-      padding: 12px 28px; font-family: 'Playfair Display', serif;
-      font-size: 0.95rem; font-weight: 700; cursor: pointer;
-      border-radius: 8px; letter-spacing: 0.5px;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      padding: 10px 22px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 10px;
+      border: none;
+      letter-spacing: 0.3px;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn:hover { background: #333; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
-    .btn:active { transform: translateY(0); box-shadow: none; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
 
-    .btn-outline { background: transparent; color: #1a1a1a; border: 1.5px solid #1a1a1a; }
-    .btn-outline:hover { background: #1a1a1a; color: #f5f3ee; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--grad-start), var(--accent));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(78,115,223,0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 20px rgba(78,115,223,0.45); }
 
-    .btn-danger { background: transparent; color: #c0392b; border: 1.5px solid #c0392b; }
-    .btn-danger:hover { background: #c0392b; color: #fff; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-dark);
+      border: 1.5px solid #dde0f0;
+    }
+    .btn-outline:hover { background: #f7f8fc; border-color: #bbbdd8; }
+
+    .btn-danger-outline {
+      background: transparent;
+      color: var(--danger);
+      border: 1.5px solid #fbd3cf;
+    }
+    .btn-danger-outline:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
     textarea {
       width: 100%;
-      min-height: 440px;
-      padding: 24px;
-      font-family: 'Inter', sans-serif;
+      min-height: 420px;
+      padding: 20px 22px;
+      font-family: 'Nunito', sans-serif;
       font-size: 0.95rem;
-      line-height: 1.8;
-      color: #222;
-      background: #fafafa;
-      border: 1.5px solid #ccc;
-      border-radius: 10px;
+      line-height: 1.85;
+      color: var(--text-dark);
+      font-weight: 600;
+      background: #f7f8fc;
+      border: 1.5px solid #e8eaf0;
+      border-radius: 12px;
       outline: none;
       resize: vertical;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background 0.2s;
     }
-    textarea:focus { border-color: #333; background: #fff; }
+    textarea:focus { border-color: var(--accent); background: #fff; }
+    textarea::placeholder { color: #c5c8d8; font-weight: 400; }
 
     .status-msg {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       text-align: right;
-      color: #777;
-      height: 20px;
+      color: var(--text-light);
+      font-weight: 700;
+      height: 18px;
       transition: color 0.3s;
     }
-    .status-msg.saved { color: #2a7a2a; }
+    .status-msg.saved { color: #27ae60; }
 
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.4); z-index: 200;
+      background: rgba(0,0,0,0.55); z-index: 200;
       align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
     }
     .modal-overlay.active { display: flex; }
     .modal {
-      background: #fff; border-radius: 14px; padding: 36px 40px;
-      max-width: 400px; width: 90%; text-align: center;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      background: #fff; border-radius: 20px; padding: 36px 40px;
+      max-width: 400px; width: 92%; text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22);
       animation: fadeUp 0.3s ease both;
+      color: var(--text-dark);
     }
-    .modal h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 12px; }
-    .modal p { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #666; margin-bottom: 28px; line-height: 1.6; }
-    .modal-buttons { display: flex; gap: 12px; justify-content: center; }
-    .btn-danger-solid { background: #c0392b; color: #fff; border: none; }
-    .btn-danger-solid:hover { background: #a93226; }
+    .modal h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; font-weight: 400; margin-bottom: 10px; }
+    .modal p { font-size: 0.88rem; color: var(--text-mid); margin-bottom: 24px; line-height: 1.6; font-weight: 600; }
+    .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+    .btn-outline-dark { background: transparent; color: var(--text-dark); border: 1.5px solid #dde0f0; }
+    .btn-outline-dark:hover { background: #f7f8fc; }
+    .btn-delete { background: var(--danger); color: #fff; box-shadow: 0 4px 12px rgba(231,76,60,0.3); }
+    .btn-delete:hover { background: #c0392b; color: #fff; box-shadow: 0 8px 20px rgba(231,76,60,0.4); }
+
+    .editor-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-light);
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
   <nav>
     <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
-    <span class="nav-title">Super Smart Study Assistant</span>
+    <span class="nav-brand">Super Smart Study Assistant</span>
     <a class="nav-back" onclick="goBack()">← Back to Notes</a>
   </nav>
 
   <main>
     <div class="page-wrapper">
 
-      <div class="title-row">
-        <h1>EDIT NOTE</h1>
+      <div class="header-row">
+        <h1>Edit Note ✏️</h1>
         <span class="file-name" id="fileName">New note</span>
       </div>
+      
+      <div class="editor-card">
 
-      <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note title..." maxlength="80" />
+        <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note title..." maxlength="80" />
 
-      <div class="course-row">
-        <span class="course-label">📚 Course:</span>
-        <select class="course-select" id="courseSelect" onchange="scheduleAutoSave()">
-          <option value="">— Uncategorised —</option>
-        </select>
-        <span class="no-courses-hint" id="noCourseHint" style="display:none">
-          No courses yet. <a onclick="goManageCourses()">Add one on the Notes board.</a>
-        </span>
-      </div>
-
-      <div class="editor-toolbar">
-        <div class="toolbar-left">
-          <button class="btn" onclick="saveNotes()">Save</button>
-          <button class="btn btn-outline" onclick="clearNotes()">Clear</button>
+        <div class="course-row">
+          <span class="course-label">📚 Course:</span>
+          <select class="course-select" id="courseSelect" onchange="scheduleAutoSave()">
+            <option value="">— Uncategorised —</option>
+          </select>
+          <span class="no-courses-hint" id="noCourseHint" style="display:none">
+            No courses yet. <a onclick="goManageCourses()">Add one on the Notes board.</a>
+          </span>
         </div>
-        <div class="toolbar-right">
-          <button class="btn btn-danger" onclick="askDelete()">🗑 Delete Note</button>
+
+        <hr class="card-divider" />
+
+        <div class="editor-toolbar">
+          <div class="toolbar-left">
+            <button class="btn btn-primary" onclick="saveNotes()">💾 Save</button>
+            <button class="btn btn-outline" onclick="clearNotes()">Clear</button>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-danger-outline" onclick="askDelete()">🗑 Delete Note</button>
+          </div>
         </div>
+
+        <textarea id="noteEditor" placeholder="Start writing your notes here..."></textarea>
+
+        <div class="editor-meta">
+          <span id="wordCount">0 words</span>
+          <p class="status-msg" id="statusMsg"></p>
+        </div>
+
       </div>
-
-      <textarea id="noteEditor" placeholder="Start writing your notes here..."></textarea>
-
-      <p class="status-msg" id="statusMsg"></p>
 
     </div>
   </main>
@@ -227,8 +328,8 @@
       <h2>Delete Note?</h2>
       <p id="deleteModalMsg">This cannot be undone.</p>
       <div class="modal-buttons">
-        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-danger-solid" onclick="confirmDelete()">Delete</button>
+        <button class="btn btn-outline-dark" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-delete" onclick="confirmDelete()">🗑 Delete</button>
       </div>
     </div>
   </div>
@@ -240,9 +341,7 @@
       courses: 'sss_courses',
     };
 
-    function getCourses() {
-      return JSON.parse(localStorage.getItem(KEYS.courses) || '[]');
-    }
+    function getCourses() { return JSON.parse(localStorage.getItem(KEYS.courses) || '[]'); }
     function saveNote(note) {
       let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
       if (!index.includes(note.id)) index.unshift(note.id);
@@ -255,31 +354,31 @@
       localStorage.setItem(KEYS.index, JSON.stringify(index));
       localStorage.removeItem(KEYS.note(id));
     }
-    function generateId() {
-      return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-    }
+    function generateId() { return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); }
 
     let currentNoteId = null;
-
     const noteEditor     = document.getElementById('noteEditor');
     const noteTitleInput = document.getElementById('noteTitleInput');
     const fileName       = document.getElementById('fileName');
     const statusMsg      = document.getElementById('statusMsg');
     const courseSelect   = document.getElementById('courseSelect');
+    const wordCountEl    = document.getElementById('wordCount');
+
+    function updateWordCount() {
+      const words = noteEditor.value.trim().split(/\s+/).filter(Boolean).length;
+      wordCountEl.textContent = words === 1 ? '1 word' : `${words} words`;
+    }
 
     function populateCourseSelect(selectedCourse) {
       const courses = getCourses();
       courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
       courses.forEach(c => {
         const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
+        opt.value = c; opt.textContent = c;
         if (c === selectedCourse) opt.selected = true;
         courseSelect.appendChild(opt);
       });
-
-      const hint = document.getElementById('noCourseHint');
-      hint.style.display = courses.length === 0 ? 'inline' : 'none';
+      document.getElementById('noCourseHint').style.display = courses.length === 0 ? 'inline' : 'none';
     }
 
     window.addEventListener('load', () => {
@@ -288,11 +387,12 @@
         const raw = localStorage.getItem(KEYS.note(editingId));
         if (raw) {
           const note = JSON.parse(raw);
-          currentNoteId        = note.id;
-          noteEditor.value     = note.content || '';
-          noteTitleInput.value = note.title   || '';
-          fileName.textContent = note.title   || 'Untitled';
+          currentNoteId = note.id;
+          noteEditor.value = note.content || '';
+          noteTitleInput.value = note.title || '';
+          fileName.textContent = note.title || 'Untitled';
           populateCourseSelect(note.course || '');
+          updateWordCount();
           return;
         }
       }
@@ -305,10 +405,10 @@
     function saveNotes() {
       if (!currentNoteId) currentNoteId = generateId();
       const note = {
-        id:        currentNoteId,
-        title:     noteTitleInput.value.trim() || 'Untitled',
-        content:   noteEditor.value,
-        course:    courseSelect.value,
+        id: currentNoteId,
+        title: noteTitleInput.value.trim() || 'Untitled',
+        content: noteEditor.value,
+        course: courseSelect.value,
         updatedAt: Date.now(),
       };
       saveNote(note);
@@ -321,14 +421,14 @@
     function scheduleAutoSave() {
       clearTimeout(autoSaveTimer);
       statusMsg.textContent = 'Saving...';
-      statusMsg.className   = 'status-msg';
+      statusMsg.className = 'status-msg';
       autoSaveTimer = setTimeout(() => {
         if (!currentNoteId) currentNoteId = generateId();
         const note = {
-          id:        currentNoteId,
-          title:     noteTitleInput.value.trim() || 'Untitled',
-          content:   noteEditor.value,
-          course:    courseSelect.value,
+          id: currentNoteId,
+          title: noteTitleInput.value.trim() || 'Untitled',
+          content: noteEditor.value,
+          course: courseSelect.value,
           updatedAt: Date.now(),
         };
         saveNote(note);
@@ -337,12 +437,13 @@
       }, 1000);
     }
 
-    noteEditor.addEventListener('input', scheduleAutoSave);
+    noteEditor.addEventListener('input', () => { scheduleAutoSave(); updateWordCount(); });
     noteTitleInput.addEventListener('input', scheduleAutoSave);
 
     function clearNotes() {
       if (confirm('Clear all content in this note?')) {
         noteEditor.value = '';
+        updateWordCount();
         showStatus('Content cleared.');
       }
     }
@@ -353,9 +454,7 @@
         `Are you sure you want to delete "${title}"? This cannot be undone.`;
       document.getElementById('deleteModal').classList.add('active');
     }
-    function closeModal() {
-      document.getElementById('deleteModal').classList.remove('active');
-    }
+    function closeModal() { document.getElementById('deleteModal').classList.remove('active'); }
     function confirmDelete() {
       if (currentNoteId) deleteNote(currentNoteId);
       localStorage.removeItem('sss_editing_id');
@@ -367,7 +466,6 @@
       localStorage.removeItem('sss_editing_id');
       window.location.href = 'notes-board.html';
     }
-
     function goManageCourses() {
       saveNotes();
       localStorage.removeItem('sss_editing_id');
@@ -376,8 +474,8 @@
 
     function showStatus(msg, success = false) {
       statusMsg.textContent = msg;
-      statusMsg.className   = 'status-msg' + (success ? ' saved' : '');
-      setTimeout(() => { statusMsg.textContent = ''; }, 3000);
+      statusMsg.className = 'status-msg' + (success ? ' saved' : '');
+      setTimeout(() => { statusMsg.textContent = ''; statusMsg.className = 'status-msg'; }, 3000);
     }
   </script>
 

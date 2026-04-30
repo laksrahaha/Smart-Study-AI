@@ -1,184 +1,326 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Course Dashboard</title>
+  <title>Courses</title>
 
   <style>
     body {
+      margin: 0;
       font-family: Arial;
-      background: #f4f6f9;
-      padding: 40px;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .top-bar {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
+      background: #f7f7fb;
+      color: #1a1a1a;
     }
 
-    .back-btn {
-      background: #888;
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      background: white;
+      height: 100vh;
+      padding: 20px;
+      border-right: 1px solid #eee;
     }
 
-    input {
-      width: 65%;
+    .sidebar h2 {
+      margin-bottom: 40px;
+    }
+
+    .menu-item {
+      margin: 15px 0;
       padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      padding: 10px 15px;
-      background: #2d2d2d;
-      color: white;
-      border: none;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    button:hover {
-      background: black;
+    .menu-item:hover {
+      background: #eee;
+      color: #6C63FF;
     }
 
-    ul {
-      margin-top: 20px;
-      padding: 0;
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 30px;
     }
 
-    li {
-      list-style: none;
-      background: #e9ecef;
-      padding: 12px;
-      margin-bottom: 8px;
-      border-radius: 6px;
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 20px;
     }
 
-    .active {
-      background: #4e73df;
+    .header-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      position: relative;
+    }
+
+    .settings-btn {
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #eee;
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 35px;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      display: none;
+      width: 120px;
+    }
+
+    .settings-menu div {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .settings-menu div:hover {
+      background: #f4f4f4;
+    }
+
+    .welcome {
+      margin-bottom: 15px;
+      color: #666;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #6C63FF;
       color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
     }
 
-    .success {
-      color: green;
+    button:hover {
+      background: #5848d6;
+    }
+
+    .courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .course-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      transition: 0.2s;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: #6C63FF;
+      box-shadow: 0 6px 15px rgba(108,99,255,0.2);
+    }
+
+    .course-card h3 {
+      margin: 0 0 10px;
+    }
+
+    .course-card p {
+      color: #777;
+      font-size: 13px;
+    }
+
+    .empty {
       text-align: center;
-      margin-top: 10px;
+      color: gray;
+      margin-top: 20px;
+    }
+
+    .count {
+      margin-bottom: 10px;
+      color: #666;
+    }
+
+    .sort-label {
+      font-size: 12px;
+      color: #888;
+      margin-left: 5px;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Smart Study AI</h2>
 
-  <div class="top-bar">
-    <button class="back-btn" onclick="goBack()">⬅ Back</button>
-    <span>Course Workspace</span>
+  <div class="menu-item" onclick="goBack()">Dashboard</div>
+  <div class="menu-item">Courses</div>
+  <div class="menu-item">Notes</div>
+  <div class="menu-item">Quiz</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="header">
+    <h2>My Courses</h2>
+
+    <div class="header-right">
+      <div>Student Name</div>
+      <div class="settings-btn" onclick="toggleSettings()">Settings</div>
+
+      <div class="settings-menu" id="settingsMenu">
+        <div>Profile</div>
+        <div>Logout</div>
+      </div>
+    </div>
   </div>
 
-  <h1>My Courses</h1>
+  <div class="welcome">
+    Happy studying 👋 Stay consistent and keep improving!
+  </div>
 
-  <input type="text" id="courseTitle" placeholder="Enter course name">
-  <button onclick="addCourse()">Add</button>
+  <!-- ADD -->
+  <div class="controls">
+    <input id="courseTitle" placeholder="Enter course name">
+    <button onclick="addCourse()">Add</button>
+  </div>
 
-  <p id="message" class="success"></p>
+  <!-- SEARCH + SORT -->
+  <div class="controls">
+    <input id="search" placeholder="Search courses..." oninput="filterCourses()">
+    <button onclick="sortCourses()">Sort</button>
+    <span class="sort-label" id="sortLabel">A-Z</span>
+  </div>
 
-  <ul id="courseList"></ul>
+  <p id="courseCount" class="count"></p>
+
+  <div class="courses" id="courseList"></div>
+
+  <p id="emptyMessage" class="empty"></p>
 
 </div>
 
 <script>
-
 const api = "http://localhost:5095/api/course";
-let selectedCourseId = null;
+let allCourses = [];
+let isAscending = true;
 
-// Load courses
+/* LOAD */
 async function loadCourses() {
   const res = await fetch(api);
-  const data = await res.json();
+  allCourses = await res.json();
+  displayCourses(allCourses);
+}
 
+/* DISPLAY */
+function displayCourses(data) {
   const list = document.getElementById("courseList");
+  const empty = document.getElementById("emptyMessage");
+  const count = document.getElementById("courseCount");
+
   list.innerHTML = "";
+  count.innerText = `${data.length} courses available`;
+
+  if (data.length === 0) {
+    empty.innerText = "No courses yet. Start by adding your first one.";
+    return;
+  }
+
+  empty.innerText = "";
 
   data.forEach(course => {
-    const li = document.createElement("li");
+    const div = document.createElement("div");
+    div.className = "course-card";
 
-    li.innerText = course.title;
+    div.innerHTML = `
+      <h3>${course.title}</h3>
+      <p>Course workspace</p>
+      <button onclick="openCourse('${course.title}')">Open</button>
+    `;
 
-    // highlight selected course
-    if (course.id === selectedCourseId) {
-      li.classList.add("active");
-    }
-
-    // click to select course
-    li.onclick = () => {
-      selectedCourseId = course.id;
-      localStorage.setItem("lastCourse", course.id);
-      loadCourses();
-    };
-
-    list.appendChild(li);
+    list.appendChild(div);
   });
 }
 
-// Add course
+/* ADD */
 async function addCourse() {
   const title = document.getElementById("courseTitle").value;
 
   if (!title) {
-    alert("Enter course name");
+    alert("Enter a course name");
     return;
   }
 
   await fetch(api, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      title: title,
-      userId: "1"
-    })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, userId: "1" })
   });
 
   document.getElementById("courseTitle").value = "";
-  document.getElementById("message").innerText = "Course added successfully!";
-
   loadCourses();
 }
 
-// Go back to dashboard
+/* SEARCH */
+function filterCourses() {
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = allCourses.filter(c =>
+    c.title.toLowerCase().includes(search)
+  );
+
+  displayCourses(filtered);
+}
+
+/* SORT */
+function sortCourses() {
+  const label = document.getElementById("sortLabel");
+
+  if (isAscending) {
+    displayCourses([...allCourses].sort((a,b)=>a.title.localeCompare(b.title)));
+    label.innerText = "Z-A";
+  } else {
+    displayCourses([...allCourses].sort((a,b)=>b.title.localeCompare(a.title)));
+    label.innerText = "A-Z";
+  }
+
+  isAscending = !isAscending;
+}
+
+/* SETTINGS */
+function toggleSettings() {
+  const menu = document.getElementById("settingsMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+/* NAV */
 function goBack() {
   window.location.href = "studentdashboard.html";
 }
 
-// Load last selected course
-function loadLastCourse() {
-  const saved = localStorage.getItem("lastCourse");
-  if (saved) {
-    selectedCourseId = parseInt(saved);
-  }
+/* OPEN */
+function openCourse(name) {
+  alert("Opening " + name);
 }
 
-loadLastCourse();
 loadCourses();
-
 </script>
 
 </body>

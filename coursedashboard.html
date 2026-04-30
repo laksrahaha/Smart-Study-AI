@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Study AI - Courses</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f3ff; /* light purple background */
+      padding: 40px;
+      margin: 0;
+    }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #6b5cff;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: black;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      flex: 1;
+    }
+
+    .top-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 14px;
+      background: #a78bfa; /* light purple */
+      color: black;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    ul {
+      margin-top: 20px;
+      padding: 0;
+    }
+
+    li {
+      list-style: none;
+      background: #ede9fe;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: black;
+    }
+
+    .active {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    .actions button {
+      margin-left: 5px;
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+
+    .success {
+      color: green;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">Smart Study AI</div>
+
+<div class="container">
+  <h1>Course Dashboard</h1>
+
+  <!-- ADD COURSE -->
+  <div class="top-bar">
+    <input type="text" id="courseTitle" placeholder="Enter course name">
+    <button onclick="addCourse()">Add</button>
+  </div>
+
+  <!-- SEARCH + SORT -->
+  <div class="top-bar">
+    <input type="text" id="searchInput" placeholder="Search..." oninput="searchCourses()">
+    <button onclick="sortCourses('asc')">A–Z</button>
+    <button onclick="sortCourses('desc')">Z–A</button>
+  </div>
+
+  <p id="message" class="success"></p>
+
+  <ul id="courseList"></ul>
+</div>
+
+<script>
+const api = "http://localhost:5095/api/course";
+
+let courses = [];
+let activeCourseId = null;
+
+// LOAD
+async function loadCourses() {
+  const res = await fetch(api);
+  courses = await res.json();
+  displayCourses(courses);
+}
+
+// DISPLAY
+function displayCourses(list) {
+  const ul = document.getElementById("courseList");
+  ul.innerHTML = "";
+
+  list.forEach(course => {
+    const li = document.createElement("li");
+
+    if (course.id === activeCourseId) {
+      li.classList.add("active");
+    }
+
+    li.innerHTML = `
+      <span onclick="selectCourse(${course.id})">${course.title}</span>
+      <div class="actions">
+        <button onclick="renameCourse(${course.id})">✏️</button>
+        <button onclick="deleteCourse(${course.id})">🗑</button>
+      </div>
+    `;
+
+    ul.appendChild(li);
+  });
+}
+
+// ADD
+async function addCourse() {
+  const title = document.getElementById("courseTitle").value;
+
+  if (!title) return alert("Enter course name");
+
+  await fetch(api, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: title, userId: "1" })
+  });
+
+  document.getElementById("courseTitle").value = "";
+  document.getElementById("message").innerText = "Course added successfully!";
+
+  loadCourses();
+}
+
+// DELETE
+async function deleteCourse(id) {
+  await fetch(`${api}/${id}`, { method: "DELETE" });
+  loadCourses();
+}
+
+// RENAME
+async function renameCourse(id) {
+  const newName = prompt("Enter new course name:");
+  if (!newName) return;
+
+  await fetch(`${api}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: newName })
+  });
+
+  loadCourses();
+}
+
+// SEARCH
+function searchCourses() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  const filtered = courses.filter(c =>
+    c.title.toLowerCase().includes(query)
+  );
+  displayCourses(filtered);
+}
+
+// SORT
+function sortCourses(type) {
+  let sorted = [...courses];
+
+  if (type === "asc") {
+    sorted.sort((a, b) => a.title.localeCompare(b.title));
+  } else {
+    sorted.sort((a, b) => b.title.localeCompare(a.title));
+  }
+
+  displayCourses(sorted);
+}
+
+// SWITCH
+async function selectCourse(id) {
+  activeCourseId = id;
+
+  await fetch(`${api}/switch/${id}`, { method: "POST" });
+
+  displayCourses(courses);
+}
+
+// INIT
+loadCourses();
+</script>
+
+</body>
+</html>

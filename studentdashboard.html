@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #2d2d2d, #4e73df);
+      color: white;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+    }
+
+    .grid {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: white;
+      color: black;
+      padding: 30px;
+      width: 200px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      background: #f1f1f1;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Welcome to Your Dashboard</h1>
+
+<div class="grid">
+  <div class="card" onclick="goToCourses()">📚 Courses</div>
+  <div class="card">📝 Notes</div>
+  <div class="card">🧪 Quiz</div>
+</div>
+
+<script>
+function goToCourses() {
+  window.location.href = "coursedashboard.html";
+}
+</script>
+
+</body>
+</html>

@@ -7,51 +7,47 @@
     body {
       font-family: Arial;
       background: #f4f6f9;
-      padding: 40px;
+      margin: 0;
+    }
+
+    /* Header */
+    .header {
+      background: #2d2d2d;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
     }
 
     .container {
-      max-width: 600px;
-      margin: auto;
+      max-width: 700px;
+      margin: 40px auto;
       background: white;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 20px;
     }
 
-    .top-bar {
+    .controls {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .back-btn {
-      background: #888;
+      gap: 10px;
+      margin-bottom: 15px;
     }
 
     input {
-      width: 65%;
+      flex: 1;
       padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
     }
 
     button {
-      padding: 10px 15px;
+      padding: 10px;
       background: #2d2d2d;
       color: white;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
-    }
-
-    button:hover {
-      background: black;
     }
 
     ul {
@@ -61,78 +57,78 @@
 
     li {
       list-style: none;
-      background: #e9ecef;
       padding: 12px;
+      background: #eee;
       margin-bottom: 8px;
       border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
-    .active {
-      background: #4e73df;
-      color: white;
-    }
-
-    .success {
-      color: green;
+    .empty {
       text-align: center;
-      margin-top: 10px;
+      color: gray;
+      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
 
+<div class="header">
+  <div>Smart Study</div>
+  <div> 👤 Student Name | ⚙ Settings</div>
+</div>
+
 <div class="container">
 
-  <div class="top-bar">
-    <button class="back-btn" onclick="goBack()">⬅ Back</button>
-    <span>Course Workspace</span>
-  </div>
+  <button onclick="goBack()">⬅ Back</button>
 
   <h1>My Courses</h1>
 
-  <input type="text" id="courseTitle" placeholder="Enter course name">
-  <button onclick="addCourse()">Add</button>
+  <div class="controls">
+    <input id="courseTitle" placeholder="Enter course name">
+    <button onclick="addCourse()">Add</button>
+  </div>
 
-  <p id="message" class="success"></p>
+  <div class="controls">
+    <input id="search" placeholder="Search courses..." oninput="filterCourses()">
+    <button onclick="sortCourses()">Sort A-Z</button>
+  </div>
 
   <ul id="courseList"></ul>
+
+  <p id="emptyMessage" class="empty"></p>
 
 </div>
 
 <script>
 
 const api = "http://localhost:5095/api/course";
-let selectedCourseId = null;
+let allCourses = [];
 
 // Load courses
 async function loadCourses() {
   const res = await fetch(api);
-  const data = await res.json();
+  allCourses = await res.json();
+  displayCourses(allCourses);
+}
 
+// Display courses
+function displayCourses(data) {
   const list = document.getElementById("courseList");
+  const empty = document.getElementById("emptyMessage");
+
   list.innerHTML = "";
+
+  if (data.length === 0) {
+    empty.innerText = "No courses yet. Add your first course!";
+    return;
+  }
+
+  empty.innerText = "";
 
   data.forEach(course => {
     const li = document.createElement("li");
-
     li.innerText = course.title;
-
-    // highlight selected course
-    if (course.id === selectedCourseId) {
-      li.classList.add("active");
-    }
-
-    // click to select course
-    li.onclick = () => {
-      selectedCourseId = course.id;
-      localStorage.setItem("lastCourse", course.id);
-      loadCourses();
-    };
-
     list.appendChild(li);
   });
 }
@@ -141,42 +137,43 @@ async function loadCourses() {
 async function addCourse() {
   const title = document.getElementById("courseTitle").value;
 
-  if (!title) {
-    alert("Enter course name");
-    return;
-  }
+  if (!title) return;
 
   await fetch(api, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      title: title,
-      userId: "1"
-    })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: title, userId: "1" })
   });
 
   document.getElementById("courseTitle").value = "";
-  document.getElementById("message").innerText = "Course added successfully!";
-
   loadCourses();
 }
 
-// Go back to dashboard
+// Search
+function filterCourses() {
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = allCourses.filter(c =>
+    c.title.toLowerCase().includes(search)
+  );
+
+  displayCourses(filtered);
+}
+
+// Sort
+function sortCourses() {
+  const sorted = [...allCourses].sort((a, b) =>
+    a.title.localeCompare(b.title)
+  );
+
+  displayCourses(sorted);
+}
+
+// Back
 function goBack() {
   window.location.href = "studentdashboard.html";
 }
 
-// Load last selected course
-function loadLastCourse() {
-  const saved = localStorage.getItem("lastCourse");
-  if (saved) {
-    selectedCourseId = parseInt(saved);
-  }
-}
-
-loadLastCourse();
 loadCourses();
 
 </script>

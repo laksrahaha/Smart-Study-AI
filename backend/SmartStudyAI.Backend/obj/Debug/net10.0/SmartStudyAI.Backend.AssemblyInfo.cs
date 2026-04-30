@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartStudyAI.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b0ce9044ac7c291f421fdc67a3a2ad72e8f5caf3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+de15d5480f291ed8020de857fec2aaa1e1265ba5")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartStudyAI.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartStudyAI.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

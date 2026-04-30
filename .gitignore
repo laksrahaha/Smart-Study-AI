@@ -40,3 +40,13 @@ temp/
 # Package lock files (optional, depending on workflow)
 # package-lock.json
 # yarn.lock
+
+# .NET / C# build files
+**/bin/
+**/obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.user
+*.suo

@@ -99,6 +99,28 @@ body {
     color: #111;
 }
 
+sravani-dashboard-updates
+
+.register-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.register-logo img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    background: white;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.register-logo h1 {
+    margin: 0;
+}
+ main
 .register-card h2 {
     margin: 4px 0 24px;
     font-family: Georgia, 'Times New Roman', serif;

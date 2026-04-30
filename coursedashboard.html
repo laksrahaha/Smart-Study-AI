@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Course Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f9;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background: #888;
+    }
+
+    input {
+      width: 65%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #2d2d2d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: black;
+    }
+
+    ul {
+      margin-top: 20px;
+      padding: 0;
+    }
+
+    li {
+      list-style: none;
+      background: #e9ecef;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .active {
+      background: #4e73df;
+      color: white;
+    }
+
+    .success {
+      color: green;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="top-bar">
+    <button class="back-btn" onclick="goBack()">⬅ Back</button>
+    <span>Course Workspace</span>
+  </div>
+
+  <h1>My Courses</h1>
+
+  <input type="text" id="courseTitle" placeholder="Enter course name">
+  <button onclick="addCourse()">Add</button>
+
+  <p id="message" class="success"></p>
+
+  <ul id="courseList"></ul>
+
+</div>
+
+<script>
+
+const api = "http://localhost:5095/api/course";
+let selectedCourseId = null;
+
+// Load courses
+async function loadCourses() {
+  const res = await fetch(api);
+  const data = await res.json();
+
+  const list = document.getElementById("courseList");
+  list.innerHTML = "";
+
+  data.forEach(course => {
+    const li = document.createElement("li");
+
+    li.innerText = course.title;
+
+    // highlight selected course
+    if (course.id === selectedCourseId) {
+      li.classList.add("active");
+    }
+
+    // click to select course
+    li.onclick = () => {
+      selectedCourseId = course.id;
+      localStorage.setItem("lastCourse", course.id);
+      loadCourses();
+    };
+
+    list.appendChild(li);
+  });
+}
+
+// Add course
+async function addCourse() {
+  const title = document.getElementById("courseTitle").value;
+
+  if (!title) {
+    alert("Enter course name");
+    return;
+  }
+
+  await fetch(api, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title: title,
+      userId: "1"
+    })
+  });
+
+  document.getElementById("courseTitle").value = "";
+  document.getElementById("message").innerText = "Course added successfully!";
+
+  loadCourses();
+}
+
+// Go back to dashboard
+function goBack() {
+  window.location.href = "studentdashboard.html";
+}
+
+// Load last selected course
+function loadLastCourse() {
+  const saved = localStorage.getItem("lastCourse");
+  if (saved) {
+    selectedCourseId = parseInt(saved);
+  }
+}
+
+loadLastCourse();
+loadCourses();
+
+</script>
+
+</body>
+</html>

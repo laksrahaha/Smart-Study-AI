@@ -4,197 +4,297 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Notes – Super Smart Study Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=La+Belle+Aurore&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
   <style>
-
-    .controls-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-    
-    #searchInput, #sortSelect {
-      padding: 10px 14px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    
-    #searchInput:focus, #sortSelect:focus { 
-      border-color: #333; 
-    }
-    
-    #searchInput { 
-      flex: 1; 
-      min-width: 200px; 
-    }
-    
-    #sortSelect { 
-      cursor: pointer; 
-      background: #fafafa; 
-      color: #333;
-    }
-
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --grad-start: #2d2d2d;
+      --grad-end: #4e73df;
+      --card-bg: #ffffff;
+      --accent: #4e73df;
+      --accent-dark: #3a5bbf;
+      --danger: #e74c3c;
+      --text-dark: #1a1a2e;
+      --text-mid: #555577;
+      --text-light: #9999bb;
+      --border: rgba(255,255,255,0.15);
+      --shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
 
     body {
       min-height: 100vh;
-      background: #fff;
-      color: #101010;
-      font-family: 'Playfair Display', serif;
+      background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
       display: flex;
       flex-direction: column;
     }
-
+    
     nav {
       display: flex;
       align-items: center;
-      padding: 14px 32px;
-      border-bottom: 1.5px solid #222;
-      gap: 12px;
-      background: #fff;
+      padding: 16px 36px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 100;
+      gap: 14px;
     }
     .nav-logo { width: 36px; height: 36px; object-fit: contain; }
-    .nav-title { font-size: 17px; font-weight: 700; letter-spacing: 1.5px; flex: 1; }
-    .nav-back { font-size: 15px; color: #444; text-decoration: none; cursor: pointer; }
-    .nav-back:hover { text-decoration: underline; }
+    .nav-brand {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      flex: 1;
+      color: #fff;
+      opacity: 0.95;
+    }
+    .nav-back {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.25);
+      transition: all 0.2s;
+    }
+    .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
     main {
       flex: 1;
+      padding: 44px 32px 60px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 32px;
-      animation: fadeUp 0.7s ease both;
+      animation: fadeUp 0.6s ease both;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .page-wrapper { width: 100%; max-width: 960px; display: flex; flex-direction: column; gap: 28px; }
 
-    .header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: 3px; }
-    .notes-count { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #888; }
+    .page-wrapper { width: 100%; max-width: 980px; display: flex; flex-direction: column; gap: 24px; }
 
-    .action-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .header-titles h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      letter-spacing: 1px;
+      line-height: 1;
+      color: #fff;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+    .header-titles .subtitle {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .notes-count-badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .controls-card {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .action-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
     .btn {
-      background: #1a1a1a; color: #f5f3ee; border: none;
-      padding: 12px 28px; font-family: 'Playfair Display', serif;
-      font-size: 0.95rem; font-weight: 700; cursor: pointer;
-      border-radius: 8px; letter-spacing: 0.5px;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-      text-decoration: none; display: inline-block;
+      background: #fff;
+      color: var(--text-dark);
+      border: none;
+      padding: 10px 22px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 10px;
+      letter-spacing: 0.3px;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn:hover { background: #333; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
-    .btn:active { transform: translateY(0); box-shadow: none; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.22); background: #f0f4ff; }
+    .btn:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 
-    .btn-outline { background: transparent; color: #1a1a1a; border: 1.5px solid #1a1a1a; }
-    .btn-outline:hover { background: #1a1a1a; color: #f5f3ee; }
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-accent:hover { background: var(--accent-dark); color: #fff; }
 
-    .btn-sm { padding: 8px 16px; font-size: 0.82rem; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.22); color: #fff; }
+
+    .btn-sm { padding: 8px 14px; font-size: 0.82rem; }
+
+    .manage-courses-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .manage-courses-btn:hover { color: #fff; }
 
     #fileInput { display: none; }
 
-    .filter-bar {
+    .search-sort-row {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrap {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    #searchInput {
+      width: 100%;
+      padding: 10px 14px 10px 34px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s;
+    }
+    #searchInput::placeholder { color: rgba(255,255,255,0.4); }
+    #searchInput:focus { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); }
+
+    #sortSelect {
+      padding: 10px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #sortSelect option { background: #2d2d2d; color: #fff; }
+    #sortSelect:focus { border-color: rgba(255,255,255,0.45); }
+
+    .filter-bar {
+      display: flex;
+      gap: 8px;
       flex-wrap: wrap;
       align-items: center;
     }
 
     .filter-label {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      color: #888;
-      margin-right: 4px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-right: 2px;
     }
 
     .filter-chip {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      padding: 6px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 16px;
       border-radius: 20px;
-      border: 1.5px solid #ddd;
-      background: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.08);
       cursor: pointer;
       transition: all 0.2s;
-      color: #555;
+      color: rgba(255,255,255,0.75);
     }
-    .filter-chip:hover { border-color: #333; color: #111; }
-    .filter-chip.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .filter-chip:hover { border-color: rgba(255,255,255,0.5); color: #fff; background: rgba(255,255,255,0.16); }
+    .filter-chip.active { background: #fff; color: var(--text-dark); border-color: #fff; }
 
-    .manage-courses-btn {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      color: #888;
-      background: none;
+    .section-divider {
       border: none;
-      cursor: pointer;
-      text-decoration: underline;
-      padding: 0;
-      margin-left: auto;
+      border-top: 1px solid rgba(255,255,255,0.12);
     }
-    .manage-courses-btn:hover { color: #333; }
-
-    hr.divider { border: none; border-top: 1.5px solid #eee; }
-
-    .course-section { display: flex; flex-direction: column; gap: 16px; }
-
-    .course-section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: #444;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .course-section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #eee;
-    }
-
     .notes-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
       gap: 16px;
     }
 
     .note-card {
-      border: 1.5px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 18px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
       cursor: pointer;
       position: relative;
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-      background: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 9px;
+      color: var(--text-dark);
     }
-    .note-card:hover { border-color: #333; box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .note-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 16px 40px rgba(0,0,0,0.22); }
 
     .note-card-course {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 600;
+      font-size: 0.7rem;
+      font-weight: 800;
       letter-spacing: 0.5px;
       color: #fff;
-      background: #1a1a1a;
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
       padding: 3px 10px;
       border-radius: 20px;
       display: inline-block;
@@ -202,132 +302,213 @@
     }
 
     .note-card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 0.98rem;
-      font-weight: 700;
-      color: #101010;
-      padding-right: 24px;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem;
+      color: var(--text-dark);
+      padding-right: 22px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.3;
     }
 
     .note-card-preview {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      color: #777;
-      line-height: 1.6;
+      font-size: 0.79rem;
+      color: var(--text-mid);
+      line-height: 1.65;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      font-weight: 600;
     }
 
-    .note-card-meta { font-family: 'Inter', sans-serif; font-size: 0.73rem; color: #bbb; margin-top: auto; }
+    .note-card-meta {
+      font-size: 0.71rem;
+      color: var(--text-light);
+      margin-top: auto;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .note-card-meta::before { content: '🕐'; font-size: 10px; }
 
     .note-card-delete {
-      position: absolute; top: 10px; right: 10px;
+      position: absolute; top: 12px; right: 12px;
       background: none; border: none; cursor: pointer;
-      font-size: 0.78rem; color: #ccc;
-      padding: 2px 5px; border-radius: 4px;
+      font-size: 12px; color: #ccc;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
       transition: color 0.2s, background 0.2s;
     }
-    .note-card-delete:hover { color: #c0392b; background: #fdecea; }
+    .note-card-delete:hover { color: var(--danger); background: #fdecea; }
+
+    .course-section { display: flex; flex-direction: column; gap: 14px; }
+
+    .course-section-title {
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .course-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+    }
 
     .no-notes-msg {
-      font-family: 'Inter', sans-serif; font-size: 0.88rem;
-      color: #bbb; padding: 24px 0; grid-column: 1 / -1;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.45);
+      padding: 32px 0;
+      grid-column: 1 / -1;
+      font-weight: 600;
+      text-align: center;
     }
 
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.4); z-index: 200;
+      background: rgba(0,0,0,0.55); z-index: 200;
       align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
     }
     .modal-overlay.active { display: flex; }
 
     .modal {
-      background: #fff; border-radius: 14px; padding: 36px 40px;
-      max-width: 420px; width: 90%; text-align: center;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 40px;
+      max-width: 440px;
+      width: 92%;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22);
       animation: fadeUp 0.3s ease both;
+      color: var(--text-dark);
     }
-    .modal h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 12px; }
-    .modal p { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #666; margin-bottom: 20px; line-height: 1.6; }
-    .modal-buttons { display: flex; gap: 12px; justify-content: center; }
+    .modal h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+    }
+    .modal p {
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      margin-bottom: 24px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+    .modal-buttons { display: flex; gap: 10px; justify-content: center; }
 
-    .btn-danger { background: #c0392b; color: #fff; border: none; }
-    .btn-danger:hover { background: #a93226; }
+    .modal .btn { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .modal .btn-outline-dark {
+      background: transparent;
+      color: var(--text-dark);
+      border: 1.5px solid #ddd;
+      box-shadow: none;
+    }
+    .modal .btn-outline-dark:hover { background: #f5f5f5; }
+    .modal .btn-delete { background: var(--danger); color: #fff; }
+    .modal .btn-delete:hover { background: #c0392b; color: #fff; }
 
-    .courses-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left; }
+    .courses-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; text-align: left; max-height: 220px; overflow-y: auto; }
 
     .course-item {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; border: 1.5px solid #eee; border-radius: 8px;
-      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      padding: 10px 14px;
+      background: #f8f8fc;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-dark);
     }
-
     .course-item-delete {
       background: none; border: none; cursor: pointer;
-      color: #ccc; font-size: 0.8rem; padding: 2px 6px;
-      border-radius: 4px; transition: color 0.2s, background 0.2s;
+      color: #ccc; font-size: 0.78rem; padding: 4px 8px;
+      border-radius: 6px; font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      transition: color 0.2s, background 0.2s;
     }
-    .course-item-delete:hover { color: #c0392b; background: #fdecea; }
+    .course-item-delete:hover { color: var(--danger); background: #fdecea; }
 
-    .add-course-row {
-      display: flex; gap: 10px;
-    }
-
+    .add-course-row { display: flex; gap: 8px; }
     .add-course-input {
       flex: 1; padding: 10px 14px;
-      font-family: 'Inter', sans-serif; font-size: 0.9rem;
-      border: 1.5px solid #ccc; border-radius: 8px; outline: none;
-      transition: border-color 0.2s;
+      font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 600;
+      border: 1.5px solid #e0e0e0; border-radius: 10px; outline: none;
+      transition: border-color 0.2s; color: var(--text-dark);
     }
-    .add-course-input:focus { border-color: #333; }
+    .add-course-input:focus { border-color: var(--accent); }
     .add-course-input::placeholder { color: #bbb; }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 48px 0;
+      grid-column: 1 / -1;
+    }
+    .empty-icon { font-size: 48px; opacity: 0.5; }
+    .empty-title { font-size: 1rem; font-weight: 800; color: rgba(255,255,255,0.5); }
+    .empty-sub { font-size: 0.82rem; color: rgba(255,255,255,0.35); font-weight: 600; }
+
   </style>
 </head>
 <body>
 
   <nav>
     <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
-    <span class="nav-title">Super Smart Study Assistant</span>
-    <a href="dashboard.html" class="nav-back">← Back to Dashboard</a>
+    <span class="nav-brand">Super Smart Study Assistant</span>
+    <a href="studentdashboard.html" class="nav-back">← Dashboard</a>
   </nav>
 
   <main>
     <div class="page-wrapper">
 
-      <!-- Header -->
       <div class="header-row">
-        <h1>MY NOTES</h1>
-        <span class="notes-count" id="notesCount">0 notes</span>
+        <div class="header-titles">
+          <h1>My Notes 📝</h1>
+          <div class="subtitle">All your study notes, organised by course</div>
+        </div>
+        <span class="notes-count-badge" id="notesCount">0 notes</span>
       </div>
 
-      <div class="action-row">
-        <button class="btn" onclick="goNewNote()">+ New Note</button>
-        <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">📄 Upload .txt</button>
-        <input type="file" id="fileInput" accept=".txt" />
-        <button class="manage-courses-btn" onclick="openManageCourses()">⚙ Manage Courses</button>
+      <div class="controls-card">
+        <div class="action-row">
+          <button class="btn btn-accent" onclick="goNewNote()">＋ New Note</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('fileInput').click()">📄 Upload .txt</button>
+          <input type="file" id="fileInput" accept=".txt" />
+          <button class="manage-courses-btn" onclick="openManageCourses()">⚙ Manage Courses</button>
+        </div>
+
+        <div class="search-sort-row">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search notes..." oninput="setSearch(this.value)" />
+          </div>
+          <select id="sortSelect" onchange="setSort(this.value)">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="az">Title (A–Z)</option>
+            <option value="za">Title (Z–A)</option>
+          </select>
+        </div>
+
+        <div class="filter-bar" id="filterBar">
+          <span class="filter-label">Filter</span>
+          <button class="filter-chip active" onclick="setFilter('all')">All</button>
+        </div>
       </div>
 
-      <div class="filter-bar" id="filterBar">
-        <span class="filter-label">Filter:</span>
-        <button class="filter-chip active" onclick="setFilter('all')">All</button>
-      </div>
-
-      <div class="controls-row">
-        <input type="text" id="searchInput" placeholder="🔍 Search notes..." oninput="setSearch(this.value)" />
-        <select id="sortSelect" onchange="setSort(this.value)">
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-          <option value="az">Title (A-Z)</option>
-          <option value="za">Title (Z-A)</option>
-        </select>
-      </div>
-
-      <hr class="divider" />
+      <hr class="section-divider" />
 
       <div id="notesContent"></div>
 
@@ -339,8 +520,8 @@
       <h2>Delete Note?</h2>
       <p id="deleteModalMsg">This cannot be undone.</p>
       <div class="modal-buttons">
-        <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
-        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+        <button class="btn btn-outline-dark" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-delete" onclick="confirmDelete()">🗑 Delete</button>
       </div>
     </div>
   </div>
@@ -353,11 +534,11 @@
       <div class="add-course-row">
         <input type="text" class="add-course-input" id="newCourseInput" placeholder="e.g. COMP602" maxlength="40"
                onkeydown="if(event.key==='Enter') addCourse()" />
-        <button class="btn btn-sm" onclick="addCourse()">Add</button>
+        <button class="btn btn-sm btn-accent" onclick="addCourse()">Add</button>
       </div>
       <br/>
       <div class="modal-buttons">
-        <button class="btn btn-outline" onclick="closeManageCourses()">Done</button>
+        <button class="btn btn-outline-dark" onclick="closeManageCourses()">Done</button>
       </div>
     </div>
   </div>
@@ -369,12 +550,9 @@
       courses: 'sss_courses',
     };
 
-    function getCourses() {
-      return JSON.parse(localStorage.getItem(KEYS.courses) || '[]');
-    }
-    function saveCourses(arr) {
-      localStorage.setItem(KEYS.courses, JSON.stringify(arr));
-    }
+    function getCourses() { return JSON.parse(localStorage.getItem(KEYS.courses) || '[]'); }
+    function saveCourses(arr) { localStorage.setItem(KEYS.courses, JSON.stringify(arr)); }
+
     function addCourse() {
       const input = document.getElementById('newCourseInput');
       const name = input.value.trim();
@@ -392,10 +570,7 @@
       const courses = getCourses().filter(c => c !== name);
       saveCourses(courses);
       getAllNotes().forEach(note => {
-        if (note.course === name) {
-          note.course = '';
-          saveNote(note);
-        }
+        if (note.course === name) { note.course = ''; saveNote(note); }
       });
       if (activeFilter === name) activeFilter = 'all';
       renderCoursesList();
@@ -422,61 +597,32 @@
       localStorage.setItem(KEYS.index, JSON.stringify(index));
       localStorage.removeItem(KEYS.note(id));
     }
-    function generateId() {
-      return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-    }
+    function generateId() { return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); }
     function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    let activeFilter = 'all';
+    let activeFilter = 'all', searchQuery = '', sortOrder = 'newest';
 
-    let searchQuery = '';
-    let sortOrder = 'newest';
-
-    function setSearch(query) {
-      searchQuery = query.toLowerCase();
-      renderNotes();
-    }
-
-    function setSort(order) {
-      sortOrder = order;
-      renderNotes();
-    }
-
-    function setFilter(course) {
-      activeFilter = course;
-      renderFilterBar();
-      renderNotes();
-    }
+    function setSearch(q) { searchQuery = q.toLowerCase(); renderNotes(); }
+    function setSort(o) { sortOrder = o; renderNotes(); }
+    function setFilter(c) { activeFilter = c; renderFilterBar(); renderNotes(); }
 
     function renderFilterBar() {
       const courses = getCourses();
       const bar = document.getElementById('filterBar');
-      bar.innerHTML = `<span class="filter-label">Filter:</span>
+      bar.innerHTML = `<span class="filter-label">Filter</span>
         <button class="filter-chip ${activeFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
         ${courses.map(c => `
           <button class="filter-chip ${activeFilter === c ? 'active' : ''}" onclick="setFilter('${escapeHtml(c)}')">${escapeHtml(c)}</button>
         `).join('')}
-        ${courses.length === 0 ? '<span style="font-family:Inter,sans-serif;font-size:0.82rem;color:#ccc">No courses yet — add one via ⚙ Manage Courses</span>' : ''}
-      `;
+        ${courses.length === 0 ? '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);font-weight:600">No courses yet — add one above</span>' : ''}`;
     }
 
     function renderNotes() {
       const allNotes = getAllNotes();
-      
-      let filtered = activeFilter === 'all'
-        ? allNotes
-        : allNotes.filter(n => n.course === activeFilter);
-
-      if (searchQuery) {
-        filtered = filtered.filter(n => 
-          n.title && n.title.toLowerCase().includes(searchQuery)
-        );
-      }
-
+      let filtered = activeFilter === 'all' ? allNotes : allNotes.filter(n => n.course === activeFilter);
+      if (searchQuery) filtered = filtered.filter(n => n.title && n.title.toLowerCase().includes(searchQuery));
       filtered.sort((a, b) => {
         if (sortOrder === 'newest') return b.updatedAt - a.updatedAt;
         if (sortOrder === 'oldest') return a.updatedAt - b.updatedAt;
@@ -491,44 +637,39 @@
       const container = document.getElementById('notesContent');
 
       if (filtered.length === 0) {
-        container.innerHTML = `<p class="no-notes-msg">${
-          activeFilter === 'all' && !searchQuery
-            ? 'No notes yet. Create a new note or upload a .txt file.'
-            : 'No matching notes found.'
-        }</p>`;
+        container.innerHTML = `<div class="notes-grid"><div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <div class="empty-title">${activeFilter === 'all' && !searchQuery ? 'No notes yet' : 'No matching notes found'}</div>
+          <div class="empty-sub">${activeFilter === 'all' && !searchQuery ? 'Create a new note or upload a .txt file to get started.' : 'Try a different search or filter.'}</div>
+        </div></div>`;
         return;
       }
 
       if (activeFilter === 'all' && !searchQuery && sortOrder === 'newest') {
         const courses = getCourses();
-        const grouped = {};
-        const uncategorised = [];
-
+        const grouped = {}, uncategorised = [];
         filtered.forEach(note => {
           if (note.course && courses.includes(note.course)) {
             if (!grouped[note.course]) grouped[note.course] = [];
             grouped[note.course].push(note);
-          } else {
-            uncategorised.push(note);
-          }
+          } else { uncategorised.push(note); }
         });
-
         let html = '';
         courses.forEach(course => {
           if (grouped[course] && grouped[course].length > 0) {
             html += `<div class="course-section">
-              <div class="course-section-title">${escapeHtml(course)}</div>
+              <div class="course-section-title">📚 ${escapeHtml(course)}</div>
               <div class="notes-grid">${grouped[course].map(noteCard).join('')}</div>
             </div>`;
           }
         });
         if (uncategorised.length > 0) {
           html += `<div class="course-section">
-            <div class="course-section-title">Uncategorised</div>
+            <div class="course-section-title">📌 Uncategorised</div>
             <div class="notes-grid">${uncategorised.map(noteCard).join('')}</div>
           </div>`;
         }
-        container.innerHTML = `<div style="display:flex;flex-direction:column;gap:32px">${html}</div>`;
+        container.innerHTML = `<div style="display:flex;flex-direction:column;gap:28px">${html}</div>`;
       } else {
         container.innerHTML = `<div class="notes-grid">${filtered.map(noteCard).join('')}</div>`;
       }
@@ -537,9 +678,7 @@
     function noteCard(note) {
       const preview = (note.content || '').trim().replace(/\s+/g, ' ').slice(0, 130);
       const date = new Date(note.updatedAt).toLocaleDateString('en-NZ', { day:'numeric', month:'short', year:'numeric' });
-      const courseTag = note.course
-        ? `<span class="note-card-course">${escapeHtml(note.course)}</span>`
-        : '';
+      const courseTag = note.course ? `<span class="note-card-course">${escapeHtml(note.course)}</span>` : '';
       return `
         <div class="note-card" onclick="openNote('${note.id}')">
           <button class="note-card-delete" onclick="event.stopPropagation();askDelete('${note.id}')" title="Delete">✕</button>
@@ -550,14 +689,8 @@
         </div>`;
     }
 
-    function openNote(id) {
-      localStorage.setItem('sss_editing_id', id);
-      window.location.href = 'notes-editor.html';
-    }
-    function goNewNote() {
-      localStorage.removeItem('sss_editing_id');
-      window.location.href = 'notes-editor.html';
-    }
+    function openNote(id) { localStorage.setItem('sss_editing_id', id); window.location.href = 'notes-editor.html'; }
+    function goNewNote() { localStorage.removeItem('sss_editing_id'); window.location.href = 'notes-editor.html'; }
 
     document.getElementById('fileInput').addEventListener('change', e => {
       const file = e.target.files[0];
@@ -583,42 +716,26 @@
       pendingDeleteId = id;
       document.getElementById('deleteModal').classList.add('active');
     }
-    function closeDeleteModal() {
-      pendingDeleteId = null;
-      document.getElementById('deleteModal').classList.remove('active');
-    }
-    function confirmDelete() {
-      if (pendingDeleteId) { deleteNote(pendingDeleteId); pendingDeleteId = null; }
-      closeDeleteModal();
-      renderNotes();
-    }
+    function closeDeleteModal() { pendingDeleteId = null; document.getElementById('deleteModal').classList.remove('active'); }
+    function confirmDelete() { if (pendingDeleteId) { deleteNote(pendingDeleteId); pendingDeleteId = null; } closeDeleteModal(); renderNotes(); }
 
-    function openManageCourses() {
-      renderCoursesList();
-      document.getElementById('coursesModal').classList.add('active');
-    }
-    function closeManageCourses() {
-      document.getElementById('coursesModal').classList.remove('active');
-    }
+    function openManageCourses() { renderCoursesList(); document.getElementById('coursesModal').classList.add('active'); }
+    function closeManageCourses() { document.getElementById('coursesModal').classList.remove('active'); }
     function renderCoursesList() {
       const courses = getCourses();
       const list = document.getElementById('coursesList');
       if (courses.length === 0) {
-        list.innerHTML = '<p style="font-family:Inter,sans-serif;font-size:0.85rem;color:#bbb;text-align:center">No courses added yet.</p>';
+        list.innerHTML = '<p style="font-size:0.85rem;color:#bbb;text-align:center;font-weight:600">No courses added yet.</p>';
         return;
       }
       list.innerHTML = courses.map(c => `
         <div class="course-item">
           <span>${escapeHtml(c)}</span>
           <button class="course-item-delete" onclick="removeCourse('${escapeHtml(c)}')">✕ Remove</button>
-        </div>
-      `).join('');
+        </div>`).join('');
     }
 
-    window.addEventListener('load', () => {
-      renderFilterBar();
-      renderNotes();
-    });
+    window.addEventListener('load', () => { renderFilterBar(); renderNotes(); });
   </script>
 
 </body>

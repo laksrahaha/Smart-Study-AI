@@ -1,0 +1,515 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #f8f6f0;
+    color: #111;
+}
+
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    background-color: #f8f6f0;
+}
+
+.left-panel {
+    width: 46%;
+    padding: 70px 58px;
+    background-color: #f8f6f0;
+    border-right: 2px solid #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.left-panel h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 54px;
+    line-height: 1.05;
+    margin: 0 0 24px;
+    color: #111;
+    letter-spacing: -1px;
+}
+
+.tagline {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    line-height: 1.55;
+    margin: 0;
+    color: #333;
+    max-width: 560px;
+}
+
+.feature-list {
+    margin-top: 38px;
+    padding: 24px 28px;
+    background-color: #ffffff;
+    border: 3px solid #111;
+    border-radius: 8px;
+    box-shadow: 6px 6px 0 #111;
+    max-width: 520px;
+}
+
+.feature-list p {
+    font-family: Georgia, 'Times New Roman', serif;
+    margin: 15px 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #111;
+}
+
+.register-card {
+    width: 54%;
+    background-color: #ffffff;
+    padding: 36px 66px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.logo-mark {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #111;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: bold;
+    font-size: 14px;
+    color: #111;
+}
+
+.brand-row p {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 21px;
+    font-weight: bold;
+    color: #111;
+}
+
+.register-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.register-logo img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    background: white;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.register-logo h1 {
+    margin: 0;
+}
+
+.register-card h2 {
+    margin: 4px 0 24px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 64px;
+    letter-spacing: 1px;
+    font-weight: 900;
+    color: #000;
+}
+
+form {
+    width: 100%;
+    max-width: 430px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input,
+select {
+    width: 100%;
+    height: 54px;
+    margin-bottom: 15px;
+    padding: 0 18px;
+    border: 3px solid #777;
+    border-radius: 7px;
+    background-color: #fff;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    text-align: center;
+    color: #111;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+input::placeholder {
+    color: #999;
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    color: #999;
+    cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, #777 50%),
+                      linear-gradient(135deg, #777 50%, transparent 50%);
+    background-position: calc(100% - 24px) 24px,
+                         calc(100% - 16px) 24px;
+    background-size: 8px 8px, 8px 8px;
+    background-repeat: no-repeat;
+}
+
+select:valid {
+    color: #111;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #111;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+}
+
+.login-text {
+    margin: 2px 0 12px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #111;
+    text-align: center;
+}
+
+.login-text a {
+    color: #111;
+    text-decoration: none;
+}
+
+.login-text a:hover {
+    text-decoration: underline;
+}
+
+#message {
+    min-height: 20px;
+    margin: 0 0 12px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+button {
+    width: 140px;
+    height: 56px;
+    border: none;
+    border-radius: 7px;
+    background-color: #000;
+    color: white;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #222;
+}
+
+@media (max-width: 1000px) {
+    .page-wrapper {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .register-card {
+        width: 100%;
+    }
+
+    .left-panel {
+        padding: 46px 30px;
+        border-right: none;
+        border-bottom: 2px solid #111;
+    }
+
+    .left-panel h1 {
+        font-size: 42px;
+    }
+
+    .tagline {
+        font-size: 19px;
+    }
+
+    .feature-list {
+        box-shadow: 4px 4px 0 #111;
+    }
+
+    .feature-list p {
+        font-size: 18px;
+    }
+
+    .register-card {
+        padding: 42px 26px;
+    }
+
+    .register-card h2 {
+        font-size: 50px;
+    }
+
+    .brand-row p {
+        font-size: 18px;
+    }
+
+    form {
+        max-width: 360px;
+    }
+
+    input,
+    select {
+        height: 52px;
+        font-size: 18px;
+    }
+
+    button {
+        width: 130px;
+        height: 54px;
+        font-size: 20px;
+    }
+}
+/*Smart study AI landing page */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+
+
+.landing-navbar {
+    height: 90px;
+    background-color: #3f2f46;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 55px;
+}
+
+.landing-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 36px;
+    color: #f4d9c6;
+}
+
+.landing-logo h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.landing-logo p {
+    margin: 0;
+    font-size: 18px;
+    color: #f4d9c6;
+    font-weight: bold;
+}
+
+.landing-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+}
+
+.landing-nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.landing-nav-links a:hover {
+    color: #f4d9c6;
+}
+
+.signup-nav-btn {
+    background-color: #f4d9c6;
+    color: #3f2f46 !important;
+    padding: 15px 32px;
+    border-radius: 40px;
+}
+
+.signup-nav-btn:hover {
+    background-color: #ead0df;
+}
+
+
+
+.landing-hero {
+    min-height: 690px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 65px;
+
+   
+    background:
+        linear-gradient(rgba(63, 47, 70, 0.55), rgba(63, 47, 70, 0.55)),
+        linear-gradient(135deg, #ead0df 0%, #c8b6d8 45%, #f4d9c6 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    color: white;
+}
+
+.hero-content h2 {
+    font-size: 86px;
+    line-height: 1.12;
+    margin: 0 0 25px 0;
+    font-weight: 900;
+}
+
+.hero-content p {
+    font-size: 22px;
+    line-height: 1.6;
+    max-width: 650px;
+    margin-bottom: 35px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 18px;
+}
+
+.hero-signup-btn,
+.hero-about-btn {
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 40px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.hero-signup-btn {
+    background-color: #f4d9c6;
+    color: #3f2f46;
+}
+
+.hero-about-btn {
+    border: 2px solid white;
+    color: white;
+}
+
+.hero-signup-btn:hover {
+    background-color: #ffffff;
+}
+
+.hero-about-btn:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+
+
+.about-landing-section {
+    background-color: #f8f3f7;
+    padding: 70px 65px;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.about-text h2 {
+    font-size: 42px;
+    color: #3f2f46;
+    margin-bottom: 18px;
+}
+
+.about-text p {
+    color: #5d4b63;
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.about-card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.about-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 16px rgba(63, 47, 70, 0.12);
+    border-left: 6px solid #c8b6d8;
+}
+
+.about-card h3 {
+    margin: 0 0 8px 0;
+    color: #3f2f46;
+    font-size: 24px;
+}
+
+.about-card p {
+    margin: 0;
+    color: #6a5a70;
+    line-height: 1.5;
+}
+
+
+
+@media (max-width: 900px) {
+    .landing-navbar {
+        height: auto;
+        padding: 25px;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .landing-nav-links {
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .landing-hero {
+        min-height: 620px;
+        padding: 45px 30px;
+    }
+
+    .hero-content h2 {
+        font-size: 54px;
+    }
+
+    .hero-content p {
+        font-size: 18px;
+    }
+
+    .about-landing-section {
+        grid-template-columns: 1fr;
+        padding: 50px 30px;
+    }
+}
+

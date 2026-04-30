@@ -1,6 +1,16 @@
 using SmartStudyAI.Backend.modelArchitecture;
 
 var builder = WebApplication.CreateBuilder(args);
+feature/login-page(built-by-Louise-Wang)
+
+builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+=======
 
 builder.Services.AddCors(options =>
 {
@@ -68,8 +78,13 @@ app.MapGet("/api/account/users", () =>
     });
 
     return Results.Ok(safeUsers);
+
+  main
 });
 
+var app = builder.Build();
+app.UseCors("AllowFrontend");
+app.MapControllers();
 app.Run();
 
 public class RegisteredUser

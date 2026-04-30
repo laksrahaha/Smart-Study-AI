@@ -6,6 +6,39 @@
   <title>My Notes – Super Smart Study Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=La+Belle+Aurore&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
+
+    .controls-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    
+    #searchInput, #sortSelect {
+      padding: 10px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    
+    #searchInput:focus, #sortSelect:focus { 
+      border-color: #333; 
+    }
+    
+    #searchInput { 
+      flex: 1; 
+      min-width: 200px; 
+    }
+    
+    #sortSelect { 
+      cursor: pointer; 
+      background: #fafafa; 
+      color: #333;
+    }
+
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -284,6 +317,16 @@
         <button class="filter-chip active" onclick="setFilter('all')">All</button>
       </div>
 
+      <div class="controls-row">
+        <input type="text" id="searchInput" placeholder="🔍 Search notes..." oninput="setSearch(this.value)" />
+        <select id="sortSelect" onchange="setSort(this.value)">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="az">Title (A-Z)</option>
+          <option value="za">Title (Z-A)</option>
+        </select>
+      </div>
+
       <hr class="divider" />
 
       <div id="notesContent"></div>
@@ -390,6 +433,19 @@
 
     let activeFilter = 'all';
 
+    let searchQuery = '';
+    let sortOrder = 'newest';
+
+    function setSearch(query) {
+      searchQuery = query.toLowerCase();
+      renderNotes();
+    }
+
+    function setSort(order) {
+      sortOrder = order;
+      renderNotes();
+    }
+
     function setFilter(course) {
       activeFilter = course;
       renderFilterBar();
@@ -410,9 +466,24 @@
 
     function renderNotes() {
       const allNotes = getAllNotes();
-      const filtered = activeFilter === 'all'
+      
+      let filtered = activeFilter === 'all'
         ? allNotes
         : allNotes.filter(n => n.course === activeFilter);
+
+      if (searchQuery) {
+        filtered = filtered.filter(n => 
+          n.title && n.title.toLowerCase().includes(searchQuery)
+        );
+      }
+
+      filtered.sort((a, b) => {
+        if (sortOrder === 'newest') return b.updatedAt - a.updatedAt;
+        if (sortOrder === 'oldest') return a.updatedAt - b.updatedAt;
+        if (sortOrder === 'az') return (a.title || '').localeCompare(b.title || '');
+        if (sortOrder === 'za') return (b.title || '').localeCompare(a.title || '');
+        return 0;
+      });
 
       document.getElementById('notesCount').textContent =
         allNotes.length === 1 ? '1 note' : `${allNotes.length} notes`;
@@ -421,14 +492,14 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `<p class="no-notes-msg">${
-          activeFilter === 'all'
+          activeFilter === 'all' && !searchQuery
             ? 'No notes yet. Create a new note or upload a .txt file.'
-            : `No notes in "${escapeHtml(activeFilter)}" yet.`
+            : 'No matching notes found.'
         }</p>`;
         return;
       }
 
-      if (activeFilter === 'all') {
+      if (activeFilter === 'all' && !searchQuery && sortOrder === 'newest') {
         const courses = getCourses();
         const grouped = {};
         const uncategorised = [];

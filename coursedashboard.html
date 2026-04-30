@@ -1,66 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smart Study AI - Courses</title>
+  <title>Course Dashboard</title>
 
   <style>
     body {
       font-family: Arial;
-      background: #f5f3ff; /* light purple background */
+      background: #f4f6f9;
       padding: 40px;
-      margin: 0;
-    }
-
-    /* HEADER */
-    .header {
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: #6b5cff;
-      margin-bottom: 20px;
     }
 
     .container {
-      max-width: 650px;
+      max-width: 600px;
       margin: auto;
       background: white;
       padding: 25px;
-      border-radius: 14px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     h1 {
       text-align: center;
       margin-bottom: 20px;
-      color: black;
-    }
-
-    input {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      flex: 1;
     }
 
     .top-bar {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background: #888;
+    }
+
+    input {
+      width: 65%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
     button {
-      padding: 10px 14px;
-      background: #a78bfa; /* light purple */
-      color: black;
+      padding: 10px 15px;
+      background: #2d2d2d;
+      color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
     }
 
     button:hover {
-      background: #8b5cf6;
-      color: white;
+      background: black;
     }
 
     ul {
@@ -70,25 +61,18 @@
 
     li {
       list-style: none;
-      background: #ede9fe;
+      background: #e9ecef;
       padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 8px;
+      margin-bottom: 8px;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: black;
     }
 
     .active {
-      background: #8b5cf6;
+      background: #4e73df;
       color: white;
-    }
-
-    .actions button {
-      margin-left: 5px;
-      font-size: 12px;
-      padding: 6px 10px;
     }
 
     .success {
@@ -101,76 +85,76 @@
 
 <body>
 
-<div class="header">Smart Study AI</div>
-
 <div class="container">
-  <h1>Course Dashboard</h1>
 
-  <!-- ADD COURSE -->
   <div class="top-bar">
-    <input type="text" id="courseTitle" placeholder="Enter course name">
-    <button onclick="addCourse()">Add</button>
+    <button class="back-btn" onclick="goBack()">⬅ Back</button>
+    <span>Course Workspace</span>
   </div>
 
-  <!-- SEARCH + SORT -->
-  <div class="top-bar">
-    <input type="text" id="searchInput" placeholder="Search..." oninput="searchCourses()">
-    <button onclick="sortCourses('asc')">A–Z</button>
-    <button onclick="sortCourses('desc')">Z–A</button>
-  </div>
+  <h1>My Courses</h1>
+
+  <input type="text" id="courseTitle" placeholder="Enter course name">
+  <button onclick="addCourse()">Add</button>
 
   <p id="message" class="success"></p>
 
   <ul id="courseList"></ul>
+
 </div>
 
 <script>
+
 const api = "http://localhost:5095/api/course";
+let selectedCourseId = null;
 
-let courses = [];
-let activeCourseId = null;
-
-// LOAD
+// Load courses
 async function loadCourses() {
   const res = await fetch(api);
-  courses = await res.json();
-  displayCourses(courses);
-}
+  const data = await res.json();
 
-// DISPLAY
-function displayCourses(list) {
-  const ul = document.getElementById("courseList");
-  ul.innerHTML = "";
+  const list = document.getElementById("courseList");
+  list.innerHTML = "";
 
-  list.forEach(course => {
+  data.forEach(course => {
     const li = document.createElement("li");
 
-    if (course.id === activeCourseId) {
+    li.innerText = course.title;
+
+    // highlight selected course
+    if (course.id === selectedCourseId) {
       li.classList.add("active");
     }
 
-    li.innerHTML = `
-      <span onclick="selectCourse(${course.id})">${course.title}</span>
-      <div class="actions">
-        <button onclick="renameCourse(${course.id})">✏️</button>
-        <button onclick="deleteCourse(${course.id})">🗑</button>
-      </div>
-    `;
+    // click to select course
+    li.onclick = () => {
+      selectedCourseId = course.id;
+      localStorage.setItem("lastCourse", course.id);
+      loadCourses();
+    };
 
-    ul.appendChild(li);
+    list.appendChild(li);
   });
 }
 
-// ADD
+// Add course
 async function addCourse() {
   const title = document.getElementById("courseTitle").value;
 
-  if (!title) return alert("Enter course name");
+  if (!title) {
+    alert("Enter course name");
+    return;
+  }
 
   await fetch(api, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: title, userId: "1" })
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title: title,
+      userId: "1"
+    })
   });
 
   document.getElementById("courseTitle").value = "";
@@ -179,59 +163,22 @@ async function addCourse() {
   loadCourses();
 }
 
-// DELETE
-async function deleteCourse(id) {
-  await fetch(`${api}/${id}`, { method: "DELETE" });
-  loadCourses();
+// Go back to dashboard
+function goBack() {
+  window.location.href = "studentdashboard.html";
 }
 
-// RENAME
-async function renameCourse(id) {
-  const newName = prompt("Enter new course name:");
-  if (!newName) return;
-
-  await fetch(`${api}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: newName })
-  });
-
-  loadCourses();
-}
-
-// SEARCH
-function searchCourses() {
-  const query = document.getElementById("searchInput").value.toLowerCase();
-  const filtered = courses.filter(c =>
-    c.title.toLowerCase().includes(query)
-  );
-  displayCourses(filtered);
-}
-
-// SORT
-function sortCourses(type) {
-  let sorted = [...courses];
-
-  if (type === "asc") {
-    sorted.sort((a, b) => a.title.localeCompare(b.title));
-  } else {
-    sorted.sort((a, b) => b.title.localeCompare(a.title));
+// Load last selected course
+function loadLastCourse() {
+  const saved = localStorage.getItem("lastCourse");
+  if (saved) {
+    selectedCourseId = parseInt(saved);
   }
-
-  displayCourses(sorted);
 }
 
-// SWITCH
-async function selectCourse(id) {
-  activeCourseId = id;
-
-  await fetch(`${api}/switch/${id}`, { method: "POST" });
-
-  displayCourses(courses);
-}
-
-// INIT
+loadLastCourse();
 loadCourses();
+
 </script>
 
 </body>

@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartStudyAI.Backend.Data;
+using SmartStudyAI.Backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartStudyAI.Controllers
 {
@@ -6,10 +9,25 @@ namespace SmartStudyAI.Controllers
     [Route("api/[controller]")]
     public class CourseController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetCourses()
+        private readonly ApplicationDbContext _context;
+
+        public CourseController(ApplicationDbContext context)
         {
-            return Ok("Course workspace working!");
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCourses()
+        {
+            var courses = await _context.Courses.Include(c => c.User).ToListAsync();
+            return Ok(courses);
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+            return Ok(users);
         }
     }
 }

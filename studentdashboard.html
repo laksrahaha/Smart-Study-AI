@@ -1,54 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Student Dashboard</title>
+  <title>Dashboard</title>
 
   <style>
     body {
-      font-family: Arial;
-      background: linear-gradient(to right, #2d2d2d, #4e73df);
-      color: white;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7fb;
+      color: #1a1a1a;
+    }
+
+    /* TOP NAVBAR */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background: white;
+      border-bottom: 1px solid #eee;
+    }
+
+    .nav-right {
+      color: #555;
+    }
+
+    /* HERO HEADER */
+    .hero {
       text-align: center;
-      padding: 50px;
+      padding: 50px 20px 30px;
+      background: linear-gradient(135deg, #6C63FF, #8a84ff);
+      color: white;
     }
 
-    h1 {
-      margin-bottom: 40px;
+    .hero h1 {
+      margin: 0;
+      font-size: 36px;
+      letter-spacing: 1px;
     }
 
-    .grid {
+    .hero p {
+      margin-top: 10px;
+      opacity: 0.9;
+    }
+
+    /* MAIN CONTENT */
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .cards {
       display: flex;
       justify-content: center;
       gap: 20px;
-      flex-wrap: wrap;
     }
 
     .card {
       background: white;
-      color: black;
       padding: 30px;
-      width: 200px;
       border-radius: 12px;
+      width: 220px;
+      text-align: center;
       cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      border: 1px solid #eee;
+      transition: all 0.25s ease;
     }
 
     .card:hover {
-      transform: scale(1.05);
-      background: #f1f1f1;
+      transform: translateY(-6px);
+      border-color: #6C63FF;
+      box-shadow: 0 6px 18px rgba(108,99,255,0.15);
     }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: #777;
+    }
+
   </style>
 </head>
 
 <body>
 
-<h1>Welcome to Your Dashboard</h1>
+<!-- NAVBAR -->
+<div class="navbar">
+  <div></div>
+  <div class="nav-right">Student Name | Settings</div>
+</div>
 
-<div class="grid">
-  <div class="card" onclick="goToCourses()">📚 Courses</div>
-  <div class="card">📝 Notes</div>
-  <div class="card">🧪 Quiz</div>
+<!-- HERO SECTION -->
+<div class="hero">
+  <h1>Smart Study AI</h1>
+  <p>Welcome back to Your intelligent study companion</p>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <div class="cards">
+    
+    <div class="card" onclick="goToCourses()">
+      <div class="card-title">Courses</div>
+      <div class="card-desc">Manage your subjects</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Notes</div>
+      <div class="card-desc">Review and edit notes</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Quiz</div>
+      <div class="card-desc">Practice and test yourself</div>
+    </div>
+
+  </div>
+
+  <!-- MOTIVATION -->
+  <div style="margin-top:20px; text-align:center; color:#888;">
+    “Stay consistent. Small progress leads to big results.”
+  </div>
+
+</div>
+
 </div>
 
 <script>

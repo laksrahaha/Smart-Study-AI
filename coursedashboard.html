@@ -1,66 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Course Dashboard</title>
+  <title>Courses</title>
 
   <style>
     body {
-      font-family: Arial;
-      background: #f4f6f9;
       margin: 0;
+      font-family: Arial;
+      display: flex;
+      background: #f7f7fb;
+      color: #1a1a1a;
     }
 
-    /* Header */
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      background: white;
+      height: 100vh;
+      padding: 20px;
+      border-right: 1px solid #eee;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 40px;
+    }
+
+    .menu-item {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      background: #eee;
+      color: #6C63FF;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
     .header {
-      background: #2d2d2d;
-      color: white;
-      padding: 15px 20px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
 
-    .container {
-      max-width: 700px;
-      margin: 40px auto;
+    .header-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      position: relative;
+    }
+
+    .settings-btn {
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #eee;
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 35px;
+      right: 0;
       background: white;
-      padding: 25px;
-      border-radius: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      display: none;
+      width: 120px;
     }
 
-    h1 {
-      text-align: center;
+    .settings-menu div {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .settings-menu div:hover {
+      background: #f4f4f4;
+    }
+
+    .welcome {
+      margin-bottom: 15px;
+      color: #666;
     }
 
     .controls {
       display: flex;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     input {
-      flex: 1;
       padding: 10px;
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 6px;
     }
 
     button {
-      padding: 10px;
-      background: #2d2d2d;
+      padding: 10px 15px;
+      background: #6C63FF;
       color: white;
       border: none;
       cursor: pointer;
-    }
-
-    ul {
-      margin-top: 20px;
-      padding: 0;
-    }
-
-    li {
-      list-style: none;
-      padding: 12px;
-      background: #eee;
-      margin-bottom: 8px;
       border-radius: 6px;
+    }
+
+    button:hover {
+      background: #5848d6;
+    }
+
+    .courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .course-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      transition: 0.2s;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: #6C63FF;
+      box-shadow: 0 6px 15px rgba(108,99,255,0.2);
+    }
+
+    .course-card h3 {
+      margin: 0 0 10px;
+    }
+
+    .course-card p {
+      color: #777;
+      font-size: 13px;
     }
 
     .empty {
@@ -68,88 +149,136 @@
       color: gray;
       margin-top: 20px;
     }
+
+    .count {
+      margin-bottom: 10px;
+      color: #666;
+    }
+
+    .sort-label {
+      font-size: 12px;
+      color: #888;
+      margin-left: 5px;
+    }
   </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div>Smart Study</div>
-  <div> 👤 Student Name | ⚙ Settings</div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Smart Study AI</h2>
+
+  <div class="menu-item" onclick="goBack()">Dashboard</div>
+  <div class="menu-item">Courses</div>
+  <div class="menu-item">Notes</div>
+  <div class="menu-item">Quiz</div>
 </div>
 
-<div class="container">
+<!-- MAIN -->
+<div class="main">
 
-  <button onclick="goBack()">⬅ Back</button>
+  <div class="header">
+    <h2>My Courses</h2>
 
-  <h1>My Courses</h1>
+    <div class="header-right">
+      <div>Student Name</div>
+      <div class="settings-btn" onclick="toggleSettings()">Settings</div>
 
+      <div class="settings-menu" id="settingsMenu">
+        <div>Profile</div>
+        <div>Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="welcome">
+    Happy studying 👋 Stay consistent and keep improving!
+  </div>
+
+  <!-- ADD -->
   <div class="controls">
     <input id="courseTitle" placeholder="Enter course name">
     <button onclick="addCourse()">Add</button>
   </div>
 
+  <!-- SEARCH + SORT -->
   <div class="controls">
     <input id="search" placeholder="Search courses..." oninput="filterCourses()">
-    <button onclick="sortCourses()">Sort A-Z</button>
+    <button onclick="sortCourses()">Sort</button>
+    <span class="sort-label" id="sortLabel">A-Z</span>
   </div>
 
-  <ul id="courseList"></ul>
+  <p id="courseCount" class="count"></p>
+
+  <div class="courses" id="courseList"></div>
 
   <p id="emptyMessage" class="empty"></p>
 
 </div>
 
 <script>
-
 const api = "http://localhost:5095/api/course";
 let allCourses = [];
+let isAscending = true;
 
-// Load courses
+/* LOAD */
 async function loadCourses() {
   const res = await fetch(api);
   allCourses = await res.json();
   displayCourses(allCourses);
 }
 
-// Display courses
+/* DISPLAY */
 function displayCourses(data) {
   const list = document.getElementById("courseList");
   const empty = document.getElementById("emptyMessage");
+  const count = document.getElementById("courseCount");
 
   list.innerHTML = "";
+  count.innerText = `${data.length} courses available`;
 
   if (data.length === 0) {
-    empty.innerText = "No courses yet. Add your first course!";
+    empty.innerText = "No courses yet. Start by adding your first one.";
     return;
   }
 
   empty.innerText = "";
 
   data.forEach(course => {
-    const li = document.createElement("li");
-    li.innerText = course.title;
-    list.appendChild(li);
+    const div = document.createElement("div");
+    div.className = "course-card";
+
+    div.innerHTML = `
+      <h3>${course.title}</h3>
+      <p>Course workspace</p>
+      <button onclick="openCourse('${course.title}')">Open</button>
+    `;
+
+    list.appendChild(div);
   });
 }
 
-// Add course
+/* ADD */
 async function addCourse() {
   const title = document.getElementById("courseTitle").value;
 
-  if (!title) return;
+  if (!title) {
+    alert("Enter a course name");
+    return;
+  }
 
   await fetch(api, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: title, userId: "1" })
+    body: JSON.stringify({ title, userId: "1" })
   });
 
   document.getElementById("courseTitle").value = "";
   loadCourses();
 }
 
-// Search
+/* SEARCH */
 function filterCourses() {
   const search = document.getElementById("search").value.toLowerCase();
 
@@ -160,22 +289,38 @@ function filterCourses() {
   displayCourses(filtered);
 }
 
-// Sort
+/* SORT */
 function sortCourses() {
-  const sorted = [...allCourses].sort((a, b) =>
-    a.title.localeCompare(b.title)
-  );
+  const label = document.getElementById("sortLabel");
 
-  displayCourses(sorted);
+  if (isAscending) {
+    displayCourses([...allCourses].sort((a,b)=>a.title.localeCompare(b.title)));
+    label.innerText = "Z-A";
+  } else {
+    displayCourses([...allCourses].sort((a,b)=>b.title.localeCompare(a.title)));
+    label.innerText = "A-Z";
+  }
+
+  isAscending = !isAscending;
 }
 
-// Back
+/* SETTINGS */
+function toggleSettings() {
+  const menu = document.getElementById("settingsMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+/* NAV */
 function goBack() {
   window.location.href = "studentdashboard.html";
 }
 
-loadCourses();
+/* OPEN */
+function openCourse(name) {
+  alert("Opening " + name);
+}
 
+loadCourses();
 </script>
 
 </body>

@@ -12,6 +12,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register DatabaseService
 builder.Services.AddScoped<DatabaseService>();
 
+// Add controllers for controller files like FileUploadController
+builder.Services.AddControllers();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -30,11 +33,21 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.EnsureCreated();
-    
+
+    // Make sure upload file table exists
+    db.Database.ExecuteSqlRaw(@"
+        CREATE TABLE IF NOT EXISTS UploadFileRecords (
+            Id INTEGER NOT NULL CONSTRAINT PK_UploadFileRecords PRIMARY KEY AUTOINCREMENT,
+            FileName TEXT NOT NULL,
+            FileSize INTEGER NOT NULL,
+            ContentType TEXT NOT NULL,
+            UploadedAt TEXT NOT NULL
+        );
+    ");
+
     // Seed sample data if database is empty
     if (!db.Users.Any())
     {
-        // Run seed script
         var seedSql = File.ReadAllText("seed-data.sql");
         db.Database.ExecuteSqlRaw(seedSql);
         Console.WriteLine("Sample data seeded from seed-data.sql!");
@@ -42,6 +55,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors();
+
+app.MapControllers();
 
 // Existing endpoint
 app.MapGet("/", () => "Hello World!");
@@ -134,5 +149,38 @@ app.MapDelete("/api/notes/{id}", async (ApplicationDbContext db, int id) =>
 
     return Results.Ok();
 });
+
+// API endpoints for File Uploads
+app.MapPost("/api/fileupload/upload", async (ApplicationDbContext db, IFormFile file) =>
+{
+    if (file == null || file.Length == 0)
+    {
+        return Results.BadRequest(new { error = "No file selected." });
+    }
+
+    var uploadedFile = new UploadFileRecord
+    {
+        FileName = file.FileName,
+        FileSize = file.Length,
+        ContentType = file.ContentType ?? "",
+        UploadedAt = DateTime.Now
+    };
+
+    db.UploadFileRecords.Add(uploadedFile);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new
+    {
+        message = $"{file.FileName} has been uploaded",
+        fileId = uploadedFile.Id,
+        fileName = uploadedFile.FileName
+    });
+})
+.DisableAntiforgery();
+
+app.MapGet("/api/fileupload", async (ApplicationDbContext db) =>
+    await db.UploadFileRecords
+        .OrderByDescending(file => file.UploadedAt)
+        .ToListAsync());
 
 app.Run();

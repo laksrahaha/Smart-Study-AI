@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload - Smart Study AI</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #eef0ff, #d8ddff, #f7f3ee);
+      color: #202842;
+    }
+
+    .page-header {
+      background: #202842;
+      color: white;
+      padding: 18px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    }
+
+    .page-header h1 {
+      font-size: 24px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .upload-container {
+      max-width: 720px;
+      margin: 55px auto;
+      background: rgba(255,255,255,0.88);
+      padding: 38px;
+      border-radius: 30px;
+      box-shadow: 0 20px 50px rgba(48, 56, 86, 0.14);
+    }
+
+    .upload-title {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 34px;
+      color: #202842;
+    }
+
+    .upload-subtitle {
+      text-align: center;
+      color: #5d6678;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #7c6df0;
+      border-radius: 24px;
+      padding: 48px 30px;
+      text-align: center;
+      background: linear-gradient(135deg, #ffffff, #f4f2ff);
+      transition: 0.25s;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(48, 56, 86, 0.08);
+    }
+
+    .drop-zone:hover {
+      transform: translateY(-3px);
+      border-color: #6757dc;
+      box-shadow: 0 16px 34px rgba(48, 56, 86, 0.14);
+    }
+
+    .drop-zone.drag-over {
+      background: #eeeaff;
+      border-color: #4e42c9;
+      transform: scale(1.01);
+    }
+
+    .drop-icon {
+      font-size: 52px;
+      margin-bottom: 14px;
+    }
+
+    .drop-main-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: #202842;
+      margin-bottom: 8px;
+    }
+
+    .drop-small-text {
+      color: #6f7890;
+      font-size: 14px;
+    }
+
+    .selected-file-box {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: #f7f8ff;
+      border: 1px solid rgba(124,109,240,0.16);
+      display: none;
+    }
+
+    .selected-file-box.show {
+      display: block;
+    }
+
+    .selected-file-name {
+      font-weight: bold;
+      color: #202842;
+      margin-bottom: 5px;
+      word-break: break-word;
+    }
+
+    .selected-file-size {
+      color: #6f7890;
+      font-size: 13px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 150px;
+      padding: 13px 18px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+      font-size: 15px;
+    }
+
+    .upload-btn {
+      background: #7c6df0;
+      color: white;
+    }
+
+    .upload-btn:hover {
+      background: #6757dc;
+      transform: translateY(-2px);
+    }
+
+    .upload-btn:disabled {
+      background: #a9aec2;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .clear-btn {
+      background: #eef0ff;
+      color: #202842;
+    }
+
+    .clear-btn:hover {
+      background: #d8ddff;
+      transform: translateY(-2px);
+    }
+
+    .message {
+      display: none;
+      margin-top: 22px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .message.success {
+      display: block;
+      background: #dff7e8;
+      color: #155724;
+      border: 1px solid #bce6c9;
+    }
+
+    .message.error {
+      display: block;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f1b8bf;
+    }
+
+    @media (max-width: 750px) {
+      .page-header {
+        padding: 16px 20px;
+      }
+
+      .page-header h1 {
+        font-size: 19px;
+      }
+
+      .upload-container {
+        margin: 35px 18px;
+        padding: 26px;
+      }
+
+      .upload-title {
+        font-size: 28px;
+      }
+
+      .drop-zone {
+        padding: 36px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="page-header">
+    <h1>Smart Study AI</h1>
+    <a href="studentdashboard.html" class="back-btn">← Dashboard</a>
+  </header>
+
+  <main class="upload-container">
+    <h2 class="upload-title">File Upload</h2>
+
+    <p class="upload-subtitle">
+      Upload study files, notes, or resources into your Smart Study AI workspace.
+    </p>
+
+    <div id="dropZone" class="drop-zone">
+      <div class="drop-icon">📂</div>
+      <p class="drop-main-text">Drag and drop a file here</p>
+      <p class="drop-small-text">or click to select a file from your computer</p>
+      <input type="file" id="fileInput" style="display: none;">
+    </div>
+
+    <div id="selectedFileBox" class="selected-file-box">
+      <p id="selectedFileName" class="selected-file-name"></p>
+      <p id="selectedFileSize" class="selected-file-size"></p>
+    </div>
+
+    <div class="button-row">
+      <button id="uploadBtn" class="upload-btn" disabled>Upload File</button>
+      <button id="clearBtn" class="clear-btn" type="button">Clear</button>
+    </div>
+
+    <div id="uploadMessage" class="message"></div>
+  </main>
+
+<script>
+  const UPLOAD_ENDPOINT = "http://localhost:5095/api/fileupload/upload";
+
+  const dropZone = document.getElementById("dropZone");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const uploadMessage = document.getElementById("uploadMessage");
+  const selectedFileBox = document.getElementById("selectedFileBox");
+  const selectedFileName = document.getElementById("selectedFileName");
+  const selectedFileSize = document.getElementById("selectedFileSize");
+
+  let selectedFile = null;
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const savedMessage = sessionStorage.getItem("lastUploadMessage");
+
+    if (savedMessage) {
+      showMessage(savedMessage, "success");
+    }
+
+    attachFileInputListener();
+  });
+
+  function attachFileInputListener() {
+    const input = dropZone.querySelector("#fileInput");
+
+    input.addEventListener("change", event => {
+      if (event.target.files.length > 0) {
+        handleFileSelection(event.target.files[0]);
+      }
+    });
+  }
+
+  dropZone.addEventListener("click", () => {
+    const currentInput = dropZone.querySelector("#fileInput");
+    currentInput.click();
+  });
+
+  dropZone.addEventListener("dragover", event => {
+    event.preventDefault();
+    dropZone.classList.add("drag-over");
+  });
+
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("drag-over");
+  });
+
+  dropZone.addEventListener("drop", event => {
+    event.preventDefault();
+    dropZone.classList.remove("drag-over");
+
+    if (event.dataTransfer.files.length > 0) {
+      handleFileSelection(event.dataTransfer.files[0]);
+    }
+  });
+
+  function handleFileSelection(file) {
+    selectedFile = file;
+
+    selectedFileName.textContent = "Selected file: " + file.name;
+    selectedFileSize.textContent = "Size: " + formatFileSize(file.size);
+    selectedFileBox.classList.add("show");
+
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "Upload File";
+
+    sessionStorage.removeItem("lastUploadMessage");
+    hideMessage();
+
+    dropZone.innerHTML = `
+      <div class="drop-icon">📄</div>
+      <p class="drop-main-text">${escapeHtml(file.name)}</p>
+      <p class="drop-small-text">Click or drop again to change file</p>
+      <input type="file" id="fileInput" style="display: none;">
+    `;
+
+    attachFileInputListener();
+  }
+
+  uploadBtn.addEventListener("click", async event => {
+    event.preventDefault();
+
+    if (!selectedFile) {
+      showMessage("Please select a file first.", "error");
+      return;
+    }
+
+    const fileBeingUploaded = selectedFile;
+
+    const formData = new FormData();
+    formData.append("file", fileBeingUploaded);
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = "Uploading...";
+
+    try {
+      const response = await fetch(UPLOAD_ENDPOINT, {
+        method: "POST",
+        body: formData
+      });
+
+      const responseText = await response.text();
+
+      let result = {};
+
+      if (responseText) {
+        try {
+          result = JSON.parse(responseText);
+        } catch {
+          result = { message: responseText };
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(result.error || result.message || "Upload failed.");
+      }
+
+      const successMessage = result.message || fileBeingUploaded.name + " has been uploaded";
+
+      sessionStorage.setItem("lastUploadMessage", successMessage);
+      showMessage(successMessage, "success");
+
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = "Upload Again";
+
+    } catch (error) {
+      sessionStorage.removeItem("lastUploadMessage");
+      showMessage("Error: " + error.message, "error");
+
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = "Upload File";
+    }
+  });
+
+  clearBtn.addEventListener("click", event => {
+    event.preventDefault();
+    sessionStorage.removeItem("lastUploadMessage");
+    resetUploadForm();
+    hideMessage();
+  });
+
+  function resetUploadForm() {
+    selectedFile = null;
+
+    selectedFileBox.classList.remove("show");
+    selectedFileName.textContent = "";
+    selectedFileSize.textContent = "";
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = "Upload File";
+
+    dropZone.innerHTML = `
+      <div class="drop-icon">📂</div>
+      <p class="drop-main-text">Drag and drop a file here</p>
+      <p class="drop-small-text">or click to select a file from your computer</p>
+      <input type="file" id="fileInput" style="display: none;">
+    `;
+
+    attachFileInputListener();
+  }
+
+  function showMessage(message, type) {
+    uploadMessage.textContent = message;
+    uploadMessage.className = "message " + type;
+    uploadMessage.style.display = "block";
+  }
+
+  function hideMessage() {
+    uploadMessage.textContent = "";
+    uploadMessage.className = "message";
+    uploadMessage.style.display = "none";
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) {
+      return bytes + " bytes";
+    }
+
+    const kilobytes = bytes / 1024;
+
+    if (kilobytes < 1024) {
+      return kilobytes.toFixed(1) + " KB";
+    }
+
+    const megabytes = kilobytes / 1024;
+    return megabytes.toFixed(1) + " MB";
+  }
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+</script>
+
+</body>
+</html>

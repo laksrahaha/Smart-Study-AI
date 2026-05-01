@@ -1,11 +1,5 @@
 {
   "version": 2,
-<<<<<<< HEAD
-  "dgSpecHash": "ngD5RzVLWu0=",
-  "success": true,
-  "projectFilePath": "/Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/SmartStudyAI.Backend.csproj",
-  "expectedPackageFiles": [],
-=======
   "dgSpecHash": "SqWHcp+9KXc=",
   "success": true,
   "projectFilePath": "C:\\Users\\ACER\\Documents\\GitHub\\Smart-Study-AI\\backend\\SmartStudyAI.Backend\\SmartStudyAI.Backend.csproj",
@@ -58,6 +52,5 @@
     "C:\\Users\\ACER\\.nuget\\packages\\system.security.cryptography.pkcs\\9.0.4\\system.security.cryptography.pkcs.9.0.4.nupkg.sha512",
     "C:\\Users\\ACER\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.4\\system.security.cryptography.protecteddata.9.0.4.nupkg.sha512"
   ],
->>>>>>> feature/Database-Phi
   "logs": []
 }

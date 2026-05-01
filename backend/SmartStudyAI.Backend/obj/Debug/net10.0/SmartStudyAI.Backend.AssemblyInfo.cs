@@ -13,11 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartStudyAI.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2420e64ebf6f968dc924c33f8c3ac1406a1f6245")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d5c3b5de6bfafa4227321a6a86ad297d694eed1")]
->>>>>>> feature/Database-Phi
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d7ef0d086676b2922b7d400cbfe29cfde260ae8")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartStudyAI.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartStudyAI.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

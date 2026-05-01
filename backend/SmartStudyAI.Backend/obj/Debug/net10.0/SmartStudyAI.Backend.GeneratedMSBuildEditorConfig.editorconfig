@@ -19,21 +19,13 @@ build_property.TargetFrameworkIdentifier = .NETCoreApp
 build_property.TargetFrameworkVersion = v10.0
 build_property.RootNamespace = SmartStudyAI.Backend
 build_property.RootNamespace = SmartStudyAI.Backend
-<<<<<<< HEAD
-build_property.ProjectDir = /Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/
-=======
 build_property.ProjectDir = C:\Users\ACER\Documents\GitHub\Smart-Study-AI\backend\SmartStudyAI.Backend\
->>>>>>> feature/Database-Phi
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-<<<<<<< HEAD
-build_property.MSBuildProjectDirectory = /Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend
-=======
 build_property.MSBuildProjectDirectory = C:\Users\ACER\Documents\GitHub\Smart-Study-AI\backend\SmartStudyAI.Backend
->>>>>>> feature/Database-Phi
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 

@@ -1,4 +1,3 @@
-
 {
   "version": 3,
   "targets": {
@@ -3089,41 +3088,25 @@
     ]
   },
   "packageFolders": {
-<<<<<<< HEAD
-    "/Users/husniamosavi/.nuget/packages/": {}
-=======
     "C:\\Users\\ACER\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
->>>>>>> feature/Database-Phi
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-<<<<<<< HEAD
-      "projectUniqueName": "/Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/SmartStudyAI.Backend.csproj",
-      "projectName": "SmartStudyAI.Backend",
-      "projectPath": "/Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/SmartStudyAI.Backend.csproj",
-      "packagesPath": "/Users/husniamosavi/.nuget/packages/",
-      "outputPath": "/Users/husniamosavi/Smart-Study-AI/backend/SmartStudyAI.Backend/obj/",
-=======
       "projectUniqueName": "C:\\Users\\ACER\\Documents\\GitHub\\Smart-Study-AI\\backend\\SmartStudyAI.Backend\\SmartStudyAI.Backend.csproj",
       "projectName": "SmartStudyAI.Backend",
       "projectPath": "C:\\Users\\ACER\\Documents\\GitHub\\Smart-Study-AI\\backend\\SmartStudyAI.Backend\\SmartStudyAI.Backend.csproj",
       "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\ACER\\Documents\\GitHub\\Smart-Study-AI\\backend\\SmartStudyAI.Backend\\obj\\",
->>>>>>> feature/Database-Phi
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-<<<<<<< HEAD
-        "/Users/husniamosavi/.nuget/NuGet/NuGet.Config"
-=======
         "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
->>>>>>> feature/Database-Phi
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -3190,11 +3173,7 @@
             "privateAssets": "all"
           }
         },
-<<<<<<< HEAD
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json",
-=======
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json",
->>>>>>> feature/Database-Phi
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

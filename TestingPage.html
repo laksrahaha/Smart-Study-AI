@@ -1,0 +1,183 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study AI - Database Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .card p {
+            color: #555;
+            margin: 5px 0;
+        }
+        .card .label {
+            font-weight: bold;
+            color: #333;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            padding: 20px;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .refresh-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .refresh-btn:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Smart Study AI - Database Viewer</h1>
+        
+        <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
+        
+        <div class="section">
+            <h2>👥 Users</h2>
+            <div id="users-container">
+                <p class="loading">Loading users...</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📖 Courses</h2>
+            <div id="courses-container">
+                <p class="loading">Loading courses...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5095/api';
+
+        async function loadData() {
+            await Promise.all([loadUsers(), loadCourses()]);
+        }
+
+        async function loadUsers() {
+            const container = document.getElementById('users-container');
+            try {
+                const response = await fetch(`${API_BASE}/users`);
+                if (!response.ok) throw new Error('Failed to fetch users');
+                const users = await response.json();
+                
+                if (users.length === 0) {
+                    container.innerHTML = '<p class="loading">No users found in database.</p>';
+                    return;
+                }
+                
+                container.innerHTML = `<div class="data-grid">` + 
+                    users.map(user => `
+                        <div class="card">
+                            <h3>User #${user.id}</h3>
+                            <p><span class="label">Username:</span> ${user.username}</p>
+                        </div>
+                    `).join('') +
+                    `</div>`;
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error loading users: ${error.message}</div>`;
+            }
+        }
+
+        async function loadCourses() {
+            const container = document.getElementById('courses-container');
+            try {
+                const response = await fetch(`${API_BASE}/courses`);
+                if (!response.ok) throw new Error('Failed to fetch courses');
+                const courses = await response.json();
+                
+                if (courses.length === 0) {
+                    container.innerHTML = '<p class="loading">No courses found in database.</p>';
+                    return;
+                }
+                
+                container.innerHTML = `<div class="data-grid">` + 
+                    courses.map(course => `
+                        <div class="card">
+                            <h3>${course.title}</h3>
+                            <p><span class="label">Description:</span> ${course.description || 'N/A'}</p>
+                            <p><span class="label">User ID:</span> ${course.userId}</p>
+                            <p><span class="label">Created by:</span> ${course.user?.username || 'Unknown'}</p>
+                        </div>
+                    `).join('') +
+                    `</div>`;
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error loading courses: ${error.message}</div>`;
+            }
+        }
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

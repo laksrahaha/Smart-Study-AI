@@ -1,0 +1,12 @@
+# Step 1: Clone repository
+git clone(do this on github desktop for convinience)
+
+# Run step 2 & 3 in the terminal
+# Step 2: Restore packages
+cd backend\SmartStudyAI.Backend
+dotnet restore
+
+# Step 3: Run (database auto-create)
+dotnet run
+
+# Step 4: Open TestingPage.html in browser

@@ -178,21 +178,21 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 22px;
-}
+  }
 
-.sidebar-logo img {
+  .sidebar-logo img {
     width: 44px;
     height: 44px;
     object-fit: contain;
     background: white;
     border-radius: 10px;
     padding: 4px;
-}
+  }
 
-.sidebar-logo h2 {
+  .sidebar-logo h2 {
     font-size: 22px;
     color: #ffffff;
-}
+  }
 
   .sidebar h2 {
     font-size: 24px;
@@ -277,6 +277,87 @@
     background: #6757dc;
   }
 
+  .timer-floating-icon {
+    position: fixed;
+    top: 95px;
+    right: 45px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #198754;
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 30;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+  }
+
+  .timer-popup {
+    display: none;
+    position: fixed;
+    top: 165px;
+    right: 45px;
+    width: 310px;
+    background: white;
+    color: #202842;
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 14px 35px rgba(48, 56, 86, 0.22);
+    text-align: center;
+    z-index: 31;
+  }
+
+  .timer-popup.show-timer {
+    display: block;
+  }
+
+  .timer-popup h3 {
+    margin-bottom: 14px;
+    font-size: 24px;
+  }
+
+  .timer-popup h1 {
+    font-size: 42px;
+    margin-bottom: 18px;
+  }
+
+  .timer-popup input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd1e1;
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+
+  .timer-popup button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #7c6df0;
+    color: white;
+    font-weight: bold;
+  }
+
+  .timer-popup button:hover {
+    background: #6757dc;
+  }
+
+  .timer-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent !important;
+    color: #202842 !important;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: none;
+  }
+
   @media (max-width: 900px) {
     .dashboard-main {
       padding: 25px;
@@ -298,6 +379,15 @@
       right: 25px;
       width: calc(100% - 50px);
     }
+
+    .timer-floating-icon {
+      right: 25px;
+    }
+
+    .timer-popup {
+      right: 25px;
+      width: calc(100% - 50px);
+    }
   }
 </style>
 </head>
@@ -308,14 +398,15 @@
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-        <img src="sss-logo.png" alt="Smart Study AI Logo">
-        <h2>Smart Study AI</h2>
+      <img src="sss-logo.png" alt="Smart Study AI Logo">
+      <h2>Smart Study AI</h2>
     </div>
 
     <a href="studentdashboard.html" class="nav-link active-link">🏠 Dashboard</a>
     <a href="coursedashboard.html" class="nav-link">📚 Course Workspace</a>
     <a href="notes-board.html" class="nav-link">📝 Notes Board</a>
-    <a href="notes-editor.html" class="nav-link">✏️ Notes Editor</a>
+    <a href="quizdashboard.html" class="nav-link">🧠 Quiz Dashboard</a>
+    <a href="#" class="nav-link" onclick="goToTimer(); return false;">⏱️ Session Timer</a>
     <a href="account-settings.html" class="nav-link">⚙️ Account Settings</a>
     <a href="file-upload.html" class="nav-link">📁 File Uploads</a>
 
@@ -346,36 +437,57 @@
       <button type="button" onclick="applyBackground()">Apply Background</button>
     </section>
 
-<section class="dashboard-panel">
+    <section class="dashboard-panel">
 
-  <section class="welcome-box">
-    <h1>Welcome to Your Dashboard</h1>
-    <p>
-      Manage your study workspace, open course tools, view notes, and personalise your dashboard.
-    </p>
-  </section>
+      <section class="welcome-box">
+        <h1>Welcome to Your Dashboard</h1>
+        <p>
+          Manage your study workspace, open course tools, view notes, and personalise your dashboard.
+        </p>
+      </section>
 
-  <section class="grid">
-    <div class="card" onclick="goToCourses()">
-      <span>📚</span>
-      <h3 id="courseCardTitle">Course Workspace</h3>
-      <p>Open your course workspace and manage study content.</p>
+      <section class="grid">
+        <div class="card" onclick="goToCourses()">
+          <span>📚</span>
+          <h3 id="courseCardTitle">Course Workspace</h3>
+          <p>Open your course workspace and manage study content.</p>
+        </div>
+
+        <div class="card" onclick="goToNotesBoard()">
+          <span>📝</span>
+          <h3>Notes Board</h3>
+          <p>View and organise your saved study notes.</p>
+        </div>
+
+        <div class="card" onclick="goToQuiz()">
+          <span>🧠</span>
+          <h3>Quiz Dashboard</h3>
+          <p>Generate quiz questions from your saved study notes.</p>
+        </div>
+
+        <div class="card" onclick="goToTimer()">
+          <span>⏱️</span>
+          <h3>Session Timer</h3>
+          <p>Start a focused study timer for your revision sessions.</p>
+        </div>
+      </section>
+
+    </section>
+
+    <button class="timer-floating-icon" onclick="toggleTimer()">⏱️</button>
+
+    <div id="timerPopup" class="timer-popup">
+      <button class="timer-close-btn" onclick="closeTimer()">×</button>
+      <h3>Session Timer</h3>
+      <h1 id="timerDisplay">00:00</h1>
+
+      <input type="number" id="minutesInput" placeholder="Minutes" min="1">
+
+      <div>
+        <button onclick="startTimer()">Start</button>
+        <button onclick="resetTimer()">Reset</button>
+      </div>
     </div>
-
-    <div class="card" onclick="goToNotesBoard()">
-      <span>📝</span>
-      <h3>Notes Board</h3>
-      <p>View and organise your saved study notes.</p>
-    </div>
-
-    <div class="card" onclick="goToNotesEditor()">
-      <span>✏️</span>
-      <h3>Notes Editor</h3>
-      <p>Create, edit, and update study notes for revision.</p>
-    </div>
-  </section>
-
-</section>
 
   </main>
 
@@ -402,11 +514,14 @@
       window.location.href = "notes-board.html";
     }
 
-    function goToNotesEditor() {
-      window.location.href = "notes-editor.html";
+    function goToQuiz() {
+      window.location.href = "quizdashboard.html";
     }
 
-    
+    function goToTimer() {
+      closeSidebar();
+      toggleTimer();
+    }
 
     function applyBackground() {
       const dashboardMain = document.getElementById("dashboardMain");
@@ -434,7 +549,60 @@
 
       document.getElementById("backgroundPanel").classList.remove("show-panel");
     }
-    
+
+    let totalSeconds = 0;
+    let timerInterval;
+
+    function toggleTimer() {
+      const popup = document.getElementById("timerPopup");
+      popup.classList.toggle("show-timer");
+    }
+
+    function closeTimer() {
+      document.getElementById("timerPopup").classList.remove("show-timer");
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+
+      document.getElementById("timerDisplay").textContent =
+        `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    }
+
+    function startTimer() {
+      const minutesInput = document.getElementById("minutesInput");
+      const minutes = Number(minutesInput.value);
+
+      if (!minutes || minutes <= 0) {
+        alert("Enter a valid number of minutes.");
+        return;
+      }
+
+      totalSeconds = minutes * 60;
+
+      clearInterval(timerInterval);
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        if (totalSeconds > 0) {
+          totalSeconds--;
+          updateTimerDisplay();
+        } else {
+          clearInterval(timerInterval);
+          alert("Time's up!");
+          closeTimer();
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      totalSeconds = 0;
+      updateTimerDisplay();
+    }
+
+    updateTimerDisplay();
   </script>
 
 </body>

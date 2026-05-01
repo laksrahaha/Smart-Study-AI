@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login – Super Smart Study Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=La+Belle+Aurore&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+
   <style>
     *, *::before, *::after {
       margin: 0;
@@ -37,7 +39,6 @@
     }
 
     .nav-title {
-      font-family: 'Playfair Display', serif;
       font-size: 17px;
       font-weight: 700;
       letter-spacing: 1.5px;
@@ -49,6 +50,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 20px;
     }
 
     .card {
@@ -67,7 +69,6 @@
     }
 
     h1 {
-      font-family: 'Playfair Display', serif;
       font-size: clamp(3rem, 8vw, 5rem);
       font-weight: 900;
       letter-spacing: 6px;
@@ -98,16 +99,13 @@
 
     input::placeholder {
       color: #aaa;
-      font-family: 'Playfair Display', serif;
     }
 
     input:focus {
       border-color: #333;
     }
 
- sravani-dashboard-clean
     .forgot {
-      font-family: 'Playfair Display', serif;
       font-size: 0.95rem;
       color: #444;
       margin-bottom: 24px;
@@ -123,12 +121,10 @@
       text-decoration: underline;
     }
 
-=======
- main
     .error-msg {
       color: #cc0000;
       font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       margin-bottom: 12px;
       display: none;
       text-align: center;
@@ -161,7 +157,6 @@
     }
 
     .signup-link {
-      font-family: 'Playfair Display', serif;
       font-size: 1rem;
       font-weight: 700;
       font-style: italic;
@@ -179,6 +174,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <nav>
@@ -187,69 +183,82 @@
   </nav>
 
   <main>
-  <div class="card">
+    <div class="card">
 
-    <h1>WELCOME</h1>
+      <h1>WELCOME</h1>
 
-    <div class="form-group">
-      <input type="email" id="email" placeholder="Email Address" />
+      <div class="form-group">
+        <input type="email" id="email" placeholder="Email Address" />
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="password" placeholder="Password" />
+      </div>
+
+      <p class="error-msg" id="errorMsg">Please fill in all fields.</p>
+
+      <p class="forgot">
+        Forgot password? <a href="forgot-password.html">Click here</a>
+      </p>
+
+      <button class="btn-login" onclick="handleLogin()">Login</button>
+
+      <p class="signup-link">
+        Don't have an account? <a href="frontend/register.html">Sign up</a>
+      </p>
+
     </div>
-
-    <div class="form-group">
-      <input type="password" id="password" placeholder="Password" />
-    </div>
-
-    <p class="error-msg" id="errorMsg">Please fill in all fields.</p>
-
- sravani-dashboard-clean
-    <p class="forgot">
-      Forgot password? <a href="forgot-password.html">Click here</a>
-    </p>
-=======
-main
-
-    <button class="btn-login" onclick="handleLogin()">Login</button>
-
-    <p class="signup-link">
-      Don't have an account? <a href="register.html">Sign up</a>
-    </p>
-
-  </div>
   </main>
 
   <script>
+    const API_BASE = "http://localhost:5095/api";
+
     async function handleLogin() {
-    const email    = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const errorMsg = document.getElementById('errorMsg');
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMsg = document.getElementById("errorMsg");
 
-    if (!email || !password) {
-        errorMsg.style.display = 'block';
-        errorMsg.textContent = 'Please fill in all fields.';
+      errorMsg.style.display = "none";
+      errorMsg.textContent = "";
+
+      if (!email || !password) {
+        errorMsg.style.display = "block";
+        errorMsg.textContent = "Please fill in all fields.";
         return;
-    }
+      }
 
-    try {
-        const response = await fetch('http://localhost:5134/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
+      try {
+        const response = await fetch(`${API_BASE}/users`);
 
-        const data = await response.json();
-
-        if (response.ok) {
-            localStorage.setItem('username', data.username);
-            window.location.href = 'studentdashboard.html';
-        } else {
-            errorMsg.style.display = 'block';
-            errorMsg.textContent = data.message;
+        if (!response.ok) {
+          throw new Error("Could not load users.");
         }
-    } catch (err) {
-        errorMsg.style.display = 'block';
-        errorMsg.textContent = 'Cannot connect to server. Please try again.';
+
+        const users = await response.json();
+
+        const matchedUser = users.find(user =>
+          user.email.toLowerCase() === email.toLowerCase() &&
+          user.passwordHash === password
+        );
+
+        if (!matchedUser) {
+          errorMsg.style.display = "block";
+          errorMsg.textContent = "Invalid email or password.";
+          return;
+        }
+
+        localStorage.setItem("userId", matchedUser.id);
+        localStorage.setItem("username", matchedUser.username);
+        localStorage.setItem("email", matchedUser.email);
+
+        window.location.href = "studentdashboard.html";
+
+      } catch (err) {
+        errorMsg.style.display = "block";
+        errorMsg.textContent = "Cannot connect to server. Make sure the backend is running.";
+        console.error(err);
+      }
     }
-}
   </script>
 
 </body>

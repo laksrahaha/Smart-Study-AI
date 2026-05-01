@@ -14,7 +14,14 @@ registerForm.addEventListener("submit", async function (event) {
     message.textContent = "";
     message.style.color = "red";
 
-    if (firstName === "" || lastName === "" || email === "" || studyLevel === "" || password === "" || confirmPassword === "") {
+    if (
+        firstName === "" ||
+        lastName === "" ||
+        email === "" ||
+        studyLevel === "" ||
+        password === "" ||
+        confirmPassword === ""
+    ) {
         message.textContent = "Please fill in all fields.";
         return;
     }
@@ -35,16 +42,13 @@ registerForm.addEventListener("submit", async function (event) {
     }
 
     const registerData = {
-        firstName: firstName,
-        lastName: lastName,
+        username: firstName + " " + lastName,
         email: email,
-        studyLevel: studyLevel,
-        password: password,
-        confirmPassword: confirmPassword
+        passwordHash: password
     };
 
     try {
-        const response = await fetch("http://localhost:5095/api/account/register", {
+        const response = await fetch("http://localhost:5095/api/users", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -59,15 +63,22 @@ registerForm.addEventListener("submit", async function (event) {
             return;
         }
 
-        localStorage.setItem("registeredUser", JSON.stringify(result));
+        localStorage.setItem("userId", result.id);
+        localStorage.setItem("username", result.username);
+        localStorage.setItem("email", result.email);
+        localStorage.setItem("studyLevel", studyLevel);
 
         message.style.color = "green";
         message.textContent = "Account created successfully.";
 
         registerForm.reset();
-        
+
+        setTimeout(function () {
+            window.location.href = "../login.html";
+        }, 1000);
+
     } catch (error) {
         message.textContent = "Could not connect to the backend. Make sure the backend is running.";
-        
+        console.error(error);
     }
 });

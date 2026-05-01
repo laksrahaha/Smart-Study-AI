@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Auto-migrate database on startup
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite("Data Source=smartstudy.db"));
 
 // Register DatabaseService
 builder.Services.AddScoped<DatabaseService>();
@@ -29,7 +29,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+    db.Database.EnsureCreated();
     
     // Seed sample data if database is empty
     if (!db.Users.Any())
@@ -66,6 +66,73 @@ app.MapPost("/api/users", async (ApplicationDbContext db, User user) =>
     db.Users.Add(user);
     await db.SaveChangesAsync();
     return Results.Created($"/api/users/{user.Id}", user);
+});
+
+// API endpoints for Notes
+app.MapGet("/api/notes", async (ApplicationDbContext db) =>
+    await db.Notes.ToListAsync());
+
+app.MapGet("/api/notes/user/{userId}", async (ApplicationDbContext db, int userId) =>
+    await db.Notes
+        .Where(note => note.UserId == userId)
+        .OrderByDescending(note => note.UpdatedAt)
+        .ToListAsync());
+
+app.MapGet("/api/notes/{id}", async (ApplicationDbContext db, int id) =>
+{
+    var note = await db.Notes.FindAsync(id);
+
+    if (note == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(note);
+});
+
+app.MapPost("/api/notes", async (ApplicationDbContext db, Note note) =>
+{
+    note.UpdatedAt = DateTime.Now;
+
+    db.Notes.Add(note);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/api/notes/{note.Id}", note);
+});
+
+app.MapPut("/api/notes/{id}", async (ApplicationDbContext db, int id, Note updatedNote) =>
+{
+    var note = await db.Notes.FindAsync(id);
+
+    if (note == null)
+    {
+        return Results.NotFound();
+    }
+
+    note.Title = updatedNote.Title;
+    note.Content = updatedNote.Content;
+    note.CourseName = updatedNote.CourseName;
+    note.CourseId = updatedNote.CourseId;
+    note.UpdatedAt = DateTime.Now;
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok(note);
+});
+
+app.MapDelete("/api/notes/{id}", async (ApplicationDbContext db, int id) =>
+{
+    var note = await db.Notes.FindAsync(id);
+
+    if (note == null)
+    {
+        return Results.NotFound();
+    }
+
+    db.Notes.Remove(note);
+    await db.SaveChangesAsync();
+
+    return Results.Ok();
 });
 
 app.Run();

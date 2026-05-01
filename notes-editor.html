@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Edit Note – Super Smart Study Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
 
     :root {
       --grad-start: #2d2d2d;
@@ -43,8 +48,22 @@
       z-index: 100;
       gap: 14px;
     }
-    .nav-logo { width: 36px; height: 36px; object-fit: contain; }
-    .nav-brand { font-size: 15px; font-weight: 800; letter-spacing: 1.5px; flex: 1; color: #fff; opacity: 0.95; }
+
+    .nav-logo { 
+      width: 36px; 
+      height: 36px; 
+      object-fit: contain; 
+    }
+
+    .nav-brand {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      flex: 1;
+      color: #fff;
+      opacity: 0.95;
+    }
+
     .nav-back {
       font-size: 14px;
       color: rgba(255,255,255,0.75);
@@ -55,7 +74,11 @@
       border: 1px solid rgba(255,255,255,0.25);
       transition: all 0.2s;
     }
-    .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    .nav-back:hover { 
+      background: rgba(255,255,255,0.12); 
+      color: #fff; 
+    }
 
     main {
       flex: 1;
@@ -65,12 +88,19 @@
       align-items: center;
       animation: fadeUp 0.6s ease both;
     }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .page-wrapper { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 20px; }
+    .page-wrapper {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
     .header-row {
       display: flex;
@@ -79,6 +109,7 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+
     h1 {
       font-family: 'DM Serif Display', serif;
       font-size: clamp(2rem, 5vw, 3rem);
@@ -88,6 +119,7 @@
       line-height: 1;
       text-shadow: 0 2px 16px rgba(0,0,0,0.3);
     }
+
     .file-name {
       font-size: 0.82rem;
       color: rgba(255,255,255,0.5);
@@ -118,8 +150,16 @@
       outline: none;
       transition: border-color 0.2s, background 0.2s;
     }
-    .note-title-input:focus { border-color: var(--accent); background: #fff; }
-    .note-title-input::placeholder { color: #c5c8d8; font-style: italic; }
+
+    .note-title-input:focus { 
+      border-color: var(--accent); 
+      background: #fff; 
+    }
+
+    .note-title-input::placeholder { 
+      color: #c5c8d8; 
+      font-style: italic; 
+    }
 
     .course-row {
       display: flex;
@@ -127,6 +167,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .course-label {
       font-size: 0.82rem;
       font-weight: 800;
@@ -134,6 +175,7 @@
       white-space: nowrap;
       letter-spacing: 0.3px;
     }
+
     .course-select {
       flex: 1;
       min-width: 180px;
@@ -149,16 +191,27 @@
       cursor: pointer;
       transition: border-color 0.2s;
     }
-    .course-select:focus { border-color: var(--accent); }
+
+    .course-select:focus { 
+      border-color: var(--accent); 
+    }
 
     .no-courses-hint {
       font-size: 0.8rem;
       color: var(--text-light);
       font-weight: 600;
     }
-    .no-courses-hint a { color: var(--accent); cursor: pointer; text-decoration: underline; }
 
-    .card-divider { border: none; border-top: 1px solid #eef0f8; }
+    .no-courses-hint a {
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .card-divider { 
+      border: none; 
+      border-top: 1px solid #eef0f8; 
+    }
 
     .editor-toolbar {
       display: flex;
@@ -167,8 +220,17 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-    .toolbar-left { display: flex; gap: 8px; }
-    .toolbar-right { display: flex; gap: 8px; align-items: center; }
+
+    .toolbar-left { 
+      display: flex; 
+      gap: 8px; 
+    }
+
+    .toolbar-right { 
+      display: flex; 
+      gap: 8px; 
+      align-items: center; 
+    }
 
     .btn {
       padding: 10px 22px;
@@ -184,29 +246,47 @@
       align-items: center;
       gap: 6px;
     }
-    .btn:hover { transform: translateY(-2px); }
-    .btn:active { transform: translateY(0); }
+
+    .btn:hover { 
+      transform: translateY(-2px); 
+    }
+
+    .btn:active { 
+      transform: translateY(0); 
+    }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--grad-start), var(--accent));
       color: #fff;
       box-shadow: 0 4px 14px rgba(78,115,223,0.35);
     }
-    .btn-primary:hover { box-shadow: 0 8px 20px rgba(78,115,223,0.45); }
+
+    .btn-primary:hover { 
+      box-shadow: 0 8px 20px rgba(78,115,223,0.45); 
+    }
 
     .btn-outline {
       background: transparent;
       color: var(--text-dark);
       border: 1.5px solid #dde0f0;
     }
-    .btn-outline:hover { background: #f7f8fc; border-color: #bbbdd8; }
+
+    .btn-outline:hover { 
+      background: #f7f8fc; 
+      border-color: #bbbdd8; 
+    }
 
     .btn-danger-outline {
       background: transparent;
       color: var(--danger);
       border: 1.5px solid #fbd3cf;
     }
-    .btn-danger-outline:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    .btn-danger-outline:hover {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+    }
 
     textarea {
       width: 100%;
@@ -224,8 +304,16 @@
       resize: vertical;
       transition: border-color 0.2s, background 0.2s;
     }
-    textarea:focus { border-color: var(--accent); background: #fff; }
-    textarea::placeholder { color: #c5c8d8; font-weight: 400; }
+
+    textarea:focus { 
+      border-color: var(--accent); 
+      background: #fff; 
+    }
+
+    textarea::placeholder { 
+      color: #c5c8d8; 
+      font-weight: 400; 
+    }
 
     .status-msg {
       font-size: 0.82rem;
@@ -235,29 +323,80 @@
       height: 18px;
       transition: color 0.3s;
     }
-    .status-msg.saved { color: #27ae60; }
+
+    .status-msg.saved { 
+      color: #27ae60; 
+    }
 
     .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.55); z-index: 200;
-      align-items: center; justify-content: center;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
       backdrop-filter: blur(4px);
     }
-    .modal-overlay.active { display: flex; }
+
+    .modal-overlay.active { 
+      display: flex; 
+    }
+
     .modal {
-      background: #fff; border-radius: 20px; padding: 36px 40px;
-      max-width: 400px; width: 92%; text-align: center;
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 40px;
+      max-width: 400px;
+      width: 92%;
+      text-align: center;
       box-shadow: 0 24px 64px rgba(0,0,0,0.22);
       animation: fadeUp 0.3s ease both;
       color: var(--text-dark);
     }
-    .modal h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; font-weight: 400; margin-bottom: 10px; }
-    .modal p { font-size: 0.88rem; color: var(--text-mid); margin-bottom: 24px; line-height: 1.6; font-weight: 600; }
-    .modal-buttons { display: flex; gap: 10px; justify-content: center; }
-    .btn-outline-dark { background: transparent; color: var(--text-dark); border: 1.5px solid #dde0f0; }
-    .btn-outline-dark:hover { background: #f7f8fc; }
-    .btn-delete { background: var(--danger); color: #fff; box-shadow: 0 4px 12px rgba(231,76,60,0.3); }
-    .btn-delete:hover { background: #c0392b; color: #fff; box-shadow: 0 8px 20px rgba(231,76,60,0.4); }
+
+    .modal h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+    }
+
+    .modal p {
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      margin-bottom: 24px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-outline-dark {
+      background: transparent;
+      color: var(--text-dark);
+      border: 1.5px solid #dde0f0;
+    }
+
+    .btn-outline-dark:hover { 
+      background: #f7f8fc; 
+    }
+
+    .btn-delete {
+      background: var(--danger);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(231,76,60,0.3);
+    }
+
+    .btn-delete:hover {
+      background: #c0392b;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(231,76,60,0.4);
+    }
 
     .editor-meta {
       display: flex;
@@ -269,6 +408,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <nav>
@@ -291,11 +431,13 @@
 
         <div class="course-row">
           <span class="course-label">📚 Course:</span>
-          <select class="course-select" id="courseSelect" onchange="scheduleAutoSave()">
+
+          <select class="course-select" id="courseSelect">
             <option value="">— Uncategorised —</option>
           </select>
+
           <span class="no-courses-hint" id="noCourseHint" style="display:none">
-            No courses yet. <a onclick="goManageCourses()">Add one on the Notes board.</a>
+            No courses yet. <a onclick="goManageCourses()">Add one in Course Dashboard.</a>
           </span>
         </div>
 
@@ -306,6 +448,7 @@
             <button class="btn btn-primary" onclick="saveNotes()">💾 Save</button>
             <button class="btn btn-outline" onclick="clearNotes()">Clear</button>
           </div>
+
           <div class="toolbar-right">
             <button class="btn btn-danger-outline" onclick="askDelete()">🗑 Delete Note</button>
           </div>
@@ -335,148 +478,216 @@
   </div>
 
   <script>
-    const KEYS = {
-      index:   'sss_notes_index',
-      note:    id => `sss_note_${id}`,
-      courses: 'sss_courses',
-    };
-
-    function getCourses() { return JSON.parse(localStorage.getItem(KEYS.courses) || '[]'); }
-    function saveNote(note) {
-      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
-      if (!index.includes(note.id)) index.unshift(note.id);
-      localStorage.setItem(KEYS.index, JSON.stringify(index));
-      localStorage.setItem(KEYS.note(note.id), JSON.stringify(note));
-    }
-    function deleteNote(id) {
-      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
-      index = index.filter(i => i !== id);
-      localStorage.setItem(KEYS.index, JSON.stringify(index));
-      localStorage.removeItem(KEYS.note(id));
-    }
-    function generateId() { return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); }
+    const API_BASE = "http://localhost:5095/api";
 
     let currentNoteId = null;
-    const noteEditor     = document.getElementById('noteEditor');
-    const noteTitleInput = document.getElementById('noteTitleInput');
-    const fileName       = document.getElementById('fileName');
-    const statusMsg      = document.getElementById('statusMsg');
-    const courseSelect   = document.getElementById('courseSelect');
-    const wordCountEl    = document.getElementById('wordCount');
+
+    const noteEditor = document.getElementById("noteEditor");
+    const noteTitleInput = document.getElementById("noteTitleInput");
+    const fileName = document.getElementById("fileName");
+    const statusMsg = document.getElementById("statusMsg");
+    const courseSelect = document.getElementById("courseSelect");
+    const wordCountEl = document.getElementById("wordCount");
+
+    function getUserId() {
+      return Number(localStorage.getItem("userId") || "1");
+    }
 
     function updateWordCount() {
       const words = noteEditor.value.trim().split(/\s+/).filter(Boolean).length;
-      wordCountEl.textContent = words === 1 ? '1 word' : `${words} words`;
+      wordCountEl.textContent = words === 1 ? "1 word" : `${words} words`;
     }
 
-    function populateCourseSelect(selectedCourse) {
-      const courses = getCourses();
-      courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
-      courses.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c; opt.textContent = c;
-        if (c === selectedCourse) opt.selected = true;
-        courseSelect.appendChild(opt);
-      });
-      document.getElementById('noCourseHint').style.display = courses.length === 0 ? 'inline' : 'none';
-    }
+    async function populateCourseSelect(selectedCourseName) {
+      try {
+        const response = await fetch(`${API_BASE}/courses`);
 
-    window.addEventListener('load', () => {
-      const editingId = localStorage.getItem('sss_editing_id');
-      if (editingId) {
-        const raw = localStorage.getItem(KEYS.note(editingId));
-        if (raw) {
-          const note = JSON.parse(raw);
-          currentNoteId = note.id;
-          noteEditor.value = note.content || '';
-          noteTitleInput.value = note.title || '';
-          fileName.textContent = note.title || 'Untitled';
-          populateCourseSelect(note.course || '');
-          updateWordCount();
-          return;
+        if (!response.ok) {
+          throw new Error("Could not load courses.");
         }
+
+        const courses = await response.json();
+        const userId = getUserId();
+
+        const userCourses = courses.filter(course => Number(course.userId) === userId);
+
+        courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
+
+        userCourses.forEach(course => {
+          const option = document.createElement("option");
+          option.value = course.title;
+          option.textContent = course.title;
+
+          if (course.title === selectedCourseName) {
+            option.selected = true;
+          }
+
+          courseSelect.appendChild(option);
+        });
+
+        document.getElementById("noCourseHint").style.display =
+          userCourses.length === 0 ? "inline" : "none";
+
+      } catch (error) {
+        console.error("Could not load courses", error);
+        courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
       }
-      currentNoteId = generateId();
-      fileName.textContent = 'New note';
-      populateCourseSelect('');
-      noteTitleInput.focus();
+    }
+
+    async function loadExistingNote() {
+      const editingId = localStorage.getItem("editingNoteId");
+
+      if (!editingId) {
+        currentNoteId = null;
+        fileName.textContent = "New note";
+        await populateCourseSelect("");
+        noteTitleInput.focus();
+        updateWordCount();
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/notes/${editingId}`);
+
+        if (!response.ok) {
+          throw new Error("Could not load note.");
+        }
+
+        const note = await response.json();
+
+        currentNoteId = note.id;
+        noteTitleInput.value = note.title || "";
+        noteEditor.value = note.content || "";
+        fileName.textContent = note.title || "Untitled";
+
+        await populateCourseSelect(note.courseName || "");
+
+        updateWordCount();
+
+      } catch (error) {
+        console.error(error);
+        currentNoteId = null;
+        fileName.textContent = "New note";
+        await populateCourseSelect("");
+      }
+    }
+
+    async function saveNotes() {
+      const noteData = {
+        userId: getUserId(),
+        title: noteTitleInput.value.trim() || "Untitled",
+        content: noteEditor.value,
+        courseName: courseSelect.value,
+        courseId: null
+      };
+
+      try {
+        let response;
+
+        if (currentNoteId) {
+          response = await fetch(`${API_BASE}/notes/${currentNoteId}`, {
+            method: "PUT",
+            headers: { 
+              "Content-Type": "application/json" 
+            },
+            body: JSON.stringify(noteData)
+          });
+        } else {
+          response = await fetch(`${API_BASE}/notes`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json" 
+            },
+            body: JSON.stringify(noteData)
+          });
+        }
+
+        if (!response.ok) {
+          throw new Error("Could not save note.");
+        }
+
+        const savedNote = await response.json();
+
+        currentNoteId = savedNote.id;
+        localStorage.setItem("editingNoteId", savedNote.id);
+
+        fileName.textContent = savedNote.title || "Untitled";
+
+        showStatus("Saved successfully!", true);
+
+        window.location.href = "notes-board.html";
+
+      } catch (error) {
+        console.error(error);
+        showStatus("Could not save note. Make sure backend is running.", false);
+      }
+    }
+
+    noteEditor.addEventListener("input", () => {
+      updateWordCount();
     });
 
-    function saveNotes() {
-      if (!currentNoteId) currentNoteId = generateId();
-      const note = {
-        id: currentNoteId,
-        title: noteTitleInput.value.trim() || 'Untitled',
-        content: noteEditor.value,
-        course: courseSelect.value,
-        updatedAt: Date.now(),
-      };
-      saveNote(note);
-      fileName.textContent = note.title;
-      showStatus('Saved successfully!', true);
-      window.location.href = 'notes-board.html';
-    }
-
-    let autoSaveTimer;
-    function scheduleAutoSave() {
-      clearTimeout(autoSaveTimer);
-      statusMsg.textContent = 'Saving...';
-      statusMsg.className = 'status-msg';
-      autoSaveTimer = setTimeout(() => {
-        if (!currentNoteId) currentNoteId = generateId();
-        const note = {
-          id: currentNoteId,
-          title: noteTitleInput.value.trim() || 'Untitled',
-          content: noteEditor.value,
-          course: courseSelect.value,
-          updatedAt: Date.now(),
-        };
-        saveNote(note);
-        fileName.textContent = note.title;
-        showStatus('Auto-saved ✓', true);
-      }, 1000);
-    }
-
-    noteEditor.addEventListener('input', () => { scheduleAutoSave(); updateWordCount(); });
-    noteTitleInput.addEventListener('input', scheduleAutoSave);
-
     function clearNotes() {
-      if (confirm('Clear all content in this note?')) {
-        noteEditor.value = '';
+      if (confirm("Clear all content in this note?")) {
+        noteEditor.value = "";
         updateWordCount();
-        showStatus('Content cleared.');
+        showStatus("Content cleared.");
       }
     }
 
     function askDelete() {
-      const title = noteTitleInput.value.trim() || 'Untitled';
-      document.getElementById('deleteModalMsg').textContent =
+      const title = noteTitleInput.value.trim() || "Untitled";
+
+      document.getElementById("deleteModalMsg").textContent =
         `Are you sure you want to delete "${title}"? This cannot be undone.`;
-      document.getElementById('deleteModal').classList.add('active');
+
+      document.getElementById("deleteModal").classList.add("active");
     }
-    function closeModal() { document.getElementById('deleteModal').classList.remove('active'); }
-    function confirmDelete() {
-      if (currentNoteId) deleteNote(currentNoteId);
-      localStorage.removeItem('sss_editing_id');
-      window.location.href = 'notes-board.html';
+
+    function closeModal() {
+      document.getElementById("deleteModal").classList.remove("active");
+    }
+
+    async function confirmDelete() {
+      if (!currentNoteId) {
+        window.location.href = "notes-board.html";
+        return;
+      }
+
+      try {
+        await fetch(`${API_BASE}/notes/${currentNoteId}`, {
+          method: "DELETE"
+        });
+
+        localStorage.removeItem("editingNoteId");
+        window.location.href = "notes-board.html";
+
+      } catch (error) {
+        console.error(error);
+        showStatus("Could not delete note.", false);
+      }
     }
 
     function goBack() {
-      saveNotes();
-      localStorage.removeItem('sss_editing_id');
-      window.location.href = 'notes-board.html';
+      localStorage.removeItem("editingNoteId");
+      window.location.href = "notes-board.html";
     }
+
     function goManageCourses() {
-      saveNotes();
-      localStorage.removeItem('sss_editing_id');
-      window.location.href = 'notes-board.html';
+      window.location.href = "coursedashboard.html";
     }
 
     function showStatus(msg, success = false) {
       statusMsg.textContent = msg;
-      statusMsg.className = 'status-msg' + (success ? ' saved' : '');
-      setTimeout(() => { statusMsg.textContent = ''; statusMsg.className = 'status-msg'; }, 3000);
+      statusMsg.className = "status-msg" + (success ? " saved" : "");
+
+      setTimeout(() => {
+        statusMsg.textContent = "";
+        statusMsg.className = "status-msg";
+      }, 3000);
     }
+
+    window.addEventListener("load", loadExistingNote);
   </script>
 
 </body>

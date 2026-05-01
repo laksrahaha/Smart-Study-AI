@@ -76,11 +76,45 @@ app.MapPost("/api/courses", async (ApplicationDbContext db, Course course) =>
 app.MapGet("/api/users", async (ApplicationDbContext db) =>
     await db.Users.ToListAsync());
 
+app.MapGet("/api/users/{id}", async (ApplicationDbContext db, int id) =>
+{
+    var user = await db.Users.FindAsync(id);
+
+    if (user == null)
+    {
+        return Results.NotFound(new { error = "User not found." });
+    }
+
+    return Results.Ok(user);
+});
+
 app.MapPost("/api/users", async (ApplicationDbContext db, User user) =>
 {
     db.Users.Add(user);
     await db.SaveChangesAsync();
     return Results.Created($"/api/users/{user.Id}", user);
+});
+
+app.MapPut("/api/users/{id}", async (ApplicationDbContext db, int id, User updatedUser) =>
+{
+    var user = await db.Users.FindAsync(id);
+
+    if (user == null)
+    {
+        return Results.NotFound(new { error = "User not found." });
+    }
+
+    user.Username = updatedUser.Username;
+    user.Email = updatedUser.Email;
+
+    if (!string.IsNullOrWhiteSpace(updatedUser.PasswordHash))
+    {
+        user.PasswordHash = updatedUser.PasswordHash;
+    }
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok(user);
 });
 
 // API endpoints for Notes

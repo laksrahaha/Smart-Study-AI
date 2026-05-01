@@ -64,8 +64,23 @@
 
         .settings-subtitle {
             color: #5d6678;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
             line-height: 1.5;
+        }
+
+        .current-user-box {
+            background: #f7f8ff;
+            border: 1px solid rgba(124, 109, 240, 0.16);
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 22px;
+            color: #5d6678;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .current-user-box strong {
+            color: #202842;
         }
 
         .setting-item {
@@ -214,8 +229,13 @@
     <main class="settings-container">
         <h2>Account Settings</h2>
         <p class="settings-subtitle">
-            Update your profile, study preferences, password, and display settings.
+            Update the account details for the user currently logged in.
         </p>
+
+        <div class="current-user-box">
+            <p><strong>Logged in as:</strong> <span id="currentUsername">Loading...</span></p>
+            <p><strong>Email:</strong> <span id="currentEmail">Loading...</span></p>
+        </div>
 
         <div class="setting-item" onclick="openModal('profileModal')">
             👤 Profile Settings
@@ -240,7 +260,7 @@
         <div class="modal-content">
             <h3>Profile Settings</h3>
 
-            <input type="text" id="name" placeholder="Full Name">
+            <input type="text" id="name" placeholder="Username">
             <input type="email" id="email" placeholder="Email">
 
             <div class="modal-buttons">
@@ -305,6 +325,53 @@
     </div>
 
     <script>
+        const API_BASE = "http://localhost:5095/api";
+        let currentUser = null;
+
+        function getUserId() {
+            return Number(localStorage.getItem("userId") || "1");
+        }
+
+        async function loadCurrentUser() {
+            const userId = getUserId();
+
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}`);
+
+                if (!response.ok) {
+                    throw new Error("Could not load user.");
+                }
+
+                currentUser = await response.json();
+
+                const username = currentUser.username || "";
+                const email = currentUser.email || "";
+
+                document.getElementById("currentUsername").textContent = username || "Unknown";
+                document.getElementById("currentEmail").textContent = email || "Unknown";
+
+                document.getElementById("name").value = username;
+                document.getElementById("email").value = email;
+
+                localStorage.setItem("username", username);
+                localStorage.setItem("email", email);
+
+            } catch (error) {
+                console.error(error);
+
+                const fallbackName = localStorage.getItem("username") || "Student";
+                const fallbackEmail = localStorage.getItem("email") || "Not available";
+
+                document.getElementById("currentUsername").textContent = fallbackName;
+                document.getElementById("currentEmail").textContent = fallbackEmail;
+
+                document.getElementById("name").value = fallbackName;
+                document.getElementById("email").value = fallbackEmail;
+
+                showStatus("Could not load database user. Showing browser details.");
+            }
+        }
+
         function openModal(id) {
             document.getElementById(id).classList.add("active");
         }
@@ -321,27 +388,56 @@
 
             setTimeout(() => {
                 status.textContent = "";
-            }, 2500);
+            }, 3500);
         }
 
-        function saveProfile() {
+        async function saveProfile() {
             const name = document.getElementById("name").value.trim();
             const email = document.getElementById("email").value.trim();
 
             if (!name || !email) {
-                showStatus("Please fill in profile name and email.");
+                showStatus("Please fill in username and email.");
                 return;
             }
 
-            localStorage.setItem("profile", JSON.stringify({ name, email }));
-            localStorage.setItem("username", name);
-            localStorage.setItem("email", email);
+            const updatedUser = {
+                id: getUserId(),
+                username: name,
+                email: email,
+                passwordHash: currentUser ? (currentUser.passwordHash || "") : ""
+            };
 
-            closeModal();
-            showStatus("Profile settings saved.");
+            try {
+                const response = await fetch(`${API_BASE}/users/${getUserId()}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedUser)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Could not update profile.");
+                }
+
+                currentUser = await response.json();
+
+                localStorage.setItem("username", name);
+                localStorage.setItem("email", email);
+
+                document.getElementById("currentUsername").textContent = name;
+                document.getElementById("currentEmail").textContent = email;
+
+                closeModal();
+                showStatus("Profile updated in database.");
+
+            } catch (error) {
+                console.error(error);
+                showStatus("Could not save profile to database.");
+            }
         }
 
-        function savePassword() {
+        async function savePassword() {
             const password = document.getElementById("newPassword").value;
             const confirm = document.getElementById("confirmPassword").value;
             const message = document.getElementById("passwordMessage");
@@ -364,15 +460,43 @@
                 return;
             }
 
-            localStorage.setItem("password", password);
+            const username = currentUser ? (currentUser.username || localStorage.getItem("username") || "Student") : localStorage.getItem("username") || "Student";
+            const email = currentUser ? (currentUser.email || localStorage.getItem("email") || "") : localStorage.getItem("email") || "";
 
-            message.className = "success-text";
-            message.textContent = "Password updated.";
+            const updatedUser = {
+                id: getUserId(),
+                username: username,
+                email: email,
+                passwordHash: password
+            };
 
-            setTimeout(() => {
-                closeModal();
-                showStatus("Password updated.");
-            }, 700);
+            try {
+                const response = await fetch(`${API_BASE}/users/${getUserId()}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedUser)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Could not update password.");
+                }
+
+                currentUser = await response.json();
+
+                message.className = "success-text";
+                message.textContent = "Password updated in database.";
+
+                setTimeout(() => {
+                    closeModal();
+                    showStatus("Password updated in database.");
+                }, 800);
+
+            } catch (error) {
+                console.error(error);
+                message.textContent = "Could not update password in database.";
+            }
         }
 
         function saveStudy() {
@@ -381,7 +505,7 @@
             localStorage.setItem("studyLevel", studyLevel);
 
             closeModal();
-            showStatus("Study preference saved.");
+            showStatus("Study preference saved for this browser.");
         }
 
         function saveTextSize() {
@@ -394,27 +518,15 @@
             showStatus("Text size saved.");
         }
 
-        function loadSavedSettings() {
-            const profile = JSON.parse(localStorage.getItem("profile") || "{}");
-
-            if (profile.name) {
-                document.getElementById("name").value = profile.name;
-            } else if (localStorage.getItem("username")) {
-                document.getElementById("name").value = localStorage.getItem("username");
-            }
-
-            if (profile.email) {
-                document.getElementById("email").value = profile.email;
-            } else if (localStorage.getItem("email")) {
-                document.getElementById("email").value = localStorage.getItem("email");
-            }
-
+        function loadLocalDisplaySettings() {
             const savedStudyLevel = localStorage.getItem("studyLevel");
+
             if (savedStudyLevel) {
                 document.getElementById("studyLevel").value = savedStudyLevel;
             }
 
             const savedSize = localStorage.getItem("textSize");
+
             if (savedSize) {
                 document.documentElement.style.fontSize = savedSize + "px";
                 document.getElementById("textSizeSelect").value = savedSize;
@@ -425,7 +537,10 @@
             document.documentElement.style.fontSize = this.value + "px";
         });
 
-        window.addEventListener("DOMContentLoaded", loadSavedSettings);
+        window.addEventListener("DOMContentLoaded", () => {
+            loadLocalDisplaySettings();
+            loadCurrentUser();
+        });
     </script>
 
 </body>

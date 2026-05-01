@@ -120,16 +120,47 @@
     <script>
         const API_BASE = 'http://localhost:5095/api';
 
+        // ==================== Database Service Functions ====================
+        // These functions interact with the backend API endpoints
+
+        /**
+         * Loads all data (users and courses) from the database
+         */
         async function loadData() {
             await Promise.all([loadUsers(), loadCourses()]);
         }
 
+        /**
+         * Fetches all users from the database via API
+         * @returns {Promise<Array>} Array of user objects
+         */
+        async function fetchUsersFromDatabase() {
+            const response = await fetch(`${API_BASE}/users`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+            return await response.json();
+        }
+
+        /**
+         * Fetches all courses from the database via API
+         * @returns {Promise<Array>} Array of course objects with user data
+         */
+        async function fetchCoursesFromDatabase() {
+            const response = await fetch(`${API_BASE}/courses`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch courses');
+            }
+            return await response.json();
+        }
+
+        // ==================== UI Rendering Functions ====================
+
         async function loadUsers() {
             const container = document.getElementById('users-container');
             try {
-                const response = await fetch(`${API_BASE}/users`);
-                if (!response.ok) throw new Error('Failed to fetch users');
-                const users = await response.json();
+                // Use the database service function
+                const users = await fetchUsersFromDatabase();
                 
                 if (users.length === 0) {
                     container.innerHTML = '<p class="loading">No users found in database.</p>';
@@ -152,9 +183,8 @@
         async function loadCourses() {
             const container = document.getElementById('courses-container');
             try {
-                const response = await fetch(`${API_BASE}/courses`);
-                if (!response.ok) throw new Error('Failed to fetch courses');
-                const courses = await response.json();
+                // Use the database service function
+                const courses = await fetchCoursesFromDatabase();
                 
                 if (courses.length === 0) {
                     container.innerHTML = '<p class="loading">No courses found in database.</p>';

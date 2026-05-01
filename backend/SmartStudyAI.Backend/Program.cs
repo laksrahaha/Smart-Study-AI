@@ -1,12 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using SmartStudyAI.Backend.Data;
 using SmartStudyAI.Backend.Models;
+using SmartStudyAI.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Auto-migrate database on startup
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register DatabaseService
+builder.Services.AddScoped<DatabaseService>();
 
 // Add CORS
 builder.Services.AddCors(options =>

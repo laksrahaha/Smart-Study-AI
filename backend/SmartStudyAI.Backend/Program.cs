@@ -3,6 +3,7 @@ using SmartStudyAI.Backend.Data;
 using SmartStudyAI.Backend.Models;
 using SmartStudyAI.Backend.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Auto-migrate database on startup
@@ -11,6 +12,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Register DatabaseService
 builder.Services.AddScoped<DatabaseService>();
+builder.Services.AddScoped<GeminiService>();
+
 
 // Add controllers for controller files like FileUploadController
 builder.Services.AddControllers();
@@ -216,5 +219,5 @@ app.MapGet("/api/fileupload", async (ApplicationDbContext db) =>
     await db.UploadFileRecords
         .OrderByDescending(file => file.UploadedAt)
         .ToListAsync());
-
+app.MapControllers();
 app.Run();

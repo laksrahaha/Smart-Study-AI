@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contextual Translation – Super Smart Study Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --grad-start: #2d2d2d;
+      --grad-end: #4e73df;
+      --accent: #4e73df;
+      --accent-dark: #3a5bbf;
+      --border: rgba(255,255,255,0.15);
+      --shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 16px 36px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      gap: 14px;
+    }
+    .nav-logo { width: 36px; height: 36px; object-fit: contain; }
+    .nav-brand { font-size: 15px; font-weight: 800; letter-spacing: 1.5px; flex: 1; color: #fff; opacity: 0.95; }
+    .nav-back {
+      font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;
+      cursor: pointer; padding: 6px 14px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.25); transition: all 0.2s;
+    }
+    .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1; padding: 44px 32px 60px;
+      display: flex; flex-direction: column; align-items: center;
+      animation: fadeUp 0.6s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-wrapper { width: 100%; max-width: 980px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── HEADER ── */
+    .header-row { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .header-titles h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400; letter-spacing: 1px; line-height: 1;
+      color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+    .header-titles .subtitle { font-size: 0.88rem; color: rgba(255,255,255,0.6); margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; }
+
+    /* ── CONTROLS CARD ── */
+    .controls-card {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .action-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      background: #fff; color: #1a1a2e; border: none;
+      padding: 10px 22px; font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem; font-weight: 800; cursor: pointer;
+      border-radius: 10px; letter-spacing: 0.3px;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.22); background: #f0f4ff; }
+    .btn:active { transform: translateY(0); }
+
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: var(--accent-dark); color: #fff; }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.12); color: #fff;
+      box-shadow: none; border: 1px solid rgba(255,255,255,0.25);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.22); color: #fff; }
+
+    #fileInput { display: none; }
+
+    /* ── LANGUAGE SELECTOR ── */
+    .lang-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .lang-label { font-size: 0.88rem; font-weight: 700; color: rgba(255,255,255,0.8); }
+
+    select {
+      padding: 9px 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 10px;
+      color: #fff; font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem; font-weight: 700;
+      outline: none; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    select:focus { border-color: rgba(255,255,255,0.5); }
+    select option { background: #2d2d2d; color: #fff; }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.25);
+      border-radius: 14px; padding: 36px 24px;
+      text-align: center; cursor: pointer;
+      transition: all 0.2s; background: rgba(255,255,255,0.05);
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.10);
+    }
+    .upload-icon { font-size: 2.4rem; margin-bottom: 10px; }
+    .upload-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+    .upload-sub { font-size: 0.82rem; color: rgba(255,255,255,0.5); font-weight: 600; }
+
+    /* ── DOCUMENT AREA ── */
+    .doc-section { display: none; flex-direction: column; gap: 14px; }
+    .doc-section.visible { display: flex; }
+
+    .doc-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .doc-filename {
+      font-size: 0.9rem; font-weight: 800;
+      color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 8px;
+    }
+
+    .doc-area {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px 32px;
+      font-size: 1rem; line-height: 2;
+      min-height: 280px; max-height: 480px;
+      overflow-y: auto; color: rgba(255,255,255,0.92);
+      backdrop-filter: blur(6px);
+    }
+
+    /* scrollbar */
+    .doc-area::-webkit-scrollbar { width: 6px; }
+    .doc-area::-webkit-scrollbar-track { background: transparent; }
+    .doc-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+    /* ── HIGHLIGHTED VOCAB ── */
+    .vocab {
+      background: rgba(255, 210, 60, 0.35);
+      border-bottom: 2px solid #ffd23c;
+      cursor: pointer; padding: 1px 3px;
+      border-radius: 3px; transition: background 0.15s;
+    }
+    .vocab:hover, .vocab.active { background: rgba(255, 210, 60, 0.55); }
+
+    /* ── NORMAL CLICKABLE WORDS ── */
+    .word {
+      cursor: pointer; padding: 1px 2px;
+      border-radius: 3px; transition: background 0.12s;
+    }
+    .word:hover { background: rgba(255,255,255,0.15); }
+    .word.active { background: rgba(255,255,255,0.2); }
+
+    /* ── TIP ── */
+    .tip {
+      font-size: 0.82rem; color: rgba(255,255,255,0.45);
+      font-weight: 600; display: flex; align-items: center; gap: 6px;
+    }
+    .tip-highlight {
+      display: inline-block;
+      background: rgba(255, 210, 60, 0.35);
+      border-bottom: 2px solid #ffd23c;
+      padding: 1px 6px; border-radius: 3px;
+    }
+
+    /* ── POPUP ── */
+    .popup {
+      display: none; position: fixed; z-index: 999;
+      background: rgba(20,20,40,0.97);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #f5f3ee; border-radius: 16px;
+      width: 300px; height: 220px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+      backdrop-filter: blur(16px);
+      animation: popIn 0.18s ease;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── POPUP HEADER ── */
+    .popup-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+    .popup-word {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+    }
+    .popup-close {
+      background: none; border: none; color: rgba(255,255,255,0.4);
+      font-size: 1rem; cursor: pointer; padding: 2px 4px;
+      transition: color 0.15s; line-height: 1;
+    }
+    .popup-close:hover { color: #fff; }
+
+    /* ── PAGES CONTAINER ── */
+    .popup-pages {
+      display: flex; flex-direction: column;
+      overflow-y: scroll; flex: 1;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+    }
+    .popup-pages::-webkit-scrollbar { display: none; }
+
+    /* ── SINGLE PAGE ── */
+    .popup-page {
+      flex-shrink: 0; height: 162px;
+      scroll-snap-align: start;
+      padding: 14px 18px;
+      display: flex; flex-direction: column; justify-content: center;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .popup-page:last-child { border-bottom: none; }
+
+    .popup-label {
+      font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 1.2px; color: rgba(255,255,255,0.4);
+      font-weight: 800; margin-bottom: 8px;
+    }
+    .popup-text {
+      font-size: 0.9rem; line-height: 1.55;
+      color: rgba(255,255,255,0.88); font-weight: 600;
+    }
+    .popup-loading {
+      font-size: 0.85rem; color: rgba(255,255,255,0.35);
+      font-style: italic; font-weight: 400;
+    }
+
+    /* ── SCROLL DOTS INDICATOR ── */
+    .popup-dots {
+      display: flex; justify-content: center; gap: 5px;
+      padding: 6px 0; flex-shrink: 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .popup-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(255,255,255,0.25); transition: background 0.2s;
+    }
+    .popup-dot.active { background: rgba(255,255,255,0.85); }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 0.8rem; font-weight: 800;
+      color: rgba(255,255,255,0.85);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
+    <span class="nav-brand">Super Smart Study Assistant</span>
+    <a class="nav-back" href="dashboard.html">← Dashboard</a>
+  </nav>
+
+  <!-- Main -->
+  <main>
+    <div class="page-wrapper">
+
+      <!-- Header -->
+      <div class="header-row">
+        <div class="header-titles">
+          <h1>📖 Contextual Translation</h1>
+          <div class="subtitle">Upload your document — complex vocabulary is highlighted automatically</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-card">
+        <div class="action-row">
+          <button class="btn btn-accent" onclick="document.getElementById('fileInput').click()">
+            📂 Upload Document
+          </button>
+          <button class="btn btn-ghost" onclick="loadSample()">✨ Load Sample Text</button>
+          <button class="btn btn-ghost" id="clearBtn" onclick="clearDoc()" style="display:none">🗑 Clear</button>
+          <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" />
+        </div>
+
+        <div class="lang-row">
+          <span class="lang-label">🌍 Translate to:</span>
+          <select id="targetLang">
+            <option value="zh">Chinese (中文)</option>
+            <option value="es">Spanish (Español)</option>
+            <option value="fr">French (Français)</option>
+            <option value="ja">Japanese (日本語)</option>
+            <option value="ko">Korean (한국어)</option>
+            <option value="ar">Arabic (العربية)</option>
+            <option value="hi">Hindi (हिन्दी)</option>
+            <option value="de">German (Deutsch)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Upload Zone (shown when no doc loaded) -->
+      <div class="upload-zone" id="uploadZone"
+           onclick="document.getElementById('fileInput').click()"
+           ondragover="event.preventDefault(); this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <div class="upload-icon">📄</div>
+        <div class="upload-title">Drop your file here or click to browse</div>
+        <div class="upload-sub">Supports .txt files &nbsp;·&nbsp; or use "Load Sample Text"</div>
+      </div>
+
+      <!-- Document Section (shown after upload) -->
+      <div class="doc-section" id="docSection">
+
+        <div class="doc-header">
+          <div class="doc-filename" id="docFilename">📄 document.txt</div>
+          <div class="stats-bar">
+            <span class="stat-chip" id="wordCountChip">0 words</span>
+            <span class="stat-chip" id="vocabCountChip">0 vocab highlighted</span>
+          </div>
+        </div>
+
+        <div class="doc-area" id="docArea"></div>
+
+        <div class="tip">
+          💡 <span class="tip-highlight">Highlighted words</span> are complex vocabulary — click any to see definition and translation
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Popup -->
+  <div class="popup" id="popup">
+    <!-- Header: word + close -->
+    <div class="popup-header">
+      <div class="popup-word" id="popupWord"></div>
+      <button class="popup-close" onclick="closePopup()">✕</button>
+    </div>
+
+    <!-- Scrollable pages -->
+    <div class="popup-pages" id="popupPages">
+      <!-- Page 1: Translation (always shown) -->
+      <div class="popup-page">
+        <div class="popup-label">🌍 Translation</div>
+        <div class="popup-text" id="popupTranslation"><span class="popup-loading">Translating...</span></div>
+      </div>
+      <!-- Page 2: Definition (vocab only) -->
+      <div class="popup-page" id="popupDefPage">
+        <div class="popup-label">📖 Definition</div>
+        <div class="popup-text" id="popupDefinition"></div>
+      </div>
+      <!-- Page 3: Context -->
+      <div class="popup-page">
+        <div class="popup-label">📌 Context</div>
+        <div class="popup-text" id="popupContext"></div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator dots -->
+    <div class="popup-dots" id="popupDots"></div>
+  </div>
+
+  <script>
+    // ── LOCAL DICTIONARY ──
+    const localDictionary = {
+      "photosynthesis":    "The process by which plants convert sunlight into food using CO₂ and water.",
+      "mitosis":           "A type of cell division resulting in two genetically identical daughter cells.",
+      "osmosis":           "The movement of water molecules through a semipermeable membrane.",
+      "algorithm":         "A step-by-step procedure or set of rules for solving a problem.",
+      "recursion":         "A method where a function calls itself to solve a smaller version of a problem.",
+      "hypothesis":        "A proposed explanation based on limited evidence, as a starting point for investigation.",
+      "catalyst":          "A substance that increases the rate of a chemical reaction without being consumed.",
+      "genome":            "The complete set of genetic material in an organism.",
+      "entropy":           "A measure of disorder or randomness in a system.",
+      "equilibrium":       "A state of balance between opposing forces or processes.",
+      "neurotransmitter":  "A chemical messenger that transmits signals between nerve cells.",
+      "polymer":           "A large molecule made up of repeating structural units called monomers.",
+      "semiconductor":     "A material with electrical conductivity between a conductor and an insulator.",
+      "isotope":           "Atoms of the same element with different numbers of neutrons.",
+      "electrode":         "A conductor through which electricity enters or leaves a substance.",
+      "metabolism":        "The chemical processes that occur in a living organism to maintain life.",
+      "chromosome":        "A thread-like structure that carries genetic information in the form of genes.",
+      "diffusion":         "The movement of particles from an area of high concentration to low concentration.",
+      "oxidation":         "A chemical reaction in which a substance loses electrons.",
+      "amplitude":         "The maximum displacement of a wave from its resting position.",
+      "frequency":         "The number of occurrences of a repeating event per unit of time.",
+      "binary":            "A number system using only two digits: 0 and 1.",
+      "abstraction":       "The process of hiding complex details and showing only the essential features.",
+      "iteration":         "The repetition of a process in order to generate a sequence of outcomes.",
+      "decomposition":     "Breaking a complex problem down into smaller, more manageable parts.",
+    };
+
+    let rawText = '';
+
+    // ── HIGHLIGHT VOCAB + WRAP ALL WORDS AS CLICKABLE ──
+    function highlightVocab(text) {
+      return text.split('\n').map(line => {
+        return line.replace(/([a-zA-Z]+)|([^a-zA-Z]+)/g, (match, word, nonWord) => {
+          if (nonWord !== undefined) return nonWord;
+          const lower = word.toLowerCase();
+          const dictKey = Object.keys(localDictionary).find(k => lower === k || lower === k + 's');
+          if (dictKey) {
+            // Complex vocab: yellow highlight, data-word stores the dict key
+            return `<span class="vocab" data-word="${dictKey}" onclick="handleClick(this)">${word}</span>`;
+          } else {
+            // Normal word: no highlight, data-word stores lowercase word
+            return `<span class="word" data-word="${lower}" onclick="handleClick(this)">${word}</span>`;
+          }
+        });
+      }).join('<br>');
+    }
+
+    // ── LOAD TEXT INTO DOC AREA ──
+    function loadText(text, filename) {
+      rawText = text;
+      document.getElementById('uploadZone').style.display = 'none';
+      document.getElementById('clearBtn').style.display = 'inline-flex';
+
+      const section = document.getElementById('docSection');
+      section.classList.add('visible');
+
+      document.getElementById('docFilename').innerHTML = `📄 ${filename}`;
+      document.getElementById('docArea').innerHTML = highlightVocab(text);
+
+      // Stats
+      const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+      const vocabCount = document.querySelectorAll('.vocab').length;
+      document.getElementById('wordCountChip').textContent = `${wordCount} words`;
+      document.getElementById('vocabCountChip').textContent = `${vocabCount} vocab highlighted`;
+    }
+
+    // ── CLEAR DOC ──
+    function clearDoc() {
+      rawText = '';
+      document.getElementById('uploadZone').style.display = 'block';
+      document.getElementById('clearBtn').style.display = 'none';
+      document.getElementById('docSection').classList.remove('visible');
+      document.getElementById('fileInput').value = '';
+      closePopup();
+    }
+
+    // ── LOAD SAMPLE TEXT ──
+    function loadSample() {
+      const sample = `In biology, photosynthesis is the fundamental process by which plants convert light energy into chemical energy. The genome of a plant encodes specific enzymes that act as a catalyst for these reactions.
+
+Cell division occurs through mitosis, producing genetically identical cells. Meanwhile, osmosis regulates water movement across membranes, while diffusion allows substances to move from high to low concentration. Metabolism encompasses all these chemical processes that sustain life.
+
+Each chromosome carries genetic information, and isotopes of certain elements are used to trace biological processes. The oxidation of molecules releases energy used in metabolism.
+
+In physics, amplitude and frequency describe wave behaviour. Entropy measures disorder in a system, and equilibrium is achieved when opposing forces balance. Semiconductor materials are critical in modern electronics.
+
+In computer science, an algorithm solves problems step-by-step. Recursion, decomposition, abstraction, and iteration are core concepts in computational thinking. Binary is the foundational number system of all digital computers.`;
+
+      loadText(sample, 'sample-scientific-text.txt');
+    }
+
+    // ── FILE UPLOAD ──
+    document.getElementById('fileInput').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => loadText(ev.target.result, file.name);
+      reader.readAsText(file);
+    });
+
+    // ── DRAG AND DROP ──
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('uploadZone').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => loadText(ev.target.result, file.name);
+      reader.readAsText(file);
+    }
+
+    // ── CLICK ON ANY WORD ──
+    async function handleClick(el) {
+      const word = el.dataset.word;
+      if (!word) return;
+
+      document.querySelectorAll('.vocab, .word').forEach(v => v.classList.remove('active'));
+      el.classList.add('active');
+      const isVocab = el.classList.contains('vocab');
+
+      const rect = el.getBoundingClientRect();
+      const popup = document.getElementById('popup');
+      popup.style.display = 'flex';
+
+      // Reset scroll to top (page 1)
+      const pages = document.getElementById('popupPages');
+      pages.scrollTop = 0;
+
+      // Position popup
+      let top = window.scrollY + rect.bottom + 10;
+      let left = rect.left;
+      if (left + 310 > window.innerWidth) left = window.innerWidth - 318;
+      if (top + 240 > window.scrollY + window.innerHeight) top = window.scrollY + rect.top - 240;
+      popup.style.top  = top + 'px';
+      popup.style.left = Math.max(10, left) + 'px';
+
+      // Word title
+      document.getElementById('popupWord').textContent =
+        word.charAt(0).toUpperCase() + word.slice(1);
+
+      // Show/hide definition page
+      const defPage = document.getElementById('popupDefPage');
+      if (isVocab) {
+        const def = localDictionary[word] || 'Definition not available.';
+        document.getElementById('popupDefinition').textContent = def;
+        defPage.style.display = 'flex';
+      } else {
+        defPage.style.display = 'none';
+      }
+
+      // Context sentence
+      document.getElementById('popupContext').textContent = getSentence(word);
+
+      // Translation
+      document.getElementById('popupTranslation').innerHTML = '<span class="popup-loading">Translating...</span>';
+      setupDots(isVocab);
+      const translation = await fetchTranslation(word);
+      document.getElementById('popupTranslation').textContent = translation;
+    }
+
+    // ── SCROLL DOTS ──
+    function setupDots(isVocab) {
+      const dotsEl = document.getElementById('popupDots');
+      const count = isVocab ? 3 : 2;
+      dotsEl.innerHTML = Array.from({length: count}, (_, i) =>
+        `<div class="popup-dot ${i === 0 ? 'active' : ''}" id="dot${i}"></div>`
+      ).join('');
+
+      // Update dots on scroll
+      const pages = document.getElementById('popupPages');
+      pages.onscroll = () => {
+        const pageHeight = pages.clientHeight;
+        const currentPage = Math.round(pages.scrollTop / pageHeight);
+        dotsEl.querySelectorAll('.popup-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === currentPage);
+        });
+      };
+    }
+
+    // ── GET SURROUNDING SENTENCE ──
+    function getSentence(word) {
+      const sentences = rawText.split(/(?<=[.!?])\s+/);
+      const match = sentences.find(s => s.toLowerCase().includes(word.toLowerCase()));
+      return match ? match.trim() : 'No context found.';
+    }
+
+    // ── FETCH TRANSLATION ──
+    async function fetchTranslation(word) {
+      const lang = document.getElementById('targetLang').value;
+
+      // Always try MyMemory directly (reliable fallback)
+      // If C# backend is running, try it first
+      const isLocalServer = window.location.protocol !== 'file:';
+
+      if (isLocalServer) {
+        try {
+          const res = await fetch(`/api/translate?word=${encodeURIComponent(word)}&target=${lang}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.translation) return data.translation;
+          }
+        } catch { /* fall through to direct API */ }
+      }
+
+      // Direct MyMemory API call
+      try {
+        const res = await fetch(
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|${lang}`
+        );
+        if (!res.ok) throw new Error('API error');
+        const json = await res.json();
+        const translated = json.responseData?.translatedText;
+        // MyMemory sometimes returns the original word if it can't translate
+        if (translated && translated.toLowerCase() !== word.toLowerCase()) {
+          return translated;
+        }
+        return `(${word})`;
+      } catch (err) {
+        return 'Translation unavailable.';
+      }
+    }
+
+    // ── CLOSE POPUP ──
+    function closePopup() {
+      const popup = document.getElementById('popup');
+      popup.style.display = 'none';
+      document.querySelectorAll('.vocab, .word').forEach(v => v.classList.remove('active'));
+    }
+
+    document.addEventListener('click', function(e) {
+      const popup = document.getElementById('popup');
+      if (!e.target.classList.contains('vocab') &&
+          !e.target.classList.contains('word') &&
+          !popup.contains(e.target)) {
+        closePopup();
+      }
+    });
+  </script>
+
+</body>
+</html>

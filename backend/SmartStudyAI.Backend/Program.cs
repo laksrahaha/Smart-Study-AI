@@ -4,6 +4,7 @@ using SmartStudyAI.Backend.Models;
 using SmartStudyAI.Backend.Services;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Auto-migrate database on startup
@@ -14,6 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddScoped<GeminiService>();
 
+// Translation
+builder.Services.AddHttpClient();
 
 // Add controllers for controller files like FileUploadController
 builder.Services.AddControllers();
@@ -63,6 +66,64 @@ app.MapControllers();
 
 // Existing endpoint
 app.MapGet("/", () => "Hello World!");
+
+// GET /api/translate?word=photosynthesis&target=zh
+// ─────────────────────────────────────────
+app.MapGet("/api/translate", async (
+    string word,
+    string target,
+    IHttpClientFactory httpClientFactory) =>
+{
+    if (string.IsNullOrWhiteSpace(word))
+        return Results.BadRequest(new { error = "Word is required." });
+
+    var allowedLanguages = new[] { "zh", "es", "fr", "ja", "ko", "ar", "hi", "de" };
+    if (!allowedLanguages.Contains(target))
+        return Results.BadRequest(new { error = "Unsupported target language." });
+
+    try
+    {
+        var client = httpClientFactory.CreateClient();
+        var url = $"https://api.mymemory.translated.net/get" +
+                  $"?q={Uri.EscapeDataString(word)}" +
+                  $"&langpair=en|{target}";
+
+        var response = await client.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+            return Results.StatusCode(502);
+
+        var json = await response.Content.ReadAsStringAsync();
+        var parsed = System.Text.Json.JsonDocument.Parse(json);
+        var root = parsed.RootElement;
+
+        var translatedText = root
+            .GetProperty("responseData")
+            .GetProperty("translatedText")
+            .GetString();
+
+        var responseStatus = root.GetProperty("responseStatus").GetInt32();
+
+        if (responseStatus != 200 || string.IsNullOrEmpty(translatedText))
+            return Results.Ok(new { translation = "Translation unavailable." });
+
+        return Results.Ok(new
+        {
+            word        = word,
+            translation = translatedText,
+            targetLang  = target
+        });
+    }
+    catch (HttpRequestException)
+    {
+        return Results.StatusCode(503);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
+// ─────────────────────────────────────────
 
 // API endpoints for Courses
 app.MapGet("/api/courses", async (ApplicationDbContext db) =>

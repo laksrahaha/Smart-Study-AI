@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shared Note</title>
+    <style>
+        body {
+            font-family: Arial;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .container {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        h1 { color: #333; }
+        .content { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Loading...</h1>
+        <div class="content" id="content">Loading note...</div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+const shareToken = params.get('token');
+
+async function loadNote() {
+    const response = await fetch(`http://localhost:5095/api/notes/shared/${shareToken}`);
+    
+    if (!response.ok) {
+        document.getElementById('content').innerHTML = 'Note not found or expired';
+        return;
+    }
+    
+    const note = await response.json();
+    document.getElementById('title').textContent = note.title;
+    document.getElementById('content').innerHTML = note.content;
+}
+
+loadNote();
+        
+        loadNote();
+    </script>
+</body>
+</html>

@@ -545,6 +545,7 @@
           <input type="file" id="fileInput" accept=".txt" />
           <button class="btn btn-ghost" id="selectModeBtn" onclick="toggleSelectMode()">☑ Select</button>
           <button class="manage-courses-btn" onclick="openManageCourses()">⚙ Manage Courses</button>
+          
         </div>
 
         <!-- Selection bar (hidden until select mode) -->
@@ -781,40 +782,46 @@
     }
 
     function noteCard(note) {
-      const preview   = (note.content || "").trim().replace(/\s+/g, " ").slice(0, 130);
-      const date      = new Date(note.updatedAt).toLocaleDateString("en-NZ", { day:"numeric", month:"short", year:"numeric" });
-      const courseTag = note.courseName
-        ? `<span class="note-card-course">${escapeHtml(note.courseName)}</span>` : "";
-      const isSelected = selectedIds.has(note.id);
+  const preview   = (note.content || "").trim().replace(/\s+/g, " ").slice(0, 130);
+  const date      = new Date(note.updatedAt).toLocaleDateString("en-NZ", { day:"numeric", month:"short", year:"numeric" });
+  const courseTag = note.courseName
+    ? `<span class="note-card-course">${escapeHtml(note.courseName)}</span>` : "";
+  const isSelected = selectedIds.has(note.id);
 
-      const cardClasses = [
-        "note-card",
-        selectMode   ? "select-mode" : "",
-        isSelected   ? "selected"    : ""
-      ].filter(Boolean).join(" ");
+  const cardClasses = [
+    "note-card",
+    selectMode   ? "select-mode" : "",
+    isSelected   ? "selected"    : ""
+  ].filter(Boolean).join(" ");
 
-      const checkboxHtml = selectMode
-        ? `<div class="note-checkbox ${isSelected ? "checked" : ""}" onclick="toggleNoteSelect(${note.id}, event)"></div>`
-        : "";
+  const checkboxHtml = selectMode
+    ? `<div class="note-checkbox ${isSelected ? "checked" : ""}" onclick="toggleNoteSelect(${note.id}, event)"></div>`
+    : "";
 
-      const deleteBtn = !selectMode
-        ? `<button class="note-card-delete" onclick="event.stopPropagation(); askDelete(${note.id})" title="Delete">✕</button>`
-        : "";
+  const deleteBtn = !selectMode
+    ? `<button class="note-card-delete" onclick="event.stopPropagation(); askDelete(${note.id})" title="Delete">✕</button>`
+    : "";
 
-      const clickAction = selectMode
-        ? `toggleNoteSelect(${note.id}, event)`
-        : `openNote(${note.id})`;
+  // Add share button
+  const shareBtn = !selectMode
+    ? `<button class="note-card-delete" style="right:36px;" onclick="event.stopPropagation(); generateShareLink(${note.id})" title="Share">🔗</button>`
+    : "";
 
-      return `
-        <div class="${cardClasses}" onclick="${clickAction}">
-          ${checkboxHtml}
-          ${deleteBtn}
-          ${courseTag}
-          <div class="note-card-title">${escapeHtml(note.title || "Untitled")}</div>
-          <div class="note-card-preview">${escapeHtml(preview) || '<em style="color:#ccc">Empty note</em>'}</div>
-          <div class="note-card-meta">Last edited ${date}</div>
-        </div>`;
-    }
+  const clickAction = selectMode
+    ? `toggleNoteSelect(${note.id}, event)`
+    : `openNote(${note.id})`;
+
+  return `
+    <div class="${cardClasses}" onclick="${clickAction}">
+      ${checkboxHtml}
+      ${shareBtn}
+      ${deleteBtn}
+      ${courseTag}
+      <div class="note-card-title">${escapeHtml(note.title || "Untitled")}</div>
+      <div class="note-card-preview">${escapeHtml(preview) || '<em style="color:#ccc">Empty note</em>'}</div>
+      <div class="note-card-meta">Last edited ${date}</div>
+    </div>`;
+}
 
     // ── Select mode ────────────────────────────────────────────────
     function toggleSelectMode() {
@@ -926,12 +933,12 @@
       try {
         if (pendingDeleteId === "__selected__") {
           await Promise.all(
-            [...selectedIds].map(id => fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" }))
+            [...selectedIds].map(id => fetch(`${API_BASE}/notes/note/${id}`, { method: "DELETE" }))
           );
           selectedIds.clear();
           toggleSelectMode();
         } else {
-          await fetch(`${API_BASE}/notes/${pendingDeleteId}`, { method: "DELETE" });
+          await fetch(`${API_BASE}/notes/note/${pendingDeleteId}`, { method: "DELETE" });
         }
         pendingDeleteId = null;
         closeDeleteModal();
@@ -1081,6 +1088,10 @@
       }
     }
 
+    function generateShareId() {
+    return Math.random().toString(36).substring(2, 10);
+}
+
     function triggerDownload(blob, filename) {
       const url  = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -1091,6 +1102,20 @@
     }
 
     window.addEventListener("load", loadPageData);
+
+    async function generateShareLink(noteId) {
+    const response = await fetch(`http://localhost:5095/api/notes/${noteId}/share`, {
+        method: 'POST'
+    });
+    
+    const data = await response.json();
+    const shareLink = `${window.location.origin}/shared-note.html?token=${data.shareToken}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(shareLink);
+    alert('Share link copied: ' + shareLink);
+}
+    
   </script>
 
 </body>

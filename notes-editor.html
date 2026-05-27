@@ -406,6 +406,34 @@
       color: var(--text-light);
       font-weight: 700;
     }
+     /* Styling for AI summary output */
+    .summary-card {
+      background: #f7f8fc;
+      border: 2px solid #dfe5ff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 10px;
+    }
+
+    .summary-card h3 {
+      color: #4e73df;
+      margin-bottom: 14px;
+      font-size: 1.1rem;
+    }
+
+    #summaryLoading {
+      color: #666;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    #summaryResult {
+      color: #1a1a2e;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      font-weight: 600;
+    }
+
   </style>
 </head>
 
@@ -446,6 +474,11 @@
         <div class="editor-toolbar">
           <div class="toolbar-left">
             <button class="btn btn-primary" onclick="saveNotes()">💾 Save</button>
+            <!-- AI summarize button to generate quick study summaries -->
+            <button class="btn btn-outline" onclick="generateSummary()">
+               ✨ AI Summarize
+            </button>
+
             <button class="btn btn-outline" onclick="clearNotes()">Clear</button>
           </div>
 
@@ -455,7 +488,21 @@
         </div>
 
         <textarea id="noteEditor" placeholder="Start writing your notes here..."></textarea>
+         <!-- AI-generated summary section -->
+        <div id="summaryContainer" style="display:none;">
 
+        <div class="summary-card">
+            <h3>✨ AI Summary</h3>
+
+              <div id="summaryLoading" style="display:none;">
+              Generating AI summary...
+              </div>
+
+              <div id="summaryResult"></div>
+              </div>
+              </div>
+        
+        
         <div class="editor-meta">
           <span id="wordCount">0 words</span>
           <p class="status-msg" id="statusMsg"></p>
@@ -686,7 +733,57 @@
         statusMsg.className = "status-msg";
       }, 3000);
     }
+    // Sends note content to Gemini AI backend and displays summary
+    async function generateSummary() {
 
+     const content = noteEditor.value.trim();
+
+     if (!content) {
+     alert("Please write some notes first.");
+      return;
+       }
+
+     const summaryContainer = document.getElementById("summaryContainer");
+     const loading = document.getElementById("summaryLoading");
+     const result = document.getElementById("summaryResult");
+
+     summaryContainer.style.display = "block";
+     loading.style.display = "block";
+     result.innerHTML = "";
+ 
+    try {
+
+      // Call backend AI summarize endpoint
+      const response = await fetch(`${API_BASE}/AI/summarize`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+        },
+      body: JSON.stringify({
+      content: content
+        })
+           });
+
+      if (!response.ok) {
+      throw new Error("AI summary failed.");
+        }
+
+      const data = await response.json();
+
+      loading.style.display = "none";
+
+       result.innerHTML = data.result;
+
+      } catch (error) {
+
+      console.error(error);
+
+      loading.style.display = "none";
+
+      result.innerHTML =
+       "Could not generate AI summary. Make sure backend is running.";
+      }
+    }
     window.addEventListener("load", loadExistingNote);
   </script>
 

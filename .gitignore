@@ -44,3 +44,13 @@ temp/
 #Ignore these file so the cache changes wont affetct git
 obj/
 bin/
+
+# Build folders
+bin/
+obj/
+
+# Database
+*.db
+
+# Cache
+*.lscache

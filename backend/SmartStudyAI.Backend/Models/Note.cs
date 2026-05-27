@@ -16,6 +16,8 @@ namespace SmartStudyAI.Backend.Models
 
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
+        public string? ShareToken { get; set; }
+
         public User? User { get; set; }
 
         public Course? Course { get; set; }

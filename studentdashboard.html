@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Dashboard - Smart Study AI</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
 <style>
   * {
@@ -358,6 +360,200 @@
     box-shadow: none;
   }
 
+  .calendar-floating-icon {
+    position: fixed;
+    top: 165px;
+    right: 45px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #7c6df0;
+    color: white;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 30;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+  }
+ 
+  .calendar-popup {
+    display: none;
+    position: fixed;
+    top: 165px;
+    right: 45px;
+    width: 550px;
+    max-height: 600px;
+    background: white;
+    color: #202842;
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 14px 35px rgba(48, 56, 86, 0.22);
+    z-index: 31;
+    overflow-y: auto;
+  }
+ 
+  .calendar-popup.show-calendar {
+    display: block;
+  }
+ 
+  .calendar-popup #calendar-widget {
+    max-height: 550px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+ 
+  /* Event Form Styles */
+  .event-form {
+    border-top: 2px solid #e0e0e0;
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+ 
+  .event-form h4 {
+    margin-bottom: 14px;
+    color: #202842;
+    font-size: 16px;
+  }
+ 
+  .form-group {
+    margin-bottom: 12px;
+  }
+ 
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #202842;
+  }
+ 
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #cbd1e1;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+  }
+ 
+  .form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+ 
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #7c6df0;
+    box-shadow: 0 0 4px rgba(124, 109, 240, 0.3);
+  }
+ 
+  .form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+ 
+  .form-buttons button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+  }
+ 
+  .add-event-btn {
+    background: #7c6df0;
+    color: white;
+  }
+ 
+  .add-event-btn:hover {
+    background: #6757dc;
+  }
+ 
+  .cancel-event-btn {
+    background: #e0e0e0;
+    color: #202842;
+  }
+ 
+  .cancel-event-btn:hover {
+    background: #d0d0d0;
+  }
+ 
+  /* Event List Styles */
+  .events-list {
+    margin-top: 20px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+ 
+  .events-list h4 {
+    margin-bottom: 12px;
+    color: #202842;
+    font-size: 14px;
+  }
+ 
+  .event-item {
+    background: #f9f9f9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid #7c6df0;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+ 
+  .event-item-content {
+    flex: 1;
+  }
+ 
+  .event-item-title {
+    font-weight: bold;
+    color: #202842;
+    font-size: 13px;
+  }
+ 
+  .event-item-date {
+    font-size: 12px;
+    color: #5d6678;
+    margin-top: 3px;
+  }
+ 
+  .event-item-desc {
+    font-size: 12px;
+    color: #5d6678;
+    margin-top: 4px;
+    font-style: italic;
+  }
+ 
+  .delete-event-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+ 
+  .delete-event-btn:hover {
+    background: #e63946;
+  }
+ 
+  .no-events {
+    color: #5d6678;
+    font-size: 13px;
+    text-align: center;
+    padding: 20px 0;
+  }
+
   @media (max-width: 900px) {
     .dashboard-main {
       padding: 25px;
@@ -388,6 +584,11 @@
       right: 25px;
       width: calc(100% - 50px);
     }
+
+    .calendar-popup {
+      right: 25px;
+      width: calc(100% - 50px);
+    }
   }
 </style>
 </head>
@@ -409,6 +610,7 @@
     <a href="#" class="nav-link" onclick="goToTimer(); return false;">⏱️ Session Timer</a>
     <a href="account-settings.html" class="nav-link">⚙️ Account Settings</a>
     <a href="BasicWebsiteFileUpload.html" class="nav-link">📁 File Uploads</a>
+    <a href="Community.html" class="nav-link"> 💬 Neuron Network</a>
 
     <a href="login.html" class="nav-link logout-link">🚪 Logout</a>
   </aside>
@@ -439,6 +641,11 @@
 
     <section class="dashboard-panel">
 
+      <div class="calendar-card">
+ 
+      </div>
+      
+
       <section class="welcome-box">
         <h1>Welcome to Your Dashboard</h1>
         <p>
@@ -459,6 +666,12 @@
           <p>View and organise your saved study notes.</p>
         </div>
 
+        <div class="card" onclick="goToCommunity()">
+          <span>💬</span>
+          <h3>Neuron Network</h3>
+          <p>Ask questions, share answers, and help each other study.</p>
+        </div>
+
         <div class="card" onclick="goToQuiz()">
           <span>🧠</span>
           <h3>Quiz Dashboard</h3>
@@ -475,6 +688,46 @@
     </section>
 
     <button class="timer-floating-icon" onclick="toggleTimer()">⏱️</button>
+
+    <button class="calendar-floating-icon" onclick="toggleCalendar()">📅</button>
+
+    <div id="calendarPopup" class="calendar-popup">
+      
+      <button class="timer-close-btn" onclick="closeCalendar()">×</button>
+      
+      <div id="calendar-widget"></div>
+ 
+      <!-- EVENT FORM -->
+      <div class="event-form">
+        <h4>Add New Event</h4>
+        
+        <div class="form-group">
+          <label for="eventDate">Date</label>
+          <input type="date" id="eventDate" required>
+        </div>
+ 
+        <div class="form-group">
+          <label for="eventTitle">Event Title</label>
+          <input type="text" id="eventTitle" placeholder="e.g., Math Exam, Project Deadline" required>
+        </div>
+ 
+        <div class="form-group">
+          <label for="eventDescription">Description (optional)</label>
+          <textarea id="eventDescription" placeholder="Add notes about this event..."></textarea>
+        </div>
+ 
+        <div class="form-buttons">
+          <button class="add-event-btn" onclick="addEvent()">Add Event</button>
+          <button class="cancel-event-btn" onclick="closeCalendar()">Close</button>
+        </div>
+      </div>
+ 
+      <!-- EVENTS LIST -->
+      <div class="events-list">
+        <h4>Your Events</h4>
+        <div id="eventsList"></div>
+      </div>
+    </div>
 
     <div id="timerPopup" class="timer-popup">
       <button class="timer-close-btn" onclick="closeTimer()">×</button>
@@ -496,7 +749,7 @@
       document.getElementById("sidebar").classList.add("open-sidebar");
       document.getElementById("sidebarOverlay").classList.add("show-overlay");
     }
-
+  
     function closeSidebar() {
       document.getElementById("sidebar").classList.remove("open-sidebar");
       document.getElementById("sidebarOverlay").classList.remove("show-overlay");
@@ -516,6 +769,10 @@
 
     function goToQuiz() {
       window.location.href = "quizdashboard.html";
+    }
+
+    function goToCommunity() {
+      window.location.href = "community.html";
     }
 
     function goToTimer() {
@@ -603,6 +860,163 @@
     }
 
     updateTimerDisplay();
+
+    let calendar;
+    let calendarReady = false;
+    let events = []; // Store events locally
+ 
+    // Load events from localStorage on page load
+    function loadEvents() {
+      const stored = localStorage.getItem('calendarEvents');
+      if (stored) {
+        events = JSON.parse(stored);
+      }
+    }
+ 
+    // Save events to localStorage
+    function saveEvents() {
+      localStorage.setItem('calendarEvents', JSON.stringify(events));
+    }
+ 
+    // Initialize calendar and load events
+    document.addEventListener('DOMContentLoaded', function () {
+      loadEvents();
+ 
+      const el = document.getElementById('calendar-widget');
+ 
+      calendar = new FullCalendar.Calendar(el, {
+        initialView: 'dayGridMonth',
+        height: 'auto',
+        contentHeight: 'auto',
+        fixedWeekCount: false,
+        headerToolbar: {
+          left: 'prev,next',
+          center: 'title',
+          right: 'today'
+        },
+        events: events.map(event => ({
+          id: event.id,
+          title: event.title,
+          start: event.date,
+          extendedProps: {
+            description: event.description
+          }
+        })),
+        eventClick: function(info) {
+          showEventDetails(info.event);
+        }
+      });
+ 
+      // Set today's date in the date input
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('eventDate').value = today;
+ 
+      displayEvents();
+    });
+ 
+    function toggleCalendar() {
+      const popup = document.getElementById("calendarPopup");
+      popup.classList.toggle("show-calendar");
+ 
+      if (!calendarReady) {
+        calendar.render();
+        calendarReady = true;
+      } else {
+        calendar.updateSize();
+      }
+    }
+ 
+    function closeCalendar() {
+      document.getElementById("calendarPopup").classList.remove("show-calendar");
+    }
+ 
+    function addEvent() {
+      const date = document.getElementById('eventDate').value;
+      const title = document.getElementById('eventTitle').value;
+      const description = document.getElementById('eventDescription').value;
+ 
+      if (!date || !title) {
+        alert('Please fill in the date and title fields.');
+        return;
+      }
+ 
+      const newEvent = {
+        id: Date.now().toString(),
+        title: title,
+        date: date,
+        description: description
+      };
+ 
+      events.push(newEvent);
+      saveEvents();
+ 
+      // Add event to calendar
+      calendar.addEvent({
+        id: newEvent.id,
+        title: newEvent.title,
+        start: newEvent.date,
+        extendedProps: {
+          description: newEvent.description
+        }
+      });
+ 
+      // Clear form
+      document.getElementById('eventTitle').value = '';
+      document.getElementById('eventDescription').value = '';
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('eventDate').value = today;
+ 
+      // Refresh event list
+      displayEvents();
+ 
+      alert('Event added successfully!');
+    }
+ 
+    function deleteEvent(eventId) {
+      events = events.filter(e => e.id !== eventId);
+      saveEvents();
+ 
+      const calEvent = calendar.getEventById(eventId);
+      if (calEvent) {
+        calEvent.remove();
+      }
+ 
+      displayEvents();
+    }
+ 
+    function displayEvents() {
+      const eventsList = document.getElementById('eventsList');
+      
+      if (events.length === 0) {
+        eventsList.innerHTML = '<div class="no-events">No events scheduled yet. Add one above!</div>';
+        return;
+      }
+ 
+      // Sort events by date
+      const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+ 
+      eventsList.innerHTML = sortedEvents.map(event => {
+        const eventDate = new Date(event.date);
+        const formattedDate = eventDate.toLocaleDateString('en-US', { 
+          weekday: 'short', 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric' 
+        });
+ 
+        return `
+          <div class="event-item">
+            <div class="event-item-content">
+              <div class="event-item-title">${event.title}</div>
+              <div class="event-item-date">${formattedDate}</div>
+              ${event.description ? `<div class="event-item-desc">${event.description}</div>` : ''}
+            </div>
+            <button class="delete-event-btn" onclick="deleteEvent('${event.id}')">Delete</button>
+          </div>
+        `;
+      }).join('');
+    }
+
   </script>
 
 </body>

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Notes – Super Smart Study Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -31,7 +33,7 @@
       display: flex;
       flex-direction: column;
     }
-    
+
     nav {
       display: flex;
       align-items: center;
@@ -44,7 +46,9 @@
       z-index: 100;
       gap: 14px;
     }
+
     .nav-logo { width: 36px; height: 36px; object-fit: contain; }
+
     .nav-brand {
       font-size: 15px;
       font-weight: 800;
@@ -53,6 +57,7 @@
       color: #fff;
       opacity: 0.95;
     }
+
     .nav-back {
       font-size: 14px;
       color: rgba(255,255,255,0.75);
@@ -63,6 +68,7 @@
       border: 1px solid rgba(255,255,255,0.25);
       transition: all 0.2s;
     }
+
     .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
     main {
@@ -73,12 +79,19 @@
       align-items: center;
       animation: fadeUp 0.6s ease both;
     }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .page-wrapper { width: 100%; max-width: 980px; display: flex; flex-direction: column; gap: 24px; }
+    .page-wrapper {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
     .header-row {
       display: flex;
@@ -87,6 +100,7 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+
     .header-titles h1 {
       font-family: 'DM Serif Display', serif;
       font-size: clamp(2rem, 5vw, 3.2rem);
@@ -96,6 +110,7 @@
       color: #fff;
       text-shadow: 0 2px 16px rgba(0,0,0,0.3);
     }
+
     .header-titles .subtitle {
       font-size: 0.88rem;
       color: rgba(255,255,255,0.6);
@@ -103,6 +118,7 @@
       font-weight: 600;
       letter-spacing: 0.5px;
     }
+
     .notes-count-badge {
       background: rgba(255,255,255,0.18);
       border: 1px solid rgba(255,255,255,0.28);
@@ -125,7 +141,12 @@
       backdrop-filter: blur(8px);
     }
 
-    .action-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
 
     .btn {
       background: #fff;
@@ -145,13 +166,10 @@
       align-items: center;
       gap: 6px;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.22); background: #f0f4ff; }
-    .btn:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 
-    .btn-accent {
-      background: var(--accent);
-      color: #fff;
-    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.22); background: #f0f4ff; }
+
+    .btn-accent { background: var(--accent); color: #fff; }
     .btn-accent:hover { background: var(--accent-dark); color: #fff; }
 
     .btn-ghost {
@@ -161,8 +179,6 @@
       border: 1px solid rgba(255,255,255,0.25);
     }
     .btn-ghost:hover { background: rgba(255,255,255,0.22); color: #fff; }
-
-    .btn-sm { padding: 8px 14px; font-size: 0.82rem; }
 
     .manage-courses-btn {
       margin-left: auto;
@@ -181,17 +197,24 @@
 
     #fileInput { display: none; }
 
-    .search-sort-row {
-      display: flex;
+    .selection-bar {
+      display: none;
+      align-items: center;
       gap: 10px;
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.18);
       flex-wrap: wrap;
     }
+    .selection-bar.visible { display: flex; }
 
-    .search-input-wrap {
-      flex: 1;
-      min-width: 200px;
-      position: relative;
-    }
+    .search-sort-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .search-input-wrap { flex: 1; min-width: 200px; position: relative; }
+
     .search-icon {
       position: absolute;
       left: 12px;
@@ -201,6 +224,7 @@
       opacity: 0.5;
       pointer-events: none;
     }
+
     #searchInput {
       width: 100%;
       padding: 10px 14px 10px 34px;
@@ -231,14 +255,8 @@
       transition: all 0.2s;
     }
     #sortSelect option { background: #2d2d2d; color: #fff; }
-    #sortSelect:focus { border-color: rgba(255,255,255,0.45); }
 
-    .filter-bar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
     .filter-label {
       font-size: 0.78rem;
@@ -264,10 +282,8 @@
     .filter-chip:hover { border-color: rgba(255,255,255,0.5); color: #fff; background: rgba(255,255,255,0.16); }
     .filter-chip.active { background: #fff; color: var(--text-dark); border-color: #fff; }
 
-    .section-divider {
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.12);
-    }
+    .section-divider { border: none; border-top: 1px solid rgba(255,255,255,0.12); }
+
     .notes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -280,7 +296,7 @@
       padding: 20px;
       cursor: pointer;
       position: relative;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s, outline 0.15s;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
@@ -288,6 +304,37 @@
       color: var(--text-dark);
     }
     .note-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 16px 40px rgba(0,0,0,0.22); }
+    .note-card.select-mode { padding-left: 44px; }
+    .note-card.selected { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+    .note-checkbox {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      border: 2px solid #ccc;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 2;
+      transition: border-color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+    .note-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+    .note-checkbox.checked::after {
+      content: '';
+      display: block;
+      width: 5px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
 
     .note-card-course {
       font-size: 0.7rem;
@@ -335,48 +382,44 @@
     .note-card-meta::before { content: '🕐'; font-size: 10px; }
 
     .note-card-delete {
-      position: absolute; top: 12px; right: 12px;
-      background: none; border: none; cursor: pointer;
-      font-size: 12px; color: #ccc;
-      width: 24px; height: 24px;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      color: #ccc;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: color 0.2s, background 0.2s;
     }
     .note-card-delete:hover { color: var(--danger); background: #fdecea; }
 
-    .course-section { display: flex; flex-direction: column; gap: 14px; }
-
-    .course-section-title {
-      font-size: 0.78rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: rgba(255,255,255,0.55);
-      text-transform: uppercase;
+    .empty-state {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-    }
-    .course-section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.15);
-    }
-
-    .no-notes-msg {
-      font-size: 0.88rem;
-      color: rgba(255,255,255,0.45);
-      padding: 32px 0;
+      gap: 12px;
+      padding: 48px 0;
       grid-column: 1 / -1;
-      font-weight: 600;
-      text-align: center;
     }
+    .empty-icon { font-size: 48px; opacity: 0.5; }
+    .empty-title { font-size: 1rem; font-weight: 800; color: rgba(255,255,255,0.5); }
+    .empty-sub { font-size: 0.82rem; color: rgba(255,255,255,0.35); font-weight: 600; }
 
     .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.55); z-index: 200;
-      align-items: center; justify-content: center;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
       backdrop-filter: blur(4px);
     }
     .modal-overlay.active { display: flex; }
@@ -392,36 +435,61 @@
       animation: fadeUp 0.3s ease both;
       color: var(--text-dark);
     }
-    .modal h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem;
-      font-weight: 400;
-      margin-bottom: 10px;
-    }
-    .modal p {
-      font-size: 0.88rem;
-      color: var(--text-mid);
-      margin-bottom: 24px;
-      line-height: 1.6;
-      font-weight: 600;
-    }
-    .modal-buttons { display: flex; gap: 10px; justify-content: center; }
 
-    .modal .btn { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .modal h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; font-weight: 400; margin-bottom: 10px; }
+    .modal p { font-size: 0.88rem; color: var(--text-mid); margin-bottom: 24px; line-height: 1.6; font-weight: 600; }
+
+    .modal-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
     .modal .btn-outline-dark {
       background: transparent;
       color: var(--text-dark);
       border: 1.5px solid #ddd;
       box-shadow: none;
+      flex: 1;
+      min-width: 120px;
     }
     .modal .btn-outline-dark:hover { background: #f5f5f5; }
+
     .modal .btn-delete { background: var(--danger); color: #fff; }
     .modal .btn-delete:hover { background: #c0392b; color: #fff; }
 
-    .courses-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; text-align: left; max-height: 220px; overflow-y: auto; }
+    .download-options { display: flex; flex-direction: column; gap: 10px; text-align: left; margin-bottom: 20px; }
+
+    .download-option {
+      padding: 12px 16px;
+      background: #f8f8fc;
+      border-radius: 10px;
+      border: 1.5px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .download-option:hover { background: #f0f0ff; border-color: var(--accent); color: var(--accent); }
+    .download-option-icon { font-size: 18px; }
+    .download-option-content { display: flex; flex-direction: column; gap: 2px; }
+    .download-option-label { font-weight: 800; font-size: 0.85rem; }
+    .download-option-desc { font-size: 0.75rem; color: #999; font-weight: 600; }
+
+    .courses-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+      text-align: left;
+      max-height: 220px;
+      overflow-y: auto;
+    }
 
     .course-item {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 10px 14px;
       background: #f8f8fc;
       border-radius: 10px;
@@ -429,39 +497,26 @@
       font-weight: 700;
       color: var(--text-dark);
     }
-    .course-item-delete {
-      background: none; border: none; cursor: pointer;
-      color: #ccc; font-size: 0.78rem; padding: 4px 8px;
-      border-radius: 6px; font-weight: 700;
-      font-family: 'Nunito', sans-serif;
-      transition: color 0.2s, background 0.2s;
-    }
-    .course-item-delete:hover { color: var(--danger); background: #fdecea; }
 
     .add-course-row { display: flex; gap: 8px; }
+
     .add-course-input {
-      flex: 1; padding: 10px 14px;
-      font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 600;
-      border: 1.5px solid #e0e0e0; border-radius: 10px; outline: none;
-      transition: border-color 0.2s; color: var(--text-dark);
+      flex: 1;
+      padding: 10px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      color: var(--text-dark);
     }
     .add-course-input:focus { border-color: var(--accent); }
     .add-course-input::placeholder { color: #bbb; }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 48px 0;
-      grid-column: 1 / -1;
-    }
-    .empty-icon { font-size: 48px; opacity: 0.5; }
-    .empty-title { font-size: 1rem; font-weight: 800; color: rgba(255,255,255,0.5); }
-    .empty-sub { font-size: 0.82rem; color: rgba(255,255,255,0.35); font-weight: 600; }
-
   </style>
 </head>
+
 <body>
 
   <nav>
@@ -482,12 +537,23 @@
       </div>
 
       <div class="controls-card">
+
+        <!-- Action row (single, no duplicate) -->
         <div class="action-row">
           <button class="btn btn-accent" onclick="goNewNote()">＋ New Note</button>
           <button class="btn btn-ghost" onclick="document.getElementById('fileInput').click()">📄 Upload .txt</button>
           <input type="file" id="fileInput" accept=".txt" />
           <a class="btn btn-ghost" href="flashcards.html">🃏 Flash Cards</a>
           <button class="manage-courses-btn" onclick="openManageCourses()">⚙ Manage Courses</button>
+          
+        </div>
+
+        <!-- Selection bar (hidden until select mode) -->
+        <div class="selection-bar" id="selectionBar">
+          <span id="selectionMsg">0 selected</span>
+          <button class="btn btn-ghost" style="padding:5px 14px;font-size:0.8rem;" onclick="selectAllNotes()">Select all</button>
+          <button class="btn btn-accent" style="padding:5px 14px;font-size:0.8rem;margin-left:auto;" id="dlSelectedBtn" onclick="openDownloadModal(true)">⬇️ Download selected</button>
+          <button class="btn btn-delete" style="padding:5px 14px;font-size:0.8rem;background:var(--danger);color:#fff;" id="deleteSelectedBtn" onclick="askDeleteSelected()">🗑 Delete selected</button>
         </div>
 
         <div class="search-sort-row">
@@ -507,6 +573,7 @@
           <span class="filter-label">Filter</span>
           <button class="filter-chip active" onclick="setFilter('all')">All</button>
         </div>
+
       </div>
 
       <hr class="section-divider" />
@@ -516,6 +583,7 @@
     </div>
   </main>
 
+  <!-- DELETE MODAL -->
   <div class="modal-overlay" id="deleteModal">
     <div class="modal">
       <h2>Delete Note?</h2>
@@ -527,15 +595,50 @@
     </div>
   </div>
 
+  <!-- DOWNLOAD MODAL -->
+  <div class="modal-overlay" id="downloadModal">
+    <div class="modal">
+      <h2>Download Notes</h2>
+      <p id="downloadModalMsg">Choose a format to download all your notes:</p>
+      <div class="download-options">
+        <button class="download-option" onclick="downloadNotesAsJSON()">
+          <span class="download-option-icon">📋</span>
+          <div class="download-option-content">
+            <span class="download-option-label">JSON Format</span>
+            <span class="download-option-desc">Backup all notes with metadata</span>
+          </div>
+        </button>
+        <button class="download-option" onclick="downloadNotesAsTXT()">
+          <span class="download-option-icon">📄</span>
+          <div class="download-option-content">
+            <span class="download-option-label">Text File</span>
+            <span class="download-option-desc">All notes in one readable file</span>
+          </div>
+        </button>
+        <button class="download-option" onclick="downloadNotesAsPDF()">
+          <span class="download-option-icon">📕</span>
+          <div class="download-option-content">
+            <span class="download-option-label">PDF Document</span>
+            <span class="download-option-desc">Professional formatted PDF</span>
+          </div>
+        </button>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-outline-dark" onclick="closeDownloadModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSES MODAL -->
   <div class="modal-overlay" id="coursesModal">
     <div class="modal">
       <h2>Manage Courses</h2>
-      <p>Add or remove courses to categorise your notes.</p>
+      <p>Courses are loaded from the Course Dashboard database.</p>
       <div class="courses-list" id="coursesList"></div>
       <div class="add-course-row">
-        <input type="text" class="add-course-input" id="newCourseInput" placeholder="e.g. COMP602" maxlength="40"
+        <input type="text" class="add-course-input" id="newCourseInput" placeholder="e.g. Web Development" maxlength="40"
                onkeydown="if(event.key==='Enter') addCourse()" />
-        <button class="btn btn-sm btn-accent" onclick="addCourse()">Add</button>
+        <button class="btn btn-accent" onclick="addCourse()">Add</button>
       </div>
       <br/>
       <div class="modal-buttons">
@@ -545,198 +648,474 @@
   </div>
 
   <script>
-    const KEYS = {
-      index:   'sss_notes_index',
-      note:    id => `sss_note_${id}`,
-      courses: 'sss_courses',
-    };
+    const API_BASE = "http://localhost:5095/api";
 
-    function getCourses() { return JSON.parse(localStorage.getItem(KEYS.courses) || '[]'); }
-    function saveCourses(arr) { localStorage.setItem(KEYS.courses, JSON.stringify(arr)); }
+    let activeFilter = "all";
+    let searchQuery  = "";
+    let sortOrder    = "newest";
+    let allNotes     = [];
+    let allCourses   = [];
+    let pendingDeleteId = null;
 
-    function addCourse() {
-      const input = document.getElementById('newCourseInput');
-      const name = input.value.trim();
-      if (!name) return;
-      const courses = getCourses();
-      if (courses.includes(name)) { input.value = ''; return; }
-      courses.push(name);
-      saveCourses(courses);
-      input.value = '';
-      renderCoursesList();
-      renderFilterBar();
-      renderNotes();
-    }
-    function removeCourse(name) {
-      const courses = getCourses().filter(c => c !== name);
-      saveCourses(courses);
-      getAllNotes().forEach(note => {
-        if (note.course === name) { note.course = ''; saveNote(note); }
-      });
-      if (activeFilter === name) activeFilter = 'all';
-      renderCoursesList();
-      renderFilterBar();
-      renderNotes();
+    // ── Selection state ────────────────────────────────────────────
+    let selectMode         = false;
+    let selectedIds        = new Set();
+    let downloadSelectionOnly = false;
+
+    function getUserId() {
+      return Number(localStorage.getItem("userId") || "1");
     }
 
-    function getAllNotes() {
-      const index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
-      return index.map(id => {
-        const raw = localStorage.getItem(KEYS.note(id));
-        return raw ? JSON.parse(raw) : null;
-      }).filter(Boolean);
-    }
-    function saveNote(note) {
-      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
-      if (!index.includes(note.id)) index.unshift(note.id);
-      localStorage.setItem(KEYS.index, JSON.stringify(index));
-      localStorage.setItem(KEYS.note(note.id), JSON.stringify(note));
-    }
-    function deleteNote(id) {
-      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
-      index = index.filter(i => i !== id);
-      localStorage.setItem(KEYS.index, JSON.stringify(index));
-      localStorage.removeItem(KEYS.note(id));
-    }
-    function generateId() { return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); }
     function escapeHtml(str) {
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
-    let activeFilter = 'all', searchQuery = '', sortOrder = 'newest';
+    function escapeForClick(str) {
+      return String(str || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
+    }
 
-    function setSearch(q) { searchQuery = q.toLowerCase(); renderNotes(); }
-    function setSort(o) { sortOrder = o; renderNotes(); }
-    function setFilter(c) { activeFilter = c; renderFilterBar(); renderNotes(); }
+    // ── Data loading ───────────────────────────────────────────────
+    async function loadCourses() {
+      try {
+        const res = await fetch(`${API_BASE}/courses`);
+        if (!res.ok) throw new Error();
+        const courses = await res.json();
+        const userId = getUserId();
+        allCourses = courses.filter(c => Number(c.userId) === userId);
+      } catch {
+        allCourses = [];
+      }
+    }
+
+    async function loadNotes() {
+      try {
+        const userId = getUserId();
+        const res = await fetch(`${API_BASE}/notes/user/${userId}`);
+        if (!res.ok) throw new Error();
+        allNotes = await res.json();
+        renderFilterBar();
+        renderNotes();
+      } catch (err) {
+        console.error(err);
+        document.getElementById("notesContent").innerHTML = `
+          <div class="notes-grid">
+            <div class="empty-state">
+              <div class="empty-icon">⚠️</div>
+              <div class="empty-title">Could not load notes</div>
+              <div class="empty-sub">Make sure the backend is running.</div>
+            </div>
+          </div>`;
+      }
+    }
+
+    async function loadPageData() {
+      await loadCourses();
+      await loadNotes();
+      renderCoursesList();
+    }
+
+    // ── Filters / search / sort ────────────────────────────────────
+    function setSearch(q)  { searchQuery = q.toLowerCase(); renderNotes(); }
+    function setSort(o)    { sortOrder = o; renderNotes(); }
+    function setFilter(c)  { activeFilter = c; renderFilterBar(); renderNotes(); }
+
+    function getFilteredNotes() {
+      let filtered = [...allNotes];
+      if (activeFilter !== "all") filtered = filtered.filter(n => n.courseName === activeFilter);
+      if (searchQuery) filtered = filtered.filter(n =>
+        (n.title || "").toLowerCase().includes(searchQuery) ||
+        (n.content || "").toLowerCase().includes(searchQuery)
+      );
+      filtered.sort((a, b) => {
+        const dA = new Date(a.updatedAt).getTime();
+        const dB = new Date(b.updatedAt).getTime();
+        if (sortOrder === "newest") return dB - dA;
+        if (sortOrder === "oldest") return dA - dB;
+        if (sortOrder === "az")     return (a.title || "").localeCompare(b.title || "");
+        if (sortOrder === "za")     return (b.title || "").localeCompare(a.title || "");
+        return 0;
+      });
+      return filtered;
+    }
 
     function renderFilterBar() {
-      const courses = getCourses();
-      const bar = document.getElementById('filterBar');
-      bar.innerHTML = `<span class="filter-label">Filter</span>
-        <button class="filter-chip ${activeFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
-        ${courses.map(c => `
-          <button class="filter-chip ${activeFilter === c ? 'active' : ''}" onclick="setFilter('${escapeHtml(c)}')">${escapeHtml(c)}</button>
-        `).join('')}
-        ${courses.length === 0 ? '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);font-weight:600">No courses yet — add one above</span>' : ''}`;
+      const bar = document.getElementById("filterBar");
+      bar.innerHTML = `
+        <span class="filter-label">Filter</span>
+        <button class="filter-chip ${activeFilter === "all" ? "active" : ""}" onclick="setFilter('all')">All</button>
+        ${allCourses.map(c => `
+          <button class="filter-chip ${activeFilter === c.title ? "active" : ""}" onclick="setFilter('${escapeForClick(c.title)}')">
+            ${escapeHtml(c.title)}
+          </button>`).join("")}
+        ${allCourses.length === 0
+          ? '<span style="font-size:0.78rem;color:rgba(255,255,255,0.35);font-weight:600">No courses yet — add one in Course Dashboard</span>'
+          : ""}`;
     }
 
     function renderNotes() {
-      const allNotes = getAllNotes();
-      let filtered = activeFilter === 'all' ? allNotes : allNotes.filter(n => n.course === activeFilter);
-      if (searchQuery) filtered = filtered.filter(n => n.title && n.title.toLowerCase().includes(searchQuery));
-      filtered.sort((a, b) => {
-        if (sortOrder === 'newest') return b.updatedAt - a.updatedAt;
-        if (sortOrder === 'oldest') return a.updatedAt - b.updatedAt;
-        if (sortOrder === 'az') return (a.title || '').localeCompare(b.title || '');
-        if (sortOrder === 'za') return (b.title || '').localeCompare(a.title || '');
-        return 0;
-      });
+      const filtered = getFilteredNotes();
 
-      document.getElementById('notesCount').textContent =
-        allNotes.length === 1 ? '1 note' : `${allNotes.length} notes`;
+      document.getElementById("notesCount").textContent =
+        allNotes.length === 1 ? "1 note" : `${allNotes.length} notes`;
 
-      const container = document.getElementById('notesContent');
+      const container = document.getElementById("notesContent");
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="notes-grid"><div class="empty-state">
-          <div class="empty-icon">📭</div>
-          <div class="empty-title">${activeFilter === 'all' && !searchQuery ? 'No notes yet' : 'No matching notes found'}</div>
-          <div class="empty-sub">${activeFilter === 'all' && !searchQuery ? 'Create a new note or upload a .txt file to get started.' : 'Try a different search or filter.'}</div>
-        </div></div>`;
+        container.innerHTML = `
+          <div class="notes-grid">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <div class="empty-title">${activeFilter === "all" && !searchQuery ? "No notes yet" : "No matching notes found"}</div>
+              <div class="empty-sub">${activeFilter === "all" && !searchQuery ? "Create a new note to get started." : "Try a different search or filter."}</div>
+            </div>
+          </div>`;
         return;
       }
 
-      if (activeFilter === 'all' && !searchQuery && sortOrder === 'newest') {
-        const courses = getCourses();
-        const grouped = {}, uncategorised = [];
-        filtered.forEach(note => {
-          if (note.course && courses.includes(note.course)) {
-            if (!grouped[note.course]) grouped[note.course] = [];
-            grouped[note.course].push(note);
-          } else { uncategorised.push(note); }
-        });
-        let html = '';
-        courses.forEach(course => {
-          if (grouped[course] && grouped[course].length > 0) {
-            html += `<div class="course-section">
-              <div class="course-section-title">📚 ${escapeHtml(course)}</div>
-              <div class="notes-grid">${grouped[course].map(noteCard).join('')}</div>
-            </div>`;
-          }
-        });
-        if (uncategorised.length > 0) {
-          html += `<div class="course-section">
-            <div class="course-section-title">📌 Uncategorised</div>
-            <div class="notes-grid">${uncategorised.map(noteCard).join('')}</div>
-          </div>`;
-        }
-        container.innerHTML = `<div style="display:flex;flex-direction:column;gap:28px">${html}</div>`;
-      } else {
-        container.innerHTML = `<div class="notes-grid">${filtered.map(noteCard).join('')}</div>`;
-      }
+      container.innerHTML = `<div class="notes-grid">${filtered.map(noteCard).join("")}</div>`;
     }
 
     function noteCard(note) {
-      const preview = (note.content || '').trim().replace(/\s+/g, ' ').slice(0, 130);
-      const date = new Date(note.updatedAt).toLocaleDateString('en-NZ', { day:'numeric', month:'short', year:'numeric' });
-      const courseTag = note.course ? `<span class="note-card-course">${escapeHtml(note.course)}</span>` : '';
-      return `
-        <div class="note-card" onclick="openNote('${note.id}')">
-          <button class="note-card-delete" onclick="event.stopPropagation();askDelete('${note.id}')" title="Delete">✕</button>
-          ${courseTag}
-          <div class="note-card-title">${escapeHtml(note.title || 'Untitled')}</div>
-          <div class="note-card-preview">${escapeHtml(preview) || '<em style="color:#ccc">Empty note</em>'}</div>
-          <div class="note-card-meta">Last edited ${date}</div>
-        </div>`;
+  const preview   = (note.content || "").trim().replace(/\s+/g, " ").slice(0, 130);
+  const date      = new Date(note.updatedAt).toLocaleDateString("en-NZ", { day:"numeric", month:"short", year:"numeric" });
+  const courseTag = note.courseName
+    ? `<span class="note-card-course">${escapeHtml(note.courseName)}</span>` : "";
+  const isSelected = selectedIds.has(note.id);
+
+  const cardClasses = [
+    "note-card",
+    selectMode   ? "select-mode" : "",
+    isSelected   ? "selected"    : ""
+  ].filter(Boolean).join(" ");
+
+  const checkboxHtml = selectMode
+    ? `<div class="note-checkbox ${isSelected ? "checked" : ""}" onclick="toggleNoteSelect(${note.id}, event)"></div>`
+    : "";
+
+  const deleteBtn = !selectMode
+    ? `<button class="note-card-delete" onclick="event.stopPropagation(); askDelete(${note.id})" title="Delete">✕</button>`
+    : "";
+
+  // Add share button
+  const shareBtn = !selectMode
+    ? `<button class="note-card-delete" style="right:36px;" onclick="event.stopPropagation(); generateShareLink(${note.id})" title="Share">🔗</button>`
+    : "";
+
+  const clickAction = selectMode
+    ? `toggleNoteSelect(${note.id}, event)`
+    : `openNote(${note.id})`;
+
+  return `
+    <div class="${cardClasses}" onclick="${clickAction}">
+      ${checkboxHtml}
+      ${shareBtn}
+      ${deleteBtn}
+      ${courseTag}
+      <div class="note-card-title">${escapeHtml(note.title || "Untitled")}</div>
+      <div class="note-card-preview">${escapeHtml(preview) || '<em style="color:#ccc">Empty note</em>'}</div>
+      <div class="note-card-meta">Last edited ${date}</div>
+    </div>`;
+}
+
+    // ── Select mode ────────────────────────────────────────────────
+    function toggleSelectMode() {
+      selectMode = !selectMode;
+      if (!selectMode) selectedIds.clear();
+      const btn = document.getElementById("selectModeBtn");
+      btn.textContent = selectMode ? "✕ Cancel" : "☑ Select";
+      document.getElementById("selectionBar").className =
+        selectMode ? "selection-bar visible" : "selection-bar";
+      updateSelectionBar();
+      renderNotes();
     }
 
-    function openNote(id) { localStorage.setItem('sss_editing_id', id); window.location.href = 'notes-editor.html'; }
-    function goNewNote() { localStorage.removeItem('sss_editing_id'); window.location.href = 'notes-editor.html'; }
+    function toggleNoteSelect(id, e) {
+      e.stopPropagation();
+      if (selectedIds.has(id)) selectedIds.delete(id);
+      else selectedIds.add(id);
+      updateSelectionBar();
+      renderNotes();
+    }
 
-    document.getElementById('fileInput').addEventListener('change', e => {
+    function selectAllNotes() {
+      const visible = getFilteredNotes();
+      if (selectedIds.size === visible.length) {
+        selectedIds.clear();
+      } else {
+        visible.forEach(n => selectedIds.add(n.id));
+      }
+      updateSelectionBar();
+      renderNotes();
+    }
+
+    function updateSelectionBar() {
+      const n = selectedIds.size;
+      document.getElementById("selectionMsg").textContent = `${n} selected`;
+      document.getElementById("dlSelectedBtn").textContent = `⬇️ Download selected (${n})`;
+      document.getElementById("deleteSelectedBtn").textContent = `🗑 Delete selected (${n})`;
+    }
+
+    // ── Navigation ─────────────────────────────────────────────────
+    function openNote(id) {
+      localStorage.setItem("editingNoteId", id);
+      window.location.href = "notes-editor.html";
+    }
+
+    function goNewNote() {
+      localStorage.removeItem("editingNoteId");
+      window.location.href = "notes-editor.html";
+    }
+
+    // ── Courses modal ──────────────────────────────────────────────
+    function openManageCourses() {
+      renderCoursesList();
+      document.getElementById("coursesModal").classList.add("active");
+    }
+
+    function closeManageCourses() {
+      document.getElementById("coursesModal").classList.remove("active");
+    }
+
+    function renderCoursesList() {
+      const list = document.getElementById("coursesList");
+      if (!list) return;
+      if (allCourses.length === 0) {
+        list.innerHTML = '<p style="font-size:0.85rem;color:#bbb;text-align:center;font-weight:600">No courses added yet. Add courses in Course Dashboard.</p>';
+        return;
+      }
+      list.innerHTML = allCourses.map(c => `
+        <div class="course-item"><span>${escapeHtml(c.title)}</span></div>`).join("");
+    }
+
+    async function addCourse() {
+      const input = document.getElementById("newCourseInput");
+      const name  = input.value.trim();
+      if (!name) return;
+      try {
+        const res = await fetch(`${API_BASE}/courses`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: name, description: "Course workspace", userId: getUserId() })
+        });
+        if (!res.ok) throw new Error();
+        input.value = "";
+        await loadCourses();
+        renderCoursesList();
+        renderFilterBar();
+        renderNotes();
+      } catch {
+        alert("Could not add course. Make sure the backend is running.");
+      }
+    }
+
+    // ── Delete modal ───────────────────────────────────────────────
+    function askDelete(id) {
+      const note = allNotes.find(n => Number(n.id) === Number(id));
+      document.getElementById("deleteModalMsg").textContent =
+        `Are you sure you want to delete "${note ? note.title || "Untitled" : "this note"}"? This cannot be undone.`;
+      pendingDeleteId = id;
+      document.getElementById("deleteModal").classList.add("active");
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      document.getElementById("deleteModal").classList.remove("active");
+    }
+
+    async function confirmDelete() {
+      if (!pendingDeleteId) return;
+      try {
+        if (pendingDeleteId === "__selected__") {
+          await Promise.all(
+            [...selectedIds].map(id => fetch(`${API_BASE}/notes/note/${id}`, { method: "DELETE" }))
+          );
+          selectedIds.clear();
+          toggleSelectMode();
+        } else {
+          await fetch(`${API_BASE}/notes/note/${pendingDeleteId}`, { method: "DELETE" });
+        }
+        pendingDeleteId = null;
+        closeDeleteModal();
+        await loadPageData();
+      } catch {
+        alert("Could not delete note.");
+      }
+    }
+
+    // ── Bulk delete ────────────────────────────────────────────────
+    function askDeleteSelected() {
+      if (selectedIds.size === 0) return;
+      const n = selectedIds.size;
+      document.getElementById("deleteModalMsg").textContent =
+        `Are you sure you want to delete ${n} note${n > 1 ? "s" : ""}? This cannot be undone.`;
+      pendingDeleteId = "__selected__";
+      document.getElementById("deleteModal").classList.add("active");
+    }
+
+    // ── File upload ────────────────────────────────────────────────
+    document.getElementById("fileInput").addEventListener("change", async e => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = ev => {
-        const id = generateId();
-        const title = file.name.replace(/\.txt$/i, '');
-        const note = { id, title, content: ev.target.result, course: '', updatedAt: Date.now() };
-        saveNote(note);
-        localStorage.setItem('sss_editing_id', id);
-        window.location.href = 'notes-editor.html';
+      reader.onload = async ev => {
+        try {
+          const res = await fetch(`${API_BASE}/notes`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: getUserId(),
+              title: file.name.replace(/\.txt$/i, ""),
+              content: ev.target.result,
+              courseName: "",
+              courseId: null
+            })
+          });
+          if (!res.ok) throw new Error();
+          const saved = await res.json();
+          localStorage.setItem("editingNoteId", saved.id);
+          window.location.href = "notes-editor.html";
+        } catch {
+          alert("Could not upload file as note.");
+        }
       };
       reader.readAsText(file);
     });
 
-    let pendingDeleteId = null;
-    function askDelete(id) {
-      const raw = localStorage.getItem(KEYS.note(id));
-      const note = raw ? JSON.parse(raw) : null;
-      document.getElementById('deleteModalMsg').textContent =
-        `Are you sure you want to delete "${note ? note.title || 'Untitled' : 'this note'}"? This cannot be undone.`;
-      pendingDeleteId = id;
-      document.getElementById('deleteModal').classList.add('active');
-    }
-    function closeDeleteModal() { pendingDeleteId = null; document.getElementById('deleteModal').classList.remove('active'); }
-    function confirmDelete() { if (pendingDeleteId) { deleteNote(pendingDeleteId); pendingDeleteId = null; } closeDeleteModal(); renderNotes(); }
-
-    function openManageCourses() { renderCoursesList(); document.getElementById('coursesModal').classList.add('active'); }
-    function closeManageCourses() { document.getElementById('coursesModal').classList.remove('active'); }
-    function renderCoursesList() {
-      const courses = getCourses();
-      const list = document.getElementById('coursesList');
-      if (courses.length === 0) {
-        list.innerHTML = '<p style="font-size:0.85rem;color:#bbb;text-align:center;font-weight:600">No courses added yet.</p>';
+    // ── Download modal ─────────────────────────────────────────────
+    function openDownloadModal(selectionOnly = false) {
+      downloadSelectionOnly = selectionOnly;
+      const notesToCheck = selectionOnly
+        ? allNotes.filter(n => selectedIds.has(n.id))
+        : allNotes;
+      if (notesToCheck.length === 0) {
+        alert(selectionOnly ? "No notes selected." : "You don't have any notes to download yet.");
         return;
       }
-      list.innerHTML = courses.map(c => `
-        <div class="course-item">
-          <span>${escapeHtml(c)}</span>
-          <button class="course-item-delete" onclick="removeCourse('${escapeHtml(c)}')">✕ Remove</button>
-        </div>`).join('');
+      document.getElementById("downloadModalMsg").textContent = selectionOnly
+        ? `Downloading ${notesToCheck.length} selected note(s):`
+        : "Choose a format to download all your notes:";
+      document.getElementById("downloadModal").classList.add("active");
     }
 
-    window.addEventListener('load', () => { renderFilterBar(); renderNotes(); });
+    function closeDownloadModal() {
+      document.getElementById("downloadModal").classList.remove("active");
+    }
+
+    function getNotesForDownload() {
+      return downloadSelectionOnly
+        ? allNotes.filter(n => selectedIds.has(n.id))
+        : allNotes;
+    }
+
+    function downloadNotesAsJSON() {
+      try {
+        const notes = getNotesForDownload();
+        const blob = new Blob([JSON.stringify({ exportDate: new Date().toISOString(), totalNotes: notes.length, notes }, null, 2)], { type: "application/json" });
+        triggerDownload(blob, `notes-backup-${Date.now()}.json`);
+        closeDownloadModal();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to download notes as JSON.");
+      }
+    }
+
+    function downloadNotesAsTXT() {
+      try {
+        const notes = getNotesForDownload();
+        let txt = `MY STUDY NOTES\nExported on: ${new Date().toLocaleDateString("en-NZ")}\nTotal notes: ${notes.length}\n\n${"=".repeat(60)}\n\n`;
+        notes.forEach((note, i) => {
+          txt += `NOTE ${i + 1}: ${note.title || "Untitled"}\n`;
+          txt += `Course: ${note.courseName || "No course"}\n`;
+          txt += `Date: ${new Date(note.updatedAt).toLocaleDateString("en-NZ")}\n`;
+          txt += `${"-".repeat(60)}\n${note.content || "Empty note"}\n\n${"=".repeat(60)}\n\n`;
+        });
+        triggerDownload(new Blob([txt], { type: "text/plain" }), `notes-${Date.now()}.txt`);
+        closeDownloadModal();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to download notes as TXT.");
+      }
+    }
+
+    function downloadNotesAsPDF() {
+      try {
+        const notes = getNotesForDownload();
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const pageH = doc.internal.pageSize.getHeight();
+        const pageW = doc.internal.pageSize.getWidth();
+        const margin = 10;
+        const maxW = pageW - 2 * margin;
+        let y = 10;
+
+        const checkPage = (needed = 10) => {
+          if (y > pageH - needed) { doc.addPage(); y = 10; }
+        };
+
+        doc.setFontSize(20);
+        doc.text("My Study Notes", margin, y); y += 10;
+        doc.setFontSize(10); doc.setTextColor(100);
+        doc.text(`Exported: ${new Date().toLocaleDateString("en-NZ")} | Total notes: ${notes.length}`, margin, y); y += 8;
+        doc.setDrawColor(200); doc.line(margin, y, pageW - margin, y); y += 8;
+        doc.setTextColor(0);
+
+        notes.forEach((note, i) => {
+          checkPage(20);
+          doc.setFontSize(12); doc.setFont(undefined, "bold");
+          doc.text(`${i + 1}. ${note.title || "Untitled"}`, margin, y); y += 6;
+          doc.setFontSize(9); doc.setFont(undefined, "normal"); doc.setTextColor(100);
+          doc.text(`Course: ${note.courseName || "No course"} | ${new Date(note.updatedAt).toLocaleDateString("en-NZ")}`, margin, y); y += 6;
+          doc.setDrawColor(220); doc.line(margin, y, pageW - margin, y); y += 4;
+          doc.setTextColor(0); doc.setFontSize(10);
+          doc.splitTextToSize(note.content || "Empty note", maxW).forEach(line => {
+            checkPage(10);
+            doc.text(line, margin, y); y += 5;
+          });
+          y += 4;
+        });
+
+        doc.save(`notes-${Date.now()}.pdf`);
+        closeDownloadModal();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to download notes as PDF.");
+      }
+    }
+
+    function generateShareId() {
+    return Math.random().toString(36).substring(2, 10);
+}
+
+    function triggerDownload(blob, filename) {
+      const url  = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    window.addEventListener("load", loadPageData);
+
+    async function generateShareLink(noteId) {
+    const response = await fetch(`http://localhost:5095/api/notes/${noteId}/share`, {
+        method: 'POST'
+    });
+    
+    const data = await response.json();
+    const shareLink = `${window.location.origin}/shared-note.html?token=${data.shareToken}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(shareLink);
+    alert('Share link copied: ' + shareLink);
+}
+    
   </script>
 
 </body>

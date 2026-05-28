@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quiz Dashboard</title>
+
+<style>
+body {
+font-family: Arial;
+background: #f4f6fb;
+margin: 0;
+}
+
+.header {
+background: linear-gradient(135deg, #6C63FF, #8a84ff);
+color: white;
+padding: 20px;
+text-align: center;
+position: relative;
+}
+
+.back-btn {
+position: absolute;
+left: 20px;
+top: 20px;
+background: transparent;
+color: rgba(255,255,255,0.9);
+border: 1.5px solid rgba(255,255,255,0.45);
+padding: 10px 22px;
+border-radius: 999px;
+cursor: pointer;
+font-size: 16px;
+font-weight: 600;
+}
+
+.back-btn:hover {
+background: rgba(255,255,255,0.15);
+color: white;
+}
+
+.container {
+max-width: 800px;
+margin: 30px auto;
+padding: 0 20px;
+}
+
+.generate-btn {
+display: block;
+margin: 20px auto;
+padding: 12px 20px;
+background: #6C63FF;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+}
+
+.generate-btn:hover {
+background: #5848d6;
+}
+
+.question-box {
+background: white;
+padding: 20px;
+margin-bottom: 20px;
+border-radius: 10px;
+border: 1px solid #ddd;
+box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.option {
+margin: 10px 0;
+padding: 10px;
+border-radius: 6px;
+border: 1px solid #ddd;
+cursor: pointer;
+}
+
+.option:hover {
+background: #f0f0ff;
+}
+
+.correct {
+background: #d4edda;
+}
+
+.wrong {
+background: #f8d7da;
+}
+
+.score {
+text-align: center;
+font-size: 22px;
+margin-top: 20px;
+font-weight: bold;
+}
+
+.empty {
+text-align: center;
+color: #888;
+margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<button class="back-btn" onclick="goDashboard()">← Dashboard</button>
+<h1>Quiz Dashboard</h1>
+<p id="courseName"></p>
+</div>
+
+<div class="container">
+
+<button class="generate-btn" onclick="generateQuiz()">Generate Quiz</button>
+
+<div id="quizArea"></div>
+
+<div id="score" class="score"></div>
+
+<p id="emptyMessage" class="empty"></p>
+
+</div>
+
+<script>
+const API_BASE = "http://localhost:5095/api";
+const selectedCourse = localStorage.getItem("selectedCourse");
+
+if (!selectedCourse) {
+document.getElementById("courseName").innerText = "All notes";
+} else {
+document.getElementById("courseName").innerText = "Course: " + selectedCourse;
+}
+
+let score = 0;
+let total = 0;
+
+function getUserId() {
+return Number(localStorage.getItem("userId") || "1");
+}
+
+async function getNotes() {
+const userId = getUserId();
+
+const response = await fetch(`${API_BASE}/notes/user/${userId}`);
+
+if (!response.ok) {
+throw new Error("Could not load notes from database.");
+}
+
+const notes = await response.json();
+
+if (!selectedCourse) {
+return notes;
+}
+
+return notes.filter(note => note.courseName === selectedCourse);
+}
+
+async function generateQuiz() {
+const quizArea = document.getElementById("quizArea");
+const empty = document.getElementById("emptyMessage");
+const scoreBox = document.getElementById("score");
+
+quizArea.innerHTML = "";
+empty.innerText = "";
+scoreBox.innerText = "";
+
+score = 0;
+total = 0;
+
+try {
+const notes = await getNotes();
+
+if (notes.length === 0) {
+empty.innerText = "No database notes found for this course. Create a note first.";
+return;
+}
+
+total = notes.length;
+
+notes.forEach((note, index) => {
+const words = (note.content || "").split(/\s+/).filter(Boolean);
+
+const correctAnswer = words[0] || note.title || "Answer";
+
+const options = shuffle([
+correctAnswer,
+words[1] || "Option A",
+words[2] || "Option B",
+words[3] || "Option C"
+]);
+
+const div = document.createElement("div");
+div.className = "question-box";
+
+div.innerHTML = `
+<p><strong>Q${index + 1}:</strong> What word best represents this note?</p>
+<p style="color:#666">${escapeHtml(words.slice(0, 10).join(" "))}...</p>
+${options.map(opt => `
+<div class="option" onclick="checkAnswer(this, '${escapeForClick(opt)}', '${escapeForClick(correctAnswer)}')">${escapeHtml(opt)}</div>
+`).join("")}
+`;
+
+quizArea.appendChild(div);
+});
+
+updateScore();
+
+} catch (error) {
+empty.innerText = "Could not connect to the backend. Make sure dotnet run is running.";
+console.error(error);
+}
+}
+
+function checkAnswer(element, selected, correct) {
+if (element.classList.contains("answered")) return;
+
+const options = element.parentElement.querySelectorAll(".option");
+options.forEach(opt => opt.classList.add("answered"));
+
+if (selected === correct) {
+element.classList.add("correct");
+score++;
+} else {
+element.classList.add("wrong");
+
+options.forEach(opt => {
+if (opt.innerText === correct) {
+opt.classList.add("correct");
+}
+});
+}
+
+updateScore();
+}
+
+function updateScore() {
+document.getElementById("score").innerText =
+`Score: ${score} / ${total}`;
+}
+
+function shuffle(array) {
+return array.sort(() => Math.random() - 0.5);
+}
+
+function escapeHtml(str) {
+return String(str || "")
+.replace(/&/g, "&amp;")
+.replace(/</g, "&lt;")
+.replace(/>/g, "&gt;")
+.replace(/"/g, "&quot;");
+}
+
+function escapeForClick(str) {
+return String(str || "")
+.replace(/\\/g, "\\\\")
+.replace(/'/g, "\\'");
+}
+
+function goDashboard() {
+window.location.href = "studentdashboard.html";
+}
+</script>
+
+</body>
+</html>

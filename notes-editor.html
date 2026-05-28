@@ -6,7 +6,24 @@
   <title>Edit Note – Super Smart Study Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+
+    :root {
+      --grad-start: #2d2d2d;
+      --grad-end: #4e73df;
+      --accent: #4e73df;
+      --accent-dark: #3a5bbf;
+      --danger: #e74c3c;
+      --text-dark: #1a1a2e;
+      --text-mid: #555577;
+      --text-light: #9999bb;
+      --border: rgba(255,255,255,0.15);
+      --shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
 
     :root {
       --grad-start: #2d2d2d;
@@ -65,6 +82,7 @@
       align-items: center;
       animation: fadeUp 0.6s ease both;
     }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -160,6 +178,11 @@
 
     .card-divider { border: none; border-top: 1px solid #eef0f8; }
 
+    .card-divider { 
+      border: none; 
+      border-top: 1px solid #eef0f8; 
+    }
+
     .editor-toolbar {
       display: flex;
       align-items: center;
@@ -243,7 +266,11 @@
       align-items: center; justify-content: center;
       backdrop-filter: blur(4px);
     }
-    .modal-overlay.active { display: flex; }
+
+    .modal-overlay.active { 
+      display: flex; 
+    }
+
     .modal {
       background: #fff; border-radius: 20px; padding: 36px 40px;
       max-width: 400px; width: 92%; text-align: center;
@@ -269,6 +296,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <nav>
@@ -335,11 +363,7 @@
   </div>
 
   <script>
-    const KEYS = {
-      index:   'sss_notes_index',
-      note:    id => `sss_note_${id}`,
-      courses: 'sss_courses',
-    };
+    const API_BASE = "http://localhost:5095/api";
 
     function getCourses() { return JSON.parse(localStorage.getItem(KEYS.courses) || '[]'); }
     function saveNote(note) {
@@ -348,11 +372,10 @@
       localStorage.setItem(KEYS.index, JSON.stringify(index));
       localStorage.setItem(KEYS.note(note.id), JSON.stringify(note));
     }
-    function deleteNote(id) {
-      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
-      index = index.filter(i => i !== id);
-      localStorage.setItem(KEYS.index, JSON.stringify(index));
-      localStorage.removeItem(KEYS.note(id));
+
+    function updateWordCount() {
+      const words = noteEditor.value.trim().split(/\s+/).filter(Boolean).length;
+      wordCountEl.textContent = words === 1 ? "1 word" : `${words} words`;
     }
     function generateId() { return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); }
 
@@ -395,12 +418,25 @@
           updateWordCount();
           return;
         }
+
+        const note = await response.json();
+
+        currentNoteId = note.id;
+        noteTitleInput.value = note.title || "";
+        noteEditor.value = note.content || "";
+        fileName.textContent = note.title || "Untitled";
+
+        await populateCourseSelect(note.courseName || "");
+
+        updateWordCount();
+
+      } catch (error) {
+        console.error(error);
+        currentNoteId = null;
+        fileName.textContent = "New note";
+        await populateCourseSelect("");
       }
-      currentNoteId = generateId();
-      fileName.textContent = 'New note';
-      populateCourseSelect('');
-      noteTitleInput.focus();
-    });
+    }
 
     function saveNotes() {
       if (!currentNoteId) currentNoteId = generateId();
@@ -449,10 +485,12 @@
     }
 
     function askDelete() {
-      const title = noteTitleInput.value.trim() || 'Untitled';
-      document.getElementById('deleteModalMsg').textContent =
+      const title = noteTitleInput.value.trim() || "Untitled";
+
+      document.getElementById("deleteModalMsg").textContent =
         `Are you sure you want to delete "${title}"? This cannot be undone.`;
-      document.getElementById('deleteModal').classList.add('active');
+
+      document.getElementById("deleteModal").classList.add("active");
     }
     function closeModal() { document.getElementById('deleteModal').classList.remove('active'); }
     function confirmDelete() {
@@ -462,14 +500,11 @@
     }
 
     function goBack() {
-      saveNotes();
-      localStorage.removeItem('sss_editing_id');
-      window.location.href = 'notes-board.html';
+      localStorage.removeItem("editingNoteId");
+      window.location.href = "notes-board.html";
     }
     function goManageCourses() {
-      saveNotes();
-      localStorage.removeItem('sss_editing_id');
-      window.location.href = 'notes-board.html';
+      window.location.href = "coursedashboard.html";
     }
 
     function showStatus(msg, success = false) {
@@ -477,6 +512,7 @@
       statusMsg.className = 'status-msg' + (success ? ' saved' : '');
       setTimeout(() => { statusMsg.textContent = ''; statusMsg.className = 'status-msg'; }, 3000);
     }
+    window.addEventListener("load", loadExistingNote);
   </script>
 
 </body>

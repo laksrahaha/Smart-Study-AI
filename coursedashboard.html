@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Courses</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      display: flex;
+      background: #f7f7fb;
+      color: #1a1a1a;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: white;
+      height: 100vh;
+      padding: 20px;
+      border-right: 1px solid #eee;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 40px;
+    }
+
+    .menu-item {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .menu-item:hover {
+      background: #eee;
+      color: #6C63FF;
+    }
+
+    .active-menu {
+      background: #f0f0ff;
+      color: #6C63FF;
+      font-weight: bold;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      position: relative;
+    }
+
+    .settings-btn {
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #eee;
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 35px;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      display: none;
+      width: 120px;
+      z-index: 10;
+    }
+
+    .settings-menu div {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .settings-menu div:hover {
+      background: #f4f4f4;
+    }
+
+    .welcome {
+      margin-bottom: 15px;
+      color: #666;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #6C63FF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    button:hover {
+      background: #5848d6;
+    }
+
+    .courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .course-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      transition: 0.2s;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: #6C63FF;
+      box-shadow: 0 6px 15px rgba(108,99,255,0.2);
+    }
+
+    .course-card h3 {
+      margin: 0 0 10px;
+    }
+
+    .course-card p {
+      color: #777;
+      font-size: 13px;
+    }
+
+    .empty {
+      text-align: center;
+      color: gray;
+      margin-top: 20px;
+    }
+
+    .count {
+      margin-bottom: 10px;
+      color: #666;
+    }
+
+    .sort-label {
+      font-size: 12px;
+      color: #888;
+      margin-left: 5px;
+      align-self: center;
+    }
+
+    .error {
+      color: #c62828;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>Smart Study AI</h2>
+
+  <div class="menu-item" onclick="goBack()">Dashboard</div>
+  <div class="menu-item active-menu">Courses</div>
+  <div class="menu-item" onclick="goNotesBoard()">Notes Board</div>
+  <div class="menu-item" onclick="goNotesEditor()">Notes Editor</div>
+  <div class="menu-item" onclick="goQuiz()">Quiz</div>
+  <div class="menu-item" onclick="goTimer()">Timer</div>
+</div>
+
+<div class="main">
+
+  <div class="header">
+    <h2>My Courses</h2>
+
+    <div class="header-right">
+      <div id="studentName">Student</div>
+      <div class="settings-btn" onclick="toggleSettings()">Settings</div>
+
+      <div class="settings-menu" id="settingsMenu">
+        <div>Profile</div>
+        <div onclick="logout()">Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="welcome">
+    Happy studying 👋 Stay consistent and keep improving!
+  </div>
+
+  <p id="errorMessage" class="error"></p>
+
+  <div class="controls">
+    <input id="courseTitle" placeholder="Enter course name">
+    <button onclick="addCourse()">Add</button>
+  </div>
+
+  <div class="controls">
+    <input id="search" placeholder="Search courses..." oninput="filterCourses()">
+    <button onclick="sortCourses()">Sort</button>
+    <span class="sort-label" id="sortLabel">A-Z</span>
+  </div>
+
+  <p id="courseCount" class="count"></p>
+
+  <div class="courses" id="courseList"></div>
+
+  <p id="emptyMessage" class="empty"></p>
+
+</div>
+
+<script>
+const API_BASE = "http://localhost:5095/api";
+const courseApi = `${API_BASE}/courses`;
+
+let allCourses = [];
+let isAscending = true;
+
+const savedUsername = localStorage.getItem("username");
+if (savedUsername) {
+  document.getElementById("studentName").innerText = savedUsername;
+}
+
+function getUserId() {
+  return Number(localStorage.getItem("userId") || "1");
+}
+
+function showError(message) {
+  document.getElementById("errorMessage").innerText = message;
+}
+
+function clearError() {
+  document.getElementById("errorMessage").innerText = "";
+}
+
+function escapeForClick(text) {
+  return String(text || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+async function loadCourses() {
+  clearError();
+
+  try {
+    const res = await fetch(courseApi);
+
+    if (!res.ok) {
+      throw new Error("Could not load courses.");
+    }
+
+    const courses = await res.json();
+    const userId = getUserId();
+
+    allCourses = courses.filter(course => Number(course.userId) === userId);
+
+    displayCourses(allCourses);
+
+  } catch (error) {
+    showError("Could not connect to the backend. Make sure dotnet run is still running.");
+    console.error(error);
+  }
+}
+
+function displayCourses(data) {
+  const list = document.getElementById("courseList");
+  const empty = document.getElementById("emptyMessage");
+  const count = document.getElementById("courseCount");
+
+  list.innerHTML = "";
+  count.innerText = `${data.length} courses available`;
+
+  if (data.length === 0) {
+    empty.innerText = "No courses yet. Start by adding your first one.";
+    return;
+  }
+
+  empty.innerText = "";
+
+  data.forEach(course => {
+    const div = document.createElement("div");
+    div.className = "course-card";
+
+    div.innerHTML = `
+      <h3>${course.title}</h3>
+      <p>${course.description || "Course workspace"}</p>
+      <button onclick="openCourse('${escapeForClick(course.title)}')">Open</button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+async function addCourse() {
+  clearError();
+
+  const title = document.getElementById("courseTitle").value.trim();
+
+  if (!title) {
+    alert("Enter a course name");
+    return;
+  }
+
+  const courseData = {
+    title: title,
+    description: "Course workspace",
+    userId: getUserId()
+  };
+
+  try {
+    const res = await fetch(courseApi, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(courseData)
+    });
+
+    if (!res.ok) {
+      throw new Error("Could not save course.");
+    }
+
+    document.getElementById("courseTitle").value = "";
+    await loadCourses();
+
+  } catch (error) {
+    showError("Could not save course. Make sure the backend is running.");
+    console.error(error);
+  }
+}
+
+function filterCourses() {
+  const search = document.getElementById("search").value.toLowerCase();
+
+  const filtered = allCourses.filter(course =>
+    course.title.toLowerCase().includes(search)
+  );
+
+  displayCourses(filtered);
+}
+
+function sortCourses() {
+  const label = document.getElementById("sortLabel");
+
+  if (isAscending) {
+    displayCourses([...allCourses].sort((a, b) => a.title.localeCompare(b.title)));
+    label.innerText = "Z-A";
+  } else {
+    displayCourses([...allCourses].sort((a, b) => b.title.localeCompare(a.title)));
+    label.innerText = "A-Z";
+  }
+
+  isAscending = !isAscending;
+}
+
+function toggleSettings() {
+  const menu = document.getElementById("settingsMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+function goBack() {
+  window.location.href = "studentdashboard.html";
+}
+
+function goNotesBoard() {
+  window.location.href = "notes-board.html";
+}
+
+function goNotesEditor() {
+  localStorage.removeItem("editingNoteId");
+  window.location.href = "notes-editor.html";
+}
+
+function goQuiz() {
+  localStorage.removeItem("selectedCourse");
+  window.location.href = "quizdashboard.html";
+}
+
+function goTimer() {
+  window.location.href = "PopupTimer.html";
+}
+
+function logout() {
+  localStorage.removeItem("userId");
+  localStorage.removeItem("username");
+  localStorage.removeItem("email");
+  localStorage.removeItem("selectedCourse");
+  localStorage.removeItem("editingNoteId");
+  window.location.href = "login.html";
+}
+
+function openCourse(name) {
+  localStorage.setItem("selectedCourse", name);
+  window.location.href = "quizdashboard.html";
+}
+
+loadCourses();
+</script>
+
+</body>
+</html>

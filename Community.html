@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neuron Network – Super Smart Study Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --grad-start: #2d2d2d;
+      --grad-end: #4e73df;
+      --accent: #4e73df;
+      --accent-dark: #3a5bbf;
+      --accent-light: #e8eeff;
+      --success: #27ae60;
+      --success-dark: #1e8449;
+      --success-light: #eafaf1;
+      --danger: #e74c3c;
+      --text-dark: #1a1a2e;
+      --text-mid: #555577;
+      --text-light: #9999bb;
+      --border: rgba(255,255,255,0.15);
+      --card-bg: #ffffff;
+      --shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 16px 36px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      gap: 14px;
+    }
+
+    .nav-logo { width: 36px; height: 36px; object-fit: contain; }
+
+    .nav-brand {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      flex: 1;
+      color: #fff;
+      opacity: 0.95;
+    }
+
+    .nav-back {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.25);
+      transition: all 0.2s;
+    }
+    .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    main {
+      flex: 1;
+      padding: 44px 32px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Header ── */
+    .header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .header-titles h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      letter-spacing: 1px;
+      line-height: 1;
+      color: #fff;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+
+    .header-titles .subtitle {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .count-badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    /* ── Controls ── */
+    .controls-card {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      background: #fff;
+      color: var(--text-dark);
+      border: none;
+      padding: 10px 22px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 10px;
+      letter-spacing: 0.3px;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.22); background: #f0f4ff; }
+
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: var(--accent-dark); color: #fff; }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.22); color: #fff; }
+
+    .search-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .search-wrap { flex: 1; min-width: 200px; position: relative; }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 34px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-input::placeholder { color: rgba(255,255,255,0.4); }
+    .search-input:focus { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); }
+
+    .filter-select {
+      padding: 10px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+    }
+    .filter-select option { background: #2d2d2d; color: #fff; }
+
+    .section-divider { border: none; border-top: 1px solid rgba(255,255,255,0.12); }
+
+    /* ── Question cards ── */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      color: var(--text-dark);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .question-card:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.22); }
+
+    .question-card.answered { border-left: 4px solid var(--success); }
+
+    .q-header {
+      padding: 20px 20px 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .q-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .q-course-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .q-solved-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--success);
+      background: var(--success-light);
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid #a9dfbf;
+    }
+
+    .q-author {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-left: auto;
+    }
+
+    .q-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      color: var(--text-dark);
+      line-height: 1.35;
+    }
+
+    .q-body {
+      font-size: 0.83rem;
+      color: var(--text-mid);
+      font-weight: 600;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .q-body.expanded { -webkit-line-clamp: unset; overflow: visible; }
+
+    .q-footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px 14px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+
+    .q-footer-stat { display: flex; align-items: center; gap: 4px; }
+
+    .q-toggle-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .q-toggle-btn:hover { background: var(--accent-light); }
+
+    /* ── Answers ── */
+    .answers-section {
+      border-top: 1px solid #f0f0f5;
+      padding: 16px 20px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .answers-section.open { display: flex; }
+
+    .answer-card {
+      background: #f8f8fc;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border: 1.5px solid transparent;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+
+    .answer-card.accepted {
+      background: var(--success-light);
+      border-color: #a9dfbf;
+    }
+
+    .answer-accepted-badge {
+      display: none;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--success);
+      align-items: center;
+      gap: 4px;
+    }
+    .answer-card.accepted .answer-accepted-badge { display: flex; }
+
+    .answer-author {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-light);
+    }
+
+    .answer-body {
+      font-size: 0.84rem;
+      color: var(--text-mid);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .answer-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      align-items: center;
+    }
+
+    .accept-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1.5px solid #a9dfbf;
+      background: transparent;
+      color: var(--success);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .accept-btn:hover { background: var(--success-light); }
+    .accept-btn.accepted-btn {
+      background: var(--success);
+      color: #fff;
+      border-color: var(--success);
+      cursor: default;
+    }
+
+    .answer-date {
+      font-size: 0.71rem;
+      color: var(--text-light);
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    /* ── Add answer form ── */
+    .add-answer-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .answer-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 600;
+      background: #fff;
+      border: 1.5px solid #e0e0f0;
+      border-radius: 10px;
+      color: var(--text-dark);
+      outline: none;
+      resize: vertical;
+      min-height: 72px;
+      transition: border-color 0.2s;
+    }
+    .answer-textarea::placeholder { color: #bbb; }
+    .answer-textarea:focus { border-color: var(--accent); }
+
+    .add-answer-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .answer-name-input {
+      flex: 1;
+      min-width: 140px;
+      padding: 9px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 600;
+      background: #fff;
+      border: 1.5px solid #e0e0f0;
+      border-radius: 10px;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .answer-name-input::placeholder { color: #bbb; }
+    .answer-name-input:focus { border-color: var(--accent); }
+
+    .btn-small {
+      padding: 9px 18px;
+      font-size: 0.82rem;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 48px 0;
+    }
+    .empty-icon { font-size: 48px; opacity: 0.5; }
+    .empty-title { font-size: 1rem; font-weight: 800; color: rgba(255,255,255,0.5); }
+    .empty-sub { font-size: 0.82rem; color: rgba(255,255,255,0.35); font-weight: 600; }
+
+    /* ── Modals ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 40px;
+      max-width: 520px;
+      width: 94%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+      animation: fadeUp 0.3s ease both;
+      color: var(--text-dark);
+    }
+
+    .modal h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+
+    .modal p {
+      font-size: 0.86rem;
+      color: var(--text-mid);
+      margin-bottom: 20px;
+      font-weight: 600;
+      line-height: 1.55;
+    }
+
+    .modal-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+    .modal-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-mid);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .modal-input, .modal-textarea, .modal-select {
+      padding: 11px 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1.5px solid #e0e0f0;
+      border-radius: 10px;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+    .modal-input:focus, .modal-textarea:focus, .modal-select:focus { border-color: var(--accent); }
+    .modal-textarea { resize: vertical; min-height: 100px; }
+    .modal-input::placeholder, .modal-textarea::placeholder { color: #bbb; }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-outline-dark {
+      background: transparent;
+      color: var(--text-dark);
+      border: 1.5px solid #ddd;
+      box-shadow: none;
+    }
+    .btn-outline-dark:hover { background: #f5f5f5; transform: none; }
+
+    .char-hint {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      font-weight: 600;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
+    <span class="nav-brand">Super Smart Study Assistant</span>
+    <a href="studentdashboard.html" class="nav-back">← Dashboard</a>
+  </nav>
+
+  <main>
+    <div class="page-wrapper">
+
+      <div class="header-row">
+        <div class="header-titles">
+          <h1>Neuron Network 💬</h1>
+          <div class="subtitle">Ask questions, share answers, help each other study</div>
+        </div>
+        <span class="count-badge" id="questionCount">0 questions</span>
+      </div>
+
+      <div class="controls-card">
+        <div class="action-row">
+          <button class="btn btn-accent" onclick="openAskModal()">✏️ Ask a Question</button>
+        </div>
+        <div class="search-row">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search questions..." oninput="renderQuestions()" />
+          </div>
+          <select class="filter-select" id="filterSelect" onchange="renderQuestions()">
+            <option value="all">All Questions</option>
+            <option value="open">Unanswered</option>
+            <option value="answered">Has Answers</option>
+            <option value="solved">Solved</option>
+          </select>
+          <select class="filter-select" id="courseFilter" onchange="renderQuestions()">
+            <option value="all">All Courses</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="section-divider" />
+
+      <div id="questionsContainer"></div>
+
+    </div>
+  </main>
+
+  <!-- ASK MODAL -->
+  <div class="modal-overlay" id="askModal">
+    <div class="modal">
+      <h2>Ask a Question</h2>
+      <p>Anyone in the community can answer. Be specific — good questions get great answers! </p>
+
+      <div class="modal-field">
+        <label class="modal-label">Your name</label>
+        <input type="text" class="modal-input" id="askName" placeholder="e.g. Alex" maxlength="40" />
+      </div>
+
+      <div class="modal-field">
+        <label class="modal-label">Course (optional)</label>
+        <input type="text" class="modal-input" id="askCourse" placeholder="e.g. Math" maxlength="40" />
+      </div>
+
+      <div class="modal-field">
+        <label class="modal-label">Question title</label>
+        <input type="text" class="modal-input" id="askTitle" placeholder="e.g. What is the difference between mitosis and meiosis?" maxlength="120" oninput="updateTitleHint()" />
+        <span class="char-hint" id="titleHint">0 / 120</span>
+      </div>
+
+      <div class="modal-field">
+        <label class="modal-label">More detail (optional)</label>
+        <textarea class="modal-textarea" id="askBody" placeholder="Add context, what you've already tried, or any relevant details..."></textarea>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn btn-outline-dark" onclick="closeAskModal()">Cancel</button>
+        <button class="btn btn-accent" onclick="submitQuestion()">Post Question</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:5095/api";
+
+    // ── Local state (falls back gracefully if backend unavailable) ──
+    let questions  = [];  // { id, title, body, author, courseName, createdAt, answers: [], solved: bool }
+    let courses    = [];
+
+    // ── Helpers ────────────────────────────────────────────────────
+    function esc(str) {
+      return String(str || "")
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    function timeAgo(dateStr) {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const m = Math.floor(diff / 60000);
+      if (m < 1)  return "just now";
+      if (m < 60) return `${m}m ago`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `${h}h ago`;
+      const d = Math.floor(h / 24);
+      return `${d}d ago`;
+    }
+
+    function getUserId() {
+      return Number(localStorage.getItem("userId") || "1");
+    }
+
+    // ── Data loading ───────────────────────────────────────────────
+    async function loadCourses() {
+      try {
+        const res = await fetch(`${API_BASE}/courses`);
+        if (!res.ok) throw new Error();
+        const all = await res.json();
+        const uid = getUserId();
+        courses = all.filter(c => Number(c.userId) === uid);
+      } catch {
+        courses = [];
+      }
+      populateCourseDropdowns();
+    }
+
+    function populateCourseDropdowns() {
+      const opts = courses.map(c => `<option value="${esc(c.title)}">${esc(c.title)}</option>`).join("");
+      document.getElementById("askCourse").innerHTML = `<option value="">No specific course</option>${opts}`;
+      document.getElementById("courseFilter").innerHTML = `<option value="all">All Courses</option>${opts}`;
+    }
+
+    async function loadQuestions() {
+      try {
+        const res = await fetch(`${API_BASE}/community/questions`);
+        if (!res.ok) throw new Error();
+        questions = await res.json();
+        // Ensure answers array exists
+        questions.forEach(q => { if (!q.answers) q.answers = []; });
+      } catch {
+        // Backend not yet set up — use localStorage as fallback
+        const stored = localStorage.getItem("sss_community_questions");
+        questions = stored ? JSON.parse(stored) : [];
+      }
+      renderQuestions();
+    }
+
+    function saveLocal() {
+      localStorage.setItem("sss_community_questions", JSON.stringify(questions));
+    }
+
+    // ── Render ─────────────────────────────────────────────────────
+    function getFiltered() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const status = document.getElementById("filterSelect").value;
+      const course = document.getElementById("courseFilter").value;
+
+      return questions.filter(q => {
+        if (search && !(q.title || "").toLowerCase().includes(search) &&
+                     !(q.body  || "").toLowerCase().includes(search)) return false;
+        if (status === "open"     && (q.answers.length > 0))  return false;
+        if (status === "answered" && (q.answers.length === 0)) return false;
+        if (status === "solved"   && !q.solved)               return false;
+        if (course !== "all"      && q.courseName !== course)  return false;
+        return true;
+      }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    function renderQuestions() {
+      const filtered = getFiltered();
+      const total    = questions.length;
+
+      document.getElementById("questionCount").textContent =
+        total === 1 ? "1 question" : `${total} questions`;
+
+      const container = document.getElementById("questionsContainer");
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${total === 0 ? "💬" : "🔍"}</div>
+            <div class="empty-title">${total === 0 ? "No questions yet" : "No matching questions"}</div>
+            <div class="empty-sub">${total === 0 ? "Be the first to ask something!" : "Try a different search or filter."}</div>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `<div class="questions-list">${filtered.map(questionCard).join("")}</div>`;
+    }
+
+    function questionCard(q) {
+      const answerCount = q.answers.length;
+      const acceptedAns = q.answers.find(a => a.accepted);
+
+      const courseTag = q.courseName
+        ? `<span class="q-course-tag">${esc(q.courseName)}</span>` : "";
+      const solvedBadge = q.solved
+        ? `<span class="q-solved-badge">✓ Solved</span>` : "";
+
+      const answersHtml = q.answers.map(a => answerCard(q.id, a, !q.solved)).join("");
+
+      return `
+        <div class="question-card ${q.solved ? "answered" : ""}" id="qcard-${q.id}">
+          <div class="q-header" onclick="toggleAnswers('${q.id}')">
+            <div class="q-meta-row">
+              ${courseTag}
+              ${solvedBadge}
+              <span class="q-author">asked by ${esc(q.author)} · ${timeAgo(q.createdAt)}</span>
+            </div>
+            <div class="q-title">${esc(q.title)}</div>
+            ${q.body ? `<div class="q-body" id="qbody-${q.id}">${esc(q.body)}</div>` : ""}
+          </div>
+          <div class="q-footer">
+            <span class="q-footer-stat">💬 ${answerCount} ${answerCount === 1 ? "answer" : "answers"}</span>
+            <button class="q-toggle-btn" id="qtoggle-${q.id}" onclick="event.stopPropagation(); toggleAnswers('${q.id}')">
+              ${answerCount > 0 ? "View answers ▾" : "Answer ▾"}
+            </button>
+          </div>
+          <div class="answers-section" id="answers-${q.id}">
+            ${answersHtml}
+            <div class="add-answer-form">
+              <textarea class="answer-textarea" id="answerText-${q.id}" placeholder="Write your answer..."></textarea>
+              <div class="add-answer-row">
+                <input type="text" class="answer-name-input" id="answerName-${q.id}" placeholder="Your name" maxlength="40" />
+                <button class="btn btn-accent btn-small" onclick="submitAnswer('${q.id}')">Post Answer</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function answerCard(qId, a, canAccept) {
+      const acceptedClass  = a.accepted ? "accepted" : "";
+      const acceptBtnClass = a.accepted ? "accept-btn accepted-btn" : "accept-btn";
+      const acceptBtnText  = a.accepted ? "✓ Accepted answer" : "✓ Mark as answer";
+      const acceptBtnClick = a.accepted
+        ? ""
+        : `onclick="acceptAnswer('${qId}', '${a.id}')"`;
+      const acceptBtnDisabled = a.accepted ? "disabled" : "";
+
+      return `
+        <div class="answer-card ${acceptedClass}" id="acard-${a.id}">
+          <div class="answer-accepted-badge">✓ Accepted answer</div>
+          <div class="answer-author">${esc(a.author)} · ${timeAgo(a.createdAt)}</div>
+          <div class="answer-body">${esc(a.body)}</div>
+          <div class="answer-actions">
+            ${canAccept || a.accepted ? `<button class="${acceptBtnClass}" ${acceptBtnClick} ${acceptBtnDisabled}>${acceptBtnText}</button>` : ""}
+            <span class="answer-date">${new Date(a.createdAt).toLocaleDateString("en-NZ", { day:"numeric", month:"short", year:"numeric" })}</span>
+          </div>
+        </div>`;
+    }
+
+    // ── Toggle answers panel ───────────────────────────────────────
+    function toggleAnswers(qId) {
+      const section = document.getElementById(`answers-${qId}`);
+      const btn     = document.getElementById(`qtoggle-${qId}`);
+      const q       = questions.find(q => q.id === qId);
+      const isOpen  = section.classList.contains("open");
+
+      section.classList.toggle("open");
+      if (!isOpen) {
+        const count = q ? q.answers.length : 0;
+        btn.textContent = (count > 0 ? "Hide answers ▴" : "Hide ▴");
+      } else {
+        const count = q ? q.answers.length : 0;
+        btn.textContent = count > 0 ? "View answers ▾" : "Answer ▾";
+      }
+    }
+
+    // ── Ask modal ──────────────────────────────────────────────────
+    function openAskModal() {
+      document.getElementById("askModal").classList.add("active");
+      document.getElementById("askName").focus();
+    }
+
+    function closeAskModal() {
+      document.getElementById("askModal").classList.remove("active");
+    }
+
+    function updateTitleHint() {
+      const len = document.getElementById("askTitle").value.length;
+      document.getElementById("titleHint").textContent = `${len} / 120`;
+    }
+
+    async function submitQuestion() {
+      const title  = document.getElementById("askTitle").value.trim();
+      const body   = document.getElementById("askBody").value.trim();
+      const author = document.getElementById("askName").value.trim() || "Anonymous";
+      const course = document.getElementById("askCourse").value;
+
+      if (!title) {
+        document.getElementById("askTitle").focus();
+        return;
+      }
+
+      const newQ = {
+        id:         crypto.randomUUID(),
+        title,
+        body,
+        author,
+        courseName: course,
+        createdAt:  new Date().toISOString(),
+        answers:    [],
+        solved:     false
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/community/questions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newQ)
+        });
+        if (!res.ok) throw new Error();
+        const saved = await res.json();
+        questions.unshift({ ...saved, answers: saved.answers || [] });
+      } catch {
+        // Fallback to local
+        questions.unshift(newQ);
+        saveLocal();
+      }
+
+      // Reset form
+      document.getElementById("askTitle").value = "";
+      document.getElementById("askBody").value  = "";
+      document.getElementById("askName").value  = "";
+      document.getElementById("askCourse").value = "";
+      updateTitleHint();
+
+      closeAskModal();
+      renderQuestions();
+    }
+
+    // ── Submit answer ──────────────────────────────────────────────
+    async function submitAnswer(qId) {
+      const body   = document.getElementById(`answerText-${qId}`).value.trim();
+      const author = document.getElementById(`answerName-${qId}`).value.trim() || "Anonymous";
+
+      if (!body) {
+        document.getElementById(`answerText-${qId}`).focus();
+        return;
+      }
+
+      const newA = {
+        id:        crypto.randomUUID(),
+        questionId: qId,
+        body,
+        author,
+        createdAt: new Date().toISOString(),
+        accepted:  false
+      };
+
+      const q = questions.find(q => q.id === qId);
+      if (!q) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/community/questions/${qId}/answers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newA)
+        });
+        if (!res.ok) throw new Error();
+        const saved = await res.json();
+        q.answers.push(saved);
+      } catch {
+        q.answers.push(newA);
+        saveLocal();
+      }
+
+      renderQuestions();
+
+      // Re-open the answers panel after re-render
+      setTimeout(() => {
+        const section = document.getElementById(`answers-${qId}`);
+        if (section && !section.classList.contains("open")) toggleAnswers(qId);
+      }, 50);
+    }
+
+    // ── Accept answer ──────────────────────────────────────────────
+    async function acceptAnswer(qId, answerId) {
+      const q = questions.find(q => q.id === qId);
+      if (!q) return;
+
+      // Unaccept any existing accepted answer
+      q.answers.forEach(a => { a.accepted = false; });
+      const a = q.answers.find(a => a.id === answerId);
+      if (!a) return;
+      a.accepted = true;
+      q.solved   = true;
+
+      try {
+        await fetch(`${API_BASE}/community/questions/${qId}/answers/${answerId}/accept`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" }
+        });
+      } catch {
+        saveLocal();
+      }
+
+      renderQuestions();
+
+      // Re-open answers panel after re-render
+      setTimeout(() => {
+        const section = document.getElementById(`answers-${qId}`);
+        if (section && !section.classList.contains("open")) toggleAnswers(qId);
+      }, 50);
+    }
+
+    // ── Init ───────────────────────────────────────────────────────
+    window.addEventListener("load", async () => {
+      await loadCourses();
+      await loadQuestions();
+    });
+
+    // Close modal on overlay click
+    document.getElementById("askModal").addEventListener("click", e => {
+      if (e.target === e.currentTarget) closeAskModal();
+    });
+  </script>
+</body>
+</html>

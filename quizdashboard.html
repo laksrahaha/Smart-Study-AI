@@ -99,6 +99,28 @@ text-align: center;
 color: #888;
 margin-top: 20px;
 }
+
+.save-note-btn {
+display: block;
+margin-top: 15px;
+padding: 10px 16px;
+background: #28a745;
+color: white;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+font-size: 14px;
+font-weight: 600;
+}
+
+.save-note-btn:hover {
+background: #218838;
+}
+
+.save-note-btn:disabled {
+background: #ccc;
+cursor: not-allowed;
+}
 </style>
 </head>
 
@@ -194,13 +216,34 @@ words[3] || "Option C"
 const div = document.createElement("div");
 div.className = "question-box";
 
+const questionText = `What word best represents this note?`;
+const questionContent = words.slice(0, 10).join(" ");
+const optionsText = options.join(", ");
+
 div.innerHTML = `
-<p><strong>Q${index + 1}:</strong> What word best represents this note?</p>
-<p style="color:#666">${escapeHtml(words.slice(0, 10).join(" "))}...</p>
+<p><strong>Q${index + 1}:</strong> ${escapeHtml(questionText)}</p>
+<p style="color:#666">${escapeHtml(questionContent)}...</p>
 ${options.map(opt => `
 <div class="option" onclick="checkAnswer(this, '${escapeForClick(opt)}', '${escapeForClick(correctAnswer)}')">${escapeHtml(opt)}</div>
 `).join("")}
+<button class="save-note-btn">💾 Save as Note</button>
 `;
+
+// Store data in data attributes
+div.dataset.questionNumber = index + 1;
+div.dataset.questionTitle = `Q${index + 1}: ${questionText}`;
+div.dataset.questionContent = questionContent;
+div.dataset.optionsText = optionsText;
+
+// Attach event listener to save button
+const saveBtn = div.querySelector(".save-note-btn");
+saveBtn.addEventListener("click", () => {
+  saveQuestionAsNote(
+    div.dataset.questionTitle,
+    div.dataset.questionContent,
+    div.dataset.optionsText
+  );
+});
 
 quizArea.appendChild(div);
 });
@@ -260,6 +303,35 @@ return String(str || "")
 
 function goDashboard() {
 window.location.href = "studentdashboard.html";
+}
+
+async function saveQuestionAsNote(questionTitle, questionContent, optionsText) {
+try {
+const userId = getUserId();
+const courseName = selectedCourse || "General";
+
+const noteContent = `Question: ${questionTitle}\n\nContent Preview: ${questionContent}\n\nOptions: ${optionsText}`;
+
+const response = await fetch(`${API_BASE}/notes`, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+title: questionTitle.substring(0, 50),
+content: noteContent,
+courseName: courseName,
+userId: userId
+})
+});
+
+if (!response.ok) {
+throw new Error("Failed to save question as note");
+}
+
+alert("✓ Question saved as note successfully!");
+} catch (error) {
+console.error(error);
+alert("Could not save question as note. Make sure the backend is running.");
+}
 }
 </script>
 

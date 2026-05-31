@@ -49,6 +49,11 @@ bin/
 bin/
 obj/
 
+# API Keys (sensitive data - never commit)
+gemini-api-key.txt
+*.key
+api-keys/
+
 # Database
 *.db
 

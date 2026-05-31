@@ -8,17 +8,29 @@ namespace SmartStudyAI.Backend.Services
     {
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
+        private readonly string _apiKey;
 
         public GeminiService(IConfiguration configuration)
         {
             _configuration = configuration;
             _httpClient = new HttpClient();
+            
+            // Load API key from file
+            string keyFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "gemini-api-key.txt");
+            if (File.Exists(keyFilePath))
+            {
+                _apiKey = File.ReadAllText(keyFilePath).Trim();
+            }
+            else
+            {
+                throw new FileNotFoundException($"API key file not found at {keyFilePath}. Please create gemini-api-key.txt with your Gemini API key.");
+            }
         }
 
         public async Task<string> GenerateSummary(string content)
         {
-            // Get Gemini API key from appsettings.json
-            string apiKey = _configuration["Gemini:ApiKey"] ?? "";
+            // Get Gemini API key from file
+            string apiKey = _apiKey;
 
             // Gemini API endpoint
             string url =
@@ -92,8 +104,8 @@ namespace SmartStudyAI.Backend.Services
 
         public async Task<AssignmentChecklistResponse> GenerateAssignmentChecklist(string assignmentContent)
         {
-            // Get Gemini API key from appsettings.json
-            string apiKey = _configuration["Gemini:ApiKey"] ?? "";
+            // Get Gemini API key from file
+            string apiKey = _apiKey;
 
             // Gemini API endpoint
             string url =

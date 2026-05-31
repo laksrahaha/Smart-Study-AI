@@ -324,6 +324,16 @@
           <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" />
         </div>
 
+        <div class="action-row" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+          <span class="lang-label">📚 From Notes:</span>
+          <select id="noteSelect" onchange="onNoteSelected()" style="flex:1; min-width:180px;">
+            <option value="">-- Loading notes... --</option>
+          </select>
+          <button class="btn btn-accent" id="loadNoteBtn" onclick="loadFromNote()" disabled>
+            📖 Load Note
+          </button>
+        </div>
+
         <div class="lang-row">
           <span class="lang-label">🌍 Translate to:</span>
           <select id="targetLang">

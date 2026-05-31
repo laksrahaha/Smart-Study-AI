@@ -1,12 +1,68 @@
-# Step 1: Clone repository
-git clone(do this on github desktop for convinience)
+# ═══════════════════════════════════════════════════════════════════════
+# SMART STUDY AI - SETUP & RUN INSTRUCTIONS
+# ═══════════════════════════════════════════════════════════════════════
 
-# Run step 2 & 3 in the terminal
-# Step 2: Restore packages
+# Step 1: Clone Repository
+# Use GitHub Desktop or command line:
+git clone https://github.com/[username]/Smart-Study-AI.git
+
+# ═══════════════════════════════════════════════════════════════════════
+# Run these steps in the terminal:
+
+# Step 2: Restore NuGet Packages
 cd backend\SmartStudyAI.Backend
 dotnet restore
 
-# Step 3: Run (database auto-create)
+# Step 3: Run Backend Server (API will start at http://localhost:5000)
 dotnet run
 
-# Step 4: Open TestingPage.html in browser
+# You should see: "Now listening on: http://localhost:5000"
+# Keep this terminal open!
+
+# ═══════════════════════════════════════════════════════════════════════
+# Step 4: Open Frontend in Browser
+
+# In a NEW terminal or browser, navigate to:
+# file:///[path-to-project]/studentdashboard.html
+
+# Or open the project root folder in VS Code and use Live Server extension
+
+# ═══════════════════════════════════════════════════════════════════════
+# USING THE NEW ASSIGNMENT HELPER FEATURE
+
+# 1. On the Student Dashboard, click the "📋 Assignment Helper" card
+# 2. Click the upload area or drag-drop your PDF/TXT file
+# 3. Click "Process with AI" button
+# 4. AI will analyze the document and generate:
+#    - Assignment title and due date
+#    - Estimated completion time
+#    - Step-by-step tasks with detailed guides
+#    - Priority levels for each task
+# 5. Check off tasks as you complete them
+# 6. Download the checklist as CSV for offline use
+
+# ═══════════════════════════════════════════════════════════════════════
+# TESTING WITHOUT UPLOADING FILES
+
+# You can also test the API directly using REST Client extension:
+# 1. Install "REST Client" extension in VS Code
+# 2. Create test file: backend/SmartStudyAI.Backend/test-api.http
+# 3. Click "Send Request" on any test
+
+# ═══════════════════════════════════════════════════════════════════════
+# TROUBLESHOOTING
+
+# Backend won't start:
+#   - Make sure port 5000 is not in use
+#   - Run: netstat -ano | findstr :5000
+#   - Kill process: taskkill /PID [PID] /F
+
+# API errors:
+#   - Check appsettings.json has valid Gemini API key
+#   - Verify database (smartstudy.db) was created
+
+# Frontend can't connect to API:
+#   - Ensure backend is running (dotnet run)
+#   - Check backend URL is http://localhost:5000
+
+# ═══════════════════════════════════════════════════════════════════════

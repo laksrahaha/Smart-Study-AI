@@ -18,6 +18,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.Net.Http.Json" Version="10.0.8" />
+    <PackageReference Include="itext7" Version="7.2.5" />
   </ItemGroup>
 
   <ItemGroup>

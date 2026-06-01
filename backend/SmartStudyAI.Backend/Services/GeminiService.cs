@@ -94,7 +94,7 @@ namespace SmartStudyAI.Backend.Services
         public async Task<List<FlashCard>> GenerateFlashcards(string content, int count)
 {
     string apiKey = _configuration["Gemini:ApiKey"] ?? "";
-    string url = $"{GeminiUrl}?key={apiKey}";
+    string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
 
     string prompt =
         $"Create exactly {count} flashcards from the following study notes.\n" +

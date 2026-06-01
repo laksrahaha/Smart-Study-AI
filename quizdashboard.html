@@ -38,24 +38,108 @@ color: white;
 }
 
 .container {
-max-width: 800px;
+max-width: 850px;
 margin: 30px auto;
 padding: 0 20px;
 }
 
+.controls {
+background: white;
+padding: 20px;
+border-radius: 12px;
+border: 1px solid #ddd;
+box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+margin-bottom: 20px;
+}
+
+.controls label {
+font-weight: bold;
+display: block;
+margin-top: 12px;
+margin-bottom: 6px;
+}
+
+.controls input,
+.controls select {
+width: 100%;
+padding: 11px;
+border-radius: 8px;
+border: 1px solid #ccc;
+box-sizing: border-box;
+}
+
 .generate-btn {
 display: block;
-margin: 20px auto;
+margin: 20px auto 5px;
 padding: 12px 20px;
 background: #6C63FF;
 color: white;
 border: none;
 border-radius: 8px;
 cursor: pointer;
+font-weight: bold;
 }
 
 .generate-btn:hover {
 background: #5848d6;
+}
+
+.history-section {
+background: white;
+padding: 20px;
+border-radius: 12px;
+border: 1px solid #ddd;
+box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+margin-top: 25px;
+}
+
+.history-section h2 {
+margin-top: 0;
+color: #333;
+}
+
+.history-scope-note {
+color: #666;
+font-size: 14px;
+line-height: 1.4;
+margin-bottom: 15px;
+}
+
+.history-actions {
+display: flex;
+justify-content: flex-end;
+margin-bottom: 12px;
+}
+
+.clear-history-btn {
+padding: 9px 14px;
+background: #f8d7da;
+color: #721c24;
+border: 1px solid #d88b95;
+border-radius: 8px;
+cursor: pointer;
+font-weight: bold;
+}
+
+.clear-history-btn:hover {
+background: #f1bfc5;
+}
+
+.history-card {
+border: 1px solid #ddd;
+border-radius: 10px;
+padding: 14px;
+margin-bottom: 12px;
+background: #fafafa;
+line-height: 1.5;
+}
+
+.history-header {
+display: flex;
+justify-content: space-between;
+gap: 15px;
+margin-bottom: 8px;
+color: #333;
 }
 
 .question-box {
@@ -81,11 +165,14 @@ background: #f0f0ff;
 
 .correct {
 background: #d4edda;
+border-color: #80c28b;
 }
 
 .wrong {
 background: #f8d7da;
+border-color: #d88b95;
 }
+
 
 .score {
 text-align: center;
@@ -98,6 +185,48 @@ font-weight: bold;
 text-align: center;
 color: #888;
 margin-top: 20px;
+}
+
+.ai-status {
+text-align: center;
+color: #666;
+font-size: 14px;
+margin-top: 8px;
+}
+
+.small-note {
+color: #666;
+font-size: 14px;
+line-height: 1.4;
+}
+
+.mistake-feedback {
+margin-top: 14px;
+padding: 14px;
+background: #fff7e6;
+border: 1px solid #ffd28a;
+border-radius: 8px;
+color: #4d3a12;
+line-height: 1.5;
+}
+
+.mistake-feedback strong {
+display: block;
+margin-bottom: 6px;
+}
+
+.correct-feedback {
+margin-top: 14px;
+padding: 14px;
+background: #e8f7ed;
+border: 1px solid #9bd5aa;
+border-radius: 8px;
+color: #1d5c2f;
+line-height: 1.5;
+}
+
+.answered {
+cursor: default;
 }
 </style>
 </head>
@@ -112,7 +241,25 @@ margin-top: 20px;
 
 <div class="container">
 
-<button class="generate-btn" onclick="generateQuiz()">Generate Quiz</button>
+<div class="controls">
+<p class="small-note">
+Generate AI multiple-choice questions from your saved notes. Choose a topic and difficulty, then answer the quiz questions.
+</p>
+
+<label for="topicInput">Topic</label>
+<input id="topicInput" type="text" placeholder="Example: Photosynthesis, C# OOP, Web Development">
+
+<label for="difficultySelect">Difficulty</label>
+<select id="difficultySelect">
+<option value="Easy">Easy</option>
+<option value="Medium" selected>Medium</option>
+<option value="Hard">Hard</option>
+</select>
+
+<button class="generate-btn" onclick="generateQuiz()">Generate AI Quiz</button>
+<p id="aiStatus" class="ai-status"></p>
+<p id="difficultyInfo" class="ai-status"></p>
+</div>
 
 <div id="quizArea"></div>
 
@@ -120,7 +267,26 @@ margin-top: 20px;
 
 <p id="emptyMessage" class="empty"></p>
 
+<div class="history-section">
+  <h2>Examination History</h2>
+
+  <p class="history-scope-note">
+    Current prototype: quiz attempts are saved locally in the browser. Future scope: connect this history to the existing database so attempts are saved permanently for each student account.
+  </p>
+
+  <div class="history-actions">
+    <button class="clear-history-btn" onclick="clearExaminationHistory()">Clear History</button>
+  </div>
+
+  <div id="historyArea"></div>
 </div>
+
+</div>
+
+<script src="AI-difficulty-adjustment.js"></script>
+<script src="AI-question-generator.js"></script>
+<script src="AI-mistake-explanations.js"></script>
+<script src="AI-examination-history.js"></script>
 
 <script>
 const API_BASE = "http://localhost:5095/api";
@@ -134,6 +300,9 @@ document.getElementById("courseName").innerText = "Course: " + selectedCourse;
 
 let score = 0;
 let total = 0;
+let currentQuestions = [];
+let currentTopic = "";
+let currentDifficulty = "Medium";
 
 function getUserId() {
 return Number(localStorage.getItem("userId") || "1");
@@ -161,76 +330,172 @@ async function generateQuiz() {
 const quizArea = document.getElementById("quizArea");
 const empty = document.getElementById("emptyMessage");
 const scoreBox = document.getElementById("score");
+const status = document.getElementById("aiStatus");
 
 quizArea.innerHTML = "";
 empty.innerText = "";
 scoreBox.innerText = "";
+status.innerText = "Generating AI quiz...";
 
 score = 0;
 total = 0;
+currentQuestions = [];
 
 try {
 const notes = await getNotes();
 
 if (notes.length === 0) {
+status.innerText = "";
 empty.innerText = "No database notes found for this course. Create a note first.";
 return;
 }
 
-total = notes.length;
+const topic = document.getElementById("topicInput").value.trim()
+|| selectedCourse
+|| notes[0].courseName
+|| "General study topic";
 
-notes.forEach((note, index) => {
-const words = (note.content || "").split(/\s+/).filter(Boolean);
+const difficulty = document.getElementById("difficultySelect").value;
 
-const correctAnswer = words[0] || note.title || "Answer";
+currentTopic = topic;
+currentDifficulty = difficulty;
 
-const options = shuffle([
-correctAnswer,
-words[1] || "Option A",
-words[2] || "Option B",
-words[3] || "Option C"
-]);
+document.getElementById("difficultyInfo").innerText =
+AIDifficultyAdjustment.getDifficultyLabel(difficulty);
 
-const div = document.createElement("div");
-div.className = "question-box";
-
-div.innerHTML = `
-<p><strong>Q${index + 1}:</strong> What word best represents this note?</p>
-<p style="color:#666">${escapeHtml(words.slice(0, 10).join(" "))}...</p>
-${options.map(opt => `
-<div class="option" onclick="checkAnswer(this, '${escapeForClick(opt)}', '${escapeForClick(correctAnswer)}')">${escapeHtml(opt)}</div>
-`).join("")}
-`;
-
-quizArea.appendChild(div);
+const result = await AIQuestionGenerator.generateQuestions({
+topic: topic,
+difficulty: difficulty,
+notes: notes,
+apiBase: API_BASE
 });
 
+currentQuestions = result.questions;
+total = currentQuestions.length;
+
+if (result.usedFallback) {
+status.innerText = "AI could not connect on this device, so a local quiz was generated from your notes.";
+} else {
+status.innerText = "AI quiz generated successfully.";
+}
+
+renderQuestions();
 updateScore();
 
 } catch (error) {
-empty.innerText = "Could not connect to the backend. Make sure dotnet run is running.";
 console.error(error);
+status.innerText = "";
+empty.innerText = "Could not connect to the backend. Make sure dotnet run is running.";
 }
 }
 
-function checkAnswer(element, selected, correct) {
+function renderQuestions() {
+const quizArea = document.getElementById("quizArea");
+quizArea.innerHTML = "";
+
+currentQuestions.forEach((question, index) => {
+const div = document.createElement("div");
+div.className = "question-box";
+
+const questionText = document.createElement("p");
+questionText.innerHTML = `<strong>Q${index + 1}:</strong> `;
+questionText.appendChild(document.createTextNode(question.question));
+div.appendChild(questionText);
+
+question.options.forEach(option => {
+const optionDiv = document.createElement("div");
+optionDiv.className = "option";
+optionDiv.textContent = option;
+
+optionDiv.addEventListener("click", () => {
+checkQuestionAnswer(optionDiv, index, option);
+});
+
+div.appendChild(optionDiv);
+});
+
+const feedbackDiv = document.createElement("div");
+feedbackDiv.id = `feedback-${index}`;
+div.appendChild(feedbackDiv);
+
+quizArea.appendChild(div);
+});
+}
+
+async function checkQuestionAnswer(element, questionIndex, selectedAnswer) {
 if (element.classList.contains("answered")) return;
 
-const options = element.parentElement.querySelectorAll(".option");
-options.forEach(opt => opt.classList.add("answered"));
+const question = currentQuestions[questionIndex];
+const result = AIQuestionGenerator.checkAnswer(selectedAnswer, question.correctAnswer);
+const feedbackBox = document.getElementById(`feedback-${questionIndex}`);
 
-if (selected === correct) {
+const options = element.parentElement.querySelectorAll(".option");
+options.forEach(option => option.classList.add("answered"));
+
+if (result.isCorrect) {
 element.classList.add("correct");
 score++;
+
+feedbackBox.className = "correct-feedback";
+feedbackBox.innerHTML = `
+<strong>Correct!</strong>
+Good job, you selected the right answer.
+`;
+
+AIExaminationHistory.saveAttempt({
+topic: currentTopic,
+difficulty: currentDifficulty,
+question: question.question,
+selectedAnswer: result.selectedAnswer,
+correctAnswer: result.correctAnswer,
+isCorrect: true,
+explanation: ""
+});
+
+AIExaminationHistory.renderHistory("historyArea");
+
 } else {
 element.classList.add("wrong");
 
-options.forEach(opt => {
-if (opt.innerText === correct) {
-opt.classList.add("correct");
+options.forEach(option => {
+if (option.innerText === result.correctAnswer) {
+option.classList.add("correct");
 }
 });
+
+feedbackBox.className = "mistake-feedback";
+feedbackBox.innerHTML = `
+<strong>Generating personalized mistake explanation...</strong>
+`;
+
+const explanationResult = await AIMistakeExplanations.generateMistakeExplanation({
+question: question.question,
+selectedAnswer: result.selectedAnswer,
+correctAnswer: result.correctAnswer,
+topic: currentTopic,
+difficulty: currentDifficulty,
+apiBase: API_BASE
+});
+
+feedbackBox.innerHTML = `
+<strong>Personalized Mistake Explanation</strong>
+<p><b>Your answer:</b> ${escapeHtml(result.selectedAnswer)}</p>
+<p><b>Correct answer:</b> ${escapeHtml(result.correctAnswer)}</p>
+<p>${escapeHtml(explanationResult.explanation)}</p>
+`;
 }
+
+AIExaminationHistory.saveAttempt({
+topic: currentTopic,
+difficulty: currentDifficulty,
+question: question.question,
+selectedAnswer: result.selectedAnswer,
+correctAnswer: result.correctAnswer,
+isCorrect: false,
+explanation: explanationResult.explanation
+});
+
+AIExaminationHistory.renderHistory("historyArea");
 
 updateScore();
 }
@@ -238,10 +503,6 @@ updateScore();
 function updateScore() {
 document.getElementById("score").innerText =
 `Score: ${score} / ${total}`;
-}
-
-function shuffle(array) {
-return array.sort(() => Math.random() - 0.5);
 }
 
 function escapeHtml(str) {
@@ -252,15 +513,16 @@ return String(str || "")
 .replace(/"/g, "&quot;");
 }
 
-function escapeForClick(str) {
-return String(str || "")
-.replace(/\\/g, "\\\\")
-.replace(/'/g, "\\'");
+function clearExaminationHistory() {
+AIExaminationHistory.clearHistory();
+AIExaminationHistory.renderHistory("historyArea");
 }
 
 function goDashboard() {
 window.location.href = "studentdashboard.html";
 }
+
+AIExaminationHistory.renderHistory("historyArea");
 </script>
 
 </body>

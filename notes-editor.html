@@ -25,19 +25,6 @@
       --shadow: 0 8px 32px rgba(0,0,0,0.18);
     }
 
-    :root {
-      --grad-start: #2d2d2d;
-      --grad-end: #4e73df;
-      --accent: #4e73df;
-      --accent-dark: #3a5bbf;
-      --danger: #e74c3c;
-      --text-dark: #1a1a2e;
-      --text-mid: #555577;
-      --text-light: #9999bb;
-      --border: rgba(255,255,255,0.15);
-      --shadow: 0 8px 32px rgba(0,0,0,0.18);
-    }
-
     body {
       min-height: 100vh;
       background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
@@ -177,11 +164,6 @@
     .no-courses-hint a { color: var(--accent); cursor: pointer; text-decoration: underline; }
 
     .card-divider { border: none; border-top: 1px solid #eef0f8; }
-
-    .card-divider { 
-      border: none; 
-      border-top: 1px solid #eef0f8; 
-    }
 
     .editor-toolbar {
       display: flex;
@@ -333,6 +315,7 @@
           <div class="toolbar-left">
             <button class="btn btn-primary" onclick="saveNotes()">💾 Save</button>
             <button class="btn btn-outline" onclick="clearNotes()">Clear</button>
+            <button class="btn btn-outline" id="summarizeBtn" onclick="summarizeNote()">✨ AI Summary</button>
           </div>
           <div class="toolbar-right">
             <button class="btn btn-danger-outline" onclick="askDelete()">🗑 Delete Note</button>
@@ -340,6 +323,15 @@
         </div>
 
         <textarea id="noteEditor" placeholder="Start writing your notes here..."></textarea>
+
+        <!-- AI Summary Panel -->
+        <div id="summaryPanel" style="display:none; background:#f0f4ff; border:1.5px solid #c5d0f5; border-radius:12px; padding:18px 20px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+            <span style="font-size:0.8rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:1px;">✨ AI Summary</span>
+            <button onclick="closeSummary()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#aaa;line-height:1;">✕</button>
+          </div>
+          <p id="summaryText" style="font-size:0.9rem; line-height:1.7; color:var(--text-dark); font-weight:600; white-space:pre-wrap;"></p>
+        </div>
 
         <div class="editor-meta">
           <span id="wordCount">0 words</span>
@@ -365,20 +357,6 @@
   <script>
     const API_BASE = "http://localhost:5095/api";
 
-    function getCourses() { return JSON.parse(localStorage.getItem(KEYS.courses) || '[]'); }
-    function saveNote(note) {
-      let index = JSON.parse(localStorage.getItem(KEYS.index) || '[]');
-      if (!index.includes(note.id)) index.unshift(note.id);
-      localStorage.setItem(KEYS.index, JSON.stringify(index));
-      localStorage.setItem(KEYS.note(note.id), JSON.stringify(note));
-    }
-
-    function updateWordCount() {
-      const words = noteEditor.value.trim().split(/\s+/).filter(Boolean).length;
-      wordCountEl.textContent = words === 1 ? "1 word" : `${words} words`;
-    }
-    function generateId() { return 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); }
-
     let currentNoteId = null;
     const noteEditor     = document.getElementById('noteEditor');
     const noteTitleInput = document.getElementById('noteTitleInput');
@@ -392,85 +370,133 @@
       wordCountEl.textContent = words === 1 ? '1 word' : `${words} words`;
     }
 
-    function populateCourseSelect(selectedCourse) {
-      const courses = getCourses();
-      courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
-      courses.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c; opt.textContent = c;
-        if (c === selectedCourse) opt.selected = true;
-        courseSelect.appendChild(opt);
-      });
-      document.getElementById('noCourseHint').style.display = courses.length === 0 ? 'inline' : 'none';
+    // ── Load courses from backend ──
+    async function populateCourseSelect(selectedCourse) {
+      try {
+        const userId = Number(localStorage.getItem("userId") || "1");
+        const res = await fetch(`${API_BASE}/courses`);
+        if (!res.ok) throw new Error();
+        const courses = await res.json();
+        const userCourses = courses.filter(c => Number(c.userId) === userId);
+        courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
+        userCourses.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.title; opt.textContent = c.title;
+          if (c.title === selectedCourse) opt.selected = true;
+          courseSelect.appendChild(opt);
+        });
+        document.getElementById('noCourseHint').style.display = userCourses.length === 0 ? 'inline' : 'none';
+      } catch {
+        courseSelect.innerHTML = '<option value="">— Uncategorised —</option>';
+      }
     }
 
-    window.addEventListener('load', () => {
-      const editingId = localStorage.getItem('sss_editing_id');
+    // ── Load existing note from backend ──
+    async function loadExistingNote() {
+      const editingId = localStorage.getItem("editingNoteId");
       if (editingId) {
-        const raw = localStorage.getItem(KEYS.note(editingId));
-        if (raw) {
-          const note = JSON.parse(raw);
+        try {
+          const res = await fetch(`${API_BASE}/notes/${editingId}`);
+          if (!res.ok) throw new Error();
+          const note = await res.json();
           currentNoteId = note.id;
-          noteEditor.value = note.content || '';
-          noteTitleInput.value = note.title || '';
-          fileName.textContent = note.title || 'Untitled';
-          populateCourseSelect(note.course || '');
+          noteTitleInput.value = note.title || "";
+          noteEditor.value = note.content || "";
+          fileName.textContent = note.title || "Untitled";
+          await populateCourseSelect(note.courseName || "");
           updateWordCount();
-          return;
+        } catch {
+          currentNoteId = null;
+          fileName.textContent = "New note";
+          await populateCourseSelect("");
         }
-
-        const note = await response.json();
-
-        currentNoteId = note.id;
-        noteTitleInput.value = note.title || "";
-        noteEditor.value = note.content || "";
-        fileName.textContent = note.title || "Untitled";
-
-        await populateCourseSelect(note.courseName || "");
-
-        updateWordCount();
-
-      } catch (error) {
-        console.error(error);
+      } else {
         currentNoteId = null;
         fileName.textContent = "New note";
         await populateCourseSelect("");
       }
     }
 
-    function saveNotes() {
-      if (!currentNoteId) currentNoteId = generateId();
-      const note = {
-        id: currentNoteId,
+    // ── Save note to backend ──
+    async function saveNotes() {
+      const userId = Number(localStorage.getItem("userId") || "1");
+      const noteData = {
+        userId,
         title: noteTitleInput.value.trim() || 'Untitled',
         content: noteEditor.value,
-        course: courseSelect.value,
-        updatedAt: Date.now(),
+        courseName: courseSelect.value,
+        courseId: null
       };
-      saveNote(note);
-      fileName.textContent = note.title;
-      showStatus('Saved successfully!', true);
-      window.location.href = 'notes-board.html';
+      try {
+        let res;
+        if (currentNoteId) {
+          res = await fetch(`${API_BASE}/notes/${currentNoteId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(noteData)
+          });
+        } else {
+          res = await fetch(`${API_BASE}/notes`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(noteData)
+          });
+          if (res.ok) {
+            const saved = await res.json();
+            currentNoteId = saved.id;
+          }
+        }
+        if (!res.ok) throw new Error();
+        fileName.textContent = noteData.title;
+        showStatus('Saved successfully!', true);
+        window.location.href = 'notes-board.html';
+      } catch {
+        showStatus('Save failed. Check backend connection.', false);
+      }
     }
 
+    // ── Auto-save to backend ──
     let autoSaveTimer;
     function scheduleAutoSave() {
       clearTimeout(autoSaveTimer);
       statusMsg.textContent = 'Saving...';
       statusMsg.className = 'status-msg';
-      autoSaveTimer = setTimeout(() => {
-        if (!currentNoteId) currentNoteId = generateId();
-        const note = {
-          id: currentNoteId,
+      autoSaveTimer = setTimeout(async () => {
+        const userId = Number(localStorage.getItem("userId") || "1");
+        const noteData = {
+          userId,
           title: noteTitleInput.value.trim() || 'Untitled',
           content: noteEditor.value,
-          course: courseSelect.value,
-          updatedAt: Date.now(),
+          courseName: courseSelect.value,
+          courseId: null
         };
-        saveNote(note);
-        fileName.textContent = note.title;
-        showStatus('Auto-saved ✓', true);
-      }, 1000);
+        try {
+          let res;
+          if (currentNoteId) {
+            res = await fetch(`${API_BASE}/notes/${currentNoteId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(noteData)
+            });
+          } else {
+            res = await fetch(`${API_BASE}/notes`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(noteData)
+            });
+            if (res.ok) {
+              const saved = await res.json();
+              currentNoteId = saved.id;
+              localStorage.setItem("editingNoteId", currentNoteId);
+            }
+          }
+          if (!res.ok) throw new Error();
+          fileName.textContent = noteData.title;
+          showStatus('Auto-saved ✓', true);
+        } catch {
+          showStatus('Auto-save failed.', false);
+        }
+      }, 1500);
     }
 
     noteEditor.addEventListener('input', () => { scheduleAutoSave(); updateWordCount(); });
@@ -484,18 +510,23 @@
       }
     }
 
+    // ── Delete ──
+    async function deleteNote(id) {
+      await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
+    }
+
     function askDelete() {
       const title = noteTitleInput.value.trim() || "Untitled";
-
       document.getElementById("deleteModalMsg").textContent =
         `Are you sure you want to delete "${title}"? This cannot be undone.`;
-
       document.getElementById("deleteModal").classList.add("active");
     }
+
     function closeModal() { document.getElementById('deleteModal').classList.remove('active'); }
-    function confirmDelete() {
-      if (currentNoteId) deleteNote(currentNoteId);
-      localStorage.removeItem('sss_editing_id');
+
+    async function confirmDelete() {
+      if (currentNoteId) await deleteNote(currentNoteId);
+      localStorage.removeItem('editingNoteId');
       window.location.href = 'notes-board.html';
     }
 
@@ -503,6 +534,7 @@
       localStorage.removeItem("editingNoteId");
       window.location.href = "notes-board.html";
     }
+
     function goManageCourses() {
       window.location.href = "coursedashboard.html";
     }
@@ -512,6 +544,41 @@
       statusMsg.className = 'status-msg' + (success ? ' saved' : '');
       setTimeout(() => { statusMsg.textContent = ''; statusMsg.className = 'status-msg'; }, 3000);
     }
+
+    // ── AI Summary ──
+    async function summarizeNote() {
+      const content = noteEditor.value.trim();
+      if (!content) {
+        showStatus('Nothing to summarise — write some notes first.', false);
+        return;
+      }
+      const btn = document.getElementById('summarizeBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Summarising...';
+
+      try {
+        const res = await fetch(`${API_BASE}/AI/summarize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content })
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        document.getElementById('summaryText').textContent = data.result || data.Result || 'No summary returned.';
+        document.getElementById('summaryPanel').style.display = 'block';
+        document.getElementById('summaryPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch {
+        showStatus('Summary failed. Make sure the backend is running.', false);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '✨ AI Summary';
+      }
+    }
+
+    function closeSummary() {
+      document.getElementById('summaryPanel').style.display = 'none';
+    }
+
     window.addEventListener("load", loadExistingNote);
   </script>
 

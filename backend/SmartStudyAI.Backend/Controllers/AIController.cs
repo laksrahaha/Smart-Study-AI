@@ -50,11 +50,7 @@ namespace SmartStudyAI.Backend.Controllers
             );
 
             if (match.Success)
-            {
-                count = int.TryParse(match.Groups[1].Value, out var parsed)
-                    ? parsed
-                    : 8;
-
+            { count = int.TryParse(match.Groups[1].Value, out var parsed) ? parsed : 8;
                 noteContent = match.Groups[2].Value.Trim();
             }
 

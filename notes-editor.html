@@ -331,6 +331,14 @@
             <button onclick="closeSummary()" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#aaa;line-height:1;">✕</button>
           </div>
           <p id="summaryText" style="font-size:0.9rem; line-height:1.7; color:var(--text-dark); font-weight:600; white-space:pre-wrap;"></p>
+          
+          <button
+           class="btn btn-primary"
+           style="margin-top:12px;"
+           onclick="saveSummary()">
+           💾 Save Summary
+           </button>
+
         </div>
 
         <div class="editor-meta">
@@ -358,7 +366,9 @@
     const API_BASE = "http://localhost:5095/api";
 
     let currentNoteId = null;
-    const noteEditor     = document.getElementById('noteEditor');
+    let currentSummary = "";
+
+    const noteEditor     = document.getElementById('noteEditor');     
     const noteTitleInput = document.getElementById('noteTitleInput');
     const fileName       = document.getElementById('fileName');
     const statusMsg      = document.getElementById('statusMsg');
@@ -405,17 +415,32 @@
           fileName.textContent = note.title || "Untitled";
           await populateCourseSelect(note.courseName || "");
           updateWordCount();
-        } catch {
-          currentNoteId = null;
-          fileName.textContent = "New note";
-          await populateCourseSelect("");
-        }
-      } else {
-        currentNoteId = null;
-        fileName.textContent = "New note";
+
+          const savedSummary =
+          localStorage.getItem(`summary_${note.id}`);
+
+           if (savedSummary) {
+
+           currentSummary = savedSummary;
+
+            document.getElementById('summaryText').textContent =
+            savedSummary;
+
+          document.getElementById('summaryPanel').style.display =
+              'block';
+          }  
+
+       } catch {
+         currentNoteId = null;
+         fileName.textContent = "New note";
         await populateCourseSelect("");
       }
+     } else {
+       currentNoteId = null;
+      fileName.textContent = "New note";
+      await populateCourseSelect("");
     }
+   }
 
     // ── Save note to backend ──
     async function saveNotes() {
@@ -564,7 +589,12 @@
         });
         if (!res.ok) throw new Error();
         const data = await res.json();
-        document.getElementById('summaryText').textContent = data.result || data.Result || 'No summary returned.';
+
+        currentSummary =
+           data.result || data.Result || 'No summary returned.';
+
+        document.getElementById('summaryText').textContent =
+           currentSummary;
         document.getElementById('summaryPanel').style.display = 'block';
         document.getElementById('summaryPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } catch {
@@ -576,8 +606,23 @@
     }
 
     function closeSummary() {
-      document.getElementById('summaryPanel').style.display = 'none';
-    }
+  document.getElementById('summaryPanel').style.display = 'none';
+}
+
+function saveSummary() {
+
+  if (!currentSummary) {
+    showStatus('No summary available.', false);
+    return;
+  }
+
+  localStorage.setItem(
+    `summary_${currentNoteId}`,
+    currentSummary
+  );
+
+  showStatus('Summary saved!', true);
+}
 
     window.addEventListener("load", loadExistingNote);
   </script>

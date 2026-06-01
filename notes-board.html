@@ -938,7 +938,7 @@
           selectedIds.clear();
           toggleSelectMode();
         } else {
-          await fetch(`${API_BASE}/notes/note/${pendingDeleteId}`, { method: "DELETE" });
+          await fetch(`${API_BASE}/notes/${pendingDeleteId}`, { method: "DELETE" });
         }
         pendingDeleteId = null;
         closeDeleteModal();

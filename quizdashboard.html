@@ -37,6 +37,47 @@ background: rgba(255,255,255,0.15);
 color: white;
 }
 
+.follow-up-btn {
+margin-top: 12px;
+padding: 10px 14px;
+background: #6C63FF;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-weight: bold;
+}
+
+.follow-up-btn:hover {
+background: #5848d6;
+}
+
+.follow-up-box {
+margin-top: 14px;
+padding: 14px;
+background: #eef0ff;
+border: 1px solid #b8bcff;
+border-radius: 8px;
+color: #25265c;
+line-height: 1.5;
+}
+
+.follow-up-box strong {
+display: block;
+margin-bottom: 8px;
+}
+
+.follow-up-box textarea {
+width: 100%;
+box-sizing: border-box;
+margin-top: 8px;
+padding: 10px;
+border: 1px solid #bbb;
+border-radius: 8px;
+font-family: Arial;
+resize: vertical;
+}
+
 .container {
 max-width: 850px;
 margin: 30px auto;
@@ -287,6 +328,7 @@ Generate AI multiple-choice questions from your saved notes. Choose a topic and 
 <script src="AI-question-generator.js"></script>
 <script src="AI-mistake-explanations.js"></script>
 <script src="AI-examination-history.js"></script>
+<script src="AI-follow-up-questions.js"></script>
 
 <script>
 const API_BASE = "http://localhost:5095/api";
@@ -482,8 +524,13 @@ feedbackBox.innerHTML = `
 <p><b>Your answer:</b> ${escapeHtml(result.selectedAnswer)}</p>
 <p><b>Correct answer:</b> ${escapeHtml(result.correctAnswer)}</p>
 <p>${escapeHtml(explanationResult.explanation)}</p>
+
+<button class="follow-up-btn" onclick="generateAdaptiveFollowUpQuestion(${questionIndex})">
+Generate Follow-up Question
+</button>
+
+<div id="follow-up-${questionIndex}"></div>
 `;
-}
 
 AIExaminationHistory.saveAttempt({
 topic: currentTopic,
@@ -496,6 +543,7 @@ explanation: explanationResult.explanation
 });
 
 AIExaminationHistory.renderHistory("historyArea");
+}
 
 updateScore();
 }
@@ -518,6 +566,41 @@ AIExaminationHistory.clearHistory();
 AIExaminationHistory.renderHistory("historyArea");
 }
 
+async function generateAdaptiveFollowUpQuestion(questionIndex) {
+const question = currentQuestions[questionIndex];
+const followUpContainer = document.getElementById(`follow-up-${questionIndex}`);
+const feedbackBox = document.getElementById(`feedback-${questionIndex}`);
+
+if (!followUpContainer || !question) {
+return;
+}
+
+followUpContainer.innerHTML = `
+<div class="follow-up-box">
+<strong>Generating adaptive follow-up question...</strong>
+</div>
+`;
+
+const selectedAnswerText = feedbackBox.querySelector("p:nth-of-type(1)")?.innerText.replace("Your answer:", "").trim() || "";
+const correctAnswerText = feedbackBox.querySelector("p:nth-of-type(2)")?.innerText.replace("Correct answer:", "").trim() || "";
+const explanationText = feedbackBox.querySelector("p:nth-of-type(3)")?.innerText.trim() || "";
+
+const followUpResult = await AIFollowUpQuestions.generateFollowUpQuestion({
+topic: currentTopic,
+difficulty: currentDifficulty,
+question: question.question,
+selectedAnswer: selectedAnswerText,
+correctAnswer: correctAnswerText,
+explanation: explanationText,
+apiBase: API_BASE
+});
+
+AIFollowUpQuestions.renderFollowUpQuestion({
+container: followUpContainer,
+followUpQuestion: followUpResult.question
+});
+}
+
 function goDashboard() {
 window.location.href = "studentdashboard.html";
 }
@@ -527,3 +610,4 @@ AIExaminationHistory.renderHistory("historyArea");
 
 </body>
 </html>
+

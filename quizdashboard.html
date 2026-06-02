@@ -1,267 +1,725 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Quiz Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <title>Quiz Dashboard</title>
 
-<style>
-body {
-font-family: Arial;
-background: #f4f6fb;
-margin: 0;
-}
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-.header {
-background: linear-gradient(135deg, #6C63FF, #8a84ff);
-color: white;
-padding: 20px;
-text-align: center;
-position: relative;
-}
+    :root {
+      --grad-start: #2d2d2d;
+      --grad-end: #4e73df;
+      --accent: #4e73df;
+      --accent-dark: #3a5bbf;
+      --accent-light: #e8eeff;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --text-dark: #1a1a2e;
+      --text-mid: #555577;
+      --text-light: #9999bb;
+      --border: rgba(255,255,255,0.15);
+      --card-bg: #ffffff;
+      --shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
 
-.back-btn {
-position: absolute;
-left: 20px;
-top: 20px;
-background: transparent;
-color: rgba(255,255,255,0.9);
-border: 1.5px solid rgba(255,255,255,0.45);
-padding: 10px 22px;
-border-radius: 999px;
-cursor: pointer;
-font-size: 16px;
-font-weight: 600;
-}
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      background-attachment: fixed;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
 
-.back-btn:hover {
-background: rgba(255,255,255,0.15);
-color: white;
-}
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 36px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-.container {
-max-width: 800px;
-margin: 30px auto;
-padding: 0 20px;
-}
+    .nav-logo { width: 36px; height: 36px; object-fit: contain; }
 
-.generate-btn {
-display: block;
-margin: 20px auto;
-padding: 12px 20px;
-background: #6C63FF;
-color: white;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-}
+    .nav-brand {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
 
-.generate-btn:hover {
-background: #5848d6;
-}
+    .nav-back {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.25);
+      transition: all 0.2s;
+      text-decoration: none;
+      background: transparent;
+    }
 
-.question-box {
-background: white;
-padding: 20px;
-margin-bottom: 20px;
-border-radius: 10px;
-border: 1px solid #ddd;
-box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-}
+    .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
-.option {
-margin: 10px 0;
-padding: 10px;
-border-radius: 6px;
-border: 1px solid #ddd;
-cursor: pointer;
-}
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 44px 32px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.option:hover {
-background: #f0f0ff;
-}
+    .page-wrapper {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-.correct {
-background: #d4edda;
-}
+    /* ── HEADER ── */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-.wrong {
-background: #f8d7da;
-}
+    .header-titles h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1;
+    }
 
-.score {
-text-align: center;
-font-size: 22px;
-margin-top: 20px;
-font-weight: bold;
-}
+    .subtitle {
+      color: rgba(255,255,255,0.6);
+      margin-top: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
 
-.empty {
-text-align: center;
-color: #888;
-margin-top: 20px;
-}
-</style>
+    .count-badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    /* ── CONTROLS CARD ── */
+    .controls {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .controls .small-note {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+
+    .controls label {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.75);
+      display: block;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .controls input,
+    .controls select {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    .controls input::placeholder { color: rgba(255,255,255,0.35); font-weight: 400; }
+    .controls input:focus,
+    .controls select:focus { border-color: rgba(255,255,255,0.45); }
+    .controls select option { background: #2d2d2d; }
+
+    .generate-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 24px;
+      background: #fff;
+      color: var(--text-dark);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.15s, box-shadow 0.2s;
+      align-self: flex-start;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+    }
+
+    .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .ai-status {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      margin-top: 4px;
+    }
+
+    /* ── QUIZ AREA ── */
+    .question-box {
+      background: var(--card-bg);
+      color: var(--text-dark);
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #e0e0f0;
+      box-shadow: var(--shadow);
+    }
+
+    .question-box p { font-weight: 700; line-height: 1.5; }
+
+    .option {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #e0e0f0;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-dark);
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .option:hover { background: #f0f4ff; border-color: #c9d7ff; }
+
+    .option.correct  { background: #eafaf1; border-color: #a9dfbf; cursor: default; }
+    .option.wrong    { background: #fdecea; border-color: #f5b7b1; cursor: default; }
+    .option.answered { cursor: default; }
+
+    /* ── FEEDBACK BOXES ── */
+    .mistake-feedback {
+      margin-top: 14px;
+      padding: 14px;
+      background: #fff7e6;
+      border: 1px solid #ffd28a;
+      border-radius: 10px;
+      color: #4d3a12;
+      line-height: 1.5;
+    }
+
+    .mistake-feedback strong,
+    .correct-feedback strong {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 800;
+    }
+
+    .correct-feedback {
+      margin-top: 14px;
+      padding: 14px;
+      background: #e8f7ed;
+      border: 1px solid #9bd5aa;
+      border-radius: 10px;
+      color: #1d5c2f;
+      line-height: 1.5;
+    }
+
+    /* ── FOLLOW-UP ── */
+    .follow-up-btn {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+
+    .follow-up-btn:hover { background: var(--accent-dark); }
+
+    .follow-up-box {
+      margin-top: 14px;
+      padding: 14px;
+      background: #eef0ff;
+      border: 1px solid #b8bcff;
+      border-radius: 10px;
+      color: #25265c;
+      line-height: 1.5;
+    }
+
+    /* ── SCORE ── */
+    .score {
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .empty {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      font-weight: 700;
+    }
+
+    /* ── HISTORY ── */
+    .history-section {
+      background: var(--card-bg);
+      color: var(--text-dark);
+      padding: 20px 24px;
+      border-radius: 16px;
+      border: 1px solid #e0e0f0;
+      box-shadow: var(--shadow);
+    }
+
+    .history-section h2 { margin-top: 0; }
+
+    .history-scope-note {
+      color: var(--text-mid);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
+
+    .history-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .clear-history-btn {
+      padding: 9px 14px;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #d88b95;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+
+    .clear-history-btn:hover { background: #f1bfc5; }
+
+    .history-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fafafa;
+      line-height: 1.5;
+      color: var(--text-dark);
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .empty-history {
+      text-align: center;
+      color: #888;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="header">
-<button class="back-btn" onclick="goDashboard()">← Dashboard</button>
-<h1>Quiz Dashboard</h1>
-<p id="courseName"></p>
-</div>
+  <nav>
+    <img src="sss-logo.png" alt="SSS Logo" class="nav-logo">
+    <span class="nav-brand">Super Smart Study Assistant</span>
+    <a class="nav-back" href="studentdashboard.html">← Dashboard</a>
+  </nav>
 
-<div class="container">
+  <main>
+    <div class="page-wrapper">
 
-<button class="generate-btn" onclick="generateQuiz()">Generate Quiz</button>
+      <div class="header-row">
+        <div class="header-titles">
+          <h1>Quiz Dashboard 🧠</h1>
+          <div class="subtitle">Generate AI quizzes from your notes and track your progress</div>
+        </div>
+        <span class="count-badge" id="courseName">All Notes</span>
+      </div>
 
-<div id="quizArea"></div>
+      <div class="controls">
+        <p class="small-note">
+          Generate AI multiple-choice questions from your saved notes. Choose a topic and difficulty, then answer the quiz questions.
+        </p>
 
-<div id="score" class="score"></div>
+        <div>
+          <label for="noteSelect">📚 Select Note</label>
+          <select id="noteSelect" onchange="onNoteSelected()">
+            <option value="">-- Loading notes... --</option>
+          </select>
+        </div>
 
-<p id="emptyMessage" class="empty"></p>
+        <div id="notePreview" style="display:none;">
+          <div style="font-size:0.78rem;font-weight:800;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📄 Note Preview</div>
+          <div id="notePreviewText" style="font-size:0.88rem;color:rgba(255,255,255,0.75);font-weight:600;line-height:1.6;max-height:80px;overflow-y:auto;background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 14px;"></div>
+        </div>
 
-</div>
+        <div>
+          <label for="topicInput">Topic (optional override)</label>
+          <input id="topicInput" type="text" placeholder="e.g. Photosynthesis, C# OOP, Web Development">
+        </div>
 
-<script>
-const API_BASE = "http://localhost:5095/api";
-const selectedCourse = localStorage.getItem("selectedCourse");
+        <div>
+          <label for="difficultySelect">Difficulty</label>
+          <select id="difficultySelect">
+            <option value="Easy">Easy</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
 
-if (!selectedCourse) {
-document.getElementById("courseName").innerText = "All notes";
-} else {
-document.getElementById("courseName").innerText = "Course: " + selectedCourse;
-}
+        <button class="generate-btn" id="generateBtn" onclick="generateQuiz()" disabled>
+          ✨ Generate AI Quiz
+        </button>
 
-let score = 0;
-let total = 0;
+        <div id="aiStatus" class="ai-status"></div>
+        <div id="difficultyInfo" class="ai-status"></div>
+      </div>
 
-function getUserId() {
-return Number(localStorage.getItem("userId") || "1");
-}
+      <div id="quizArea"></div>
 
-async function getNotes() {
-const userId = getUserId();
+      <div id="score" class="score"></div>
+      <p id="emptyMessage" class="empty"></p>
 
-const response = await fetch(`${API_BASE}/notes/user/${userId}`);
+      <div class="history-section">
+        <h2>Examination History</h2>
+        <p class="history-scope-note">
+          Current prototype: quiz attempts are saved locally in the browser. Future scope: connect this history to the existing database so attempts are saved permanently for each student account.
+        </p>
+        <div class="history-actions">
+          <button class="clear-history-btn" onclick="clearExaminationHistory()">Clear History</button>
+        </div>
+        <div id="historyArea"></div>
+      </div>
 
-if (!response.ok) {
-throw new Error("Could not load notes from database.");
-}
+    </div>
+  </main>
 
-const notes = await response.json();
+  <script src="AI-difficulty-adjustment.js"></script>
+  <script src="AI-question-generator.js"></script>
+  <script src="AI-mistake-explanations.js"></script>
+  <script src="AI-examination-history.js"></script>
+  <script src="AI-follow-up-questions.js"></script>
 
-if (!selectedCourse) {
-return notes;
-}
+  <script>
+    const API_BASE = "http://localhost:5095/api";
+    const selectedCourse = localStorage.getItem("selectedCourse");
 
-return notes.filter(note => note.courseName === selectedCourse);
-}
+    document.getElementById("courseName").innerText =
+      selectedCourse ? "Course: " + selectedCourse : "All Notes";
 
-async function generateQuiz() {
-const quizArea = document.getElementById("quizArea");
-const empty = document.getElementById("emptyMessage");
-const scoreBox = document.getElementById("score");
+    let score = 0;
+    let total = 0;
+    let currentQuestions = [];
+    let currentTopic = "";
+    let currentDifficulty = "Medium";
+    let notes = [];
+    let selectedNote = null;
 
-quizArea.innerHTML = "";
-empty.innerText = "";
-scoreBox.innerText = "";
+    // ── LOAD NOTES (matches flashcard pattern) ──
+    async function loadNotes() {
+      const select = document.getElementById("noteSelect");
+      select.innerHTML = '<option value="">-- Loading... --</option>';
 
-score = 0;
-total = 0;
+      try {
+        const res = await fetch(`${API_BASE}/notes`);
+        if (!res.ok) throw new Error("Failed to fetch notes");
+        notes = await res.json();
 
-try {
-const notes = await getNotes();
+        // Filter by course if one is selected
+        if (selectedCourse) {
+          notes = notes.filter(n => n.courseName === selectedCourse);
+        }
 
-if (notes.length === 0) {
-empty.innerText = "No database notes found for this course. Create a note first.";
-return;
-}
+        if (!notes.length) {
+          select.innerHTML = '<option value="">-- No notes found --</option>';
+          document.getElementById("emptyMessage").innerText =
+            "No notes found" + (selectedCourse ? " for this course." : ". Create a note first.");
+          return;
+        }
 
-total = notes.length;
+        select.innerHTML =
+          '<option value="">-- Select a note --</option>' +
+          notes.map(n =>
+            `<option value="${n.id}">${n.title || 'Untitled'}${n.courseName ? ' (' + n.courseName + ')' : ''}</option>`
+          ).join('');
 
-notes.forEach((note, index) => {
-const words = (note.content || "").split(/\s+/).filter(Boolean);
+      } catch (err) {
+        select.innerHTML = '<option value="">-- Could not load notes --</option>';
+        document.getElementById("emptyMessage").innerText =
+          "Could not connect to the backend. Make sure dotnet run is running.";
+      }
+    }
 
-const correctAnswer = words[0] || note.title || "Answer";
+    // ── ON NOTE SELECTED ──
+    function onNoteSelected() {
+      const noteId = document.getElementById("noteSelect").value;
+      const generateBtn = document.getElementById("generateBtn");
 
-const options = shuffle([
-correctAnswer,
-words[1] || "Option A",
-words[2] || "Option B",
-words[3] || "Option C"
-]);
+      if (!noteId) {
+        selectedNote = null;
+        document.getElementById("notePreview").style.display = "none";
+        generateBtn.disabled = true;
+        return;
+      }
 
-const div = document.createElement("div");
-div.className = "question-box";
+      selectedNote = notes.find(n => n.id == noteId);
+      if (!selectedNote) return;
 
-div.innerHTML = `
-<p><strong>Q${index + 1}:</strong> What word best represents this note?</p>
-<p style="color:#666">${escapeHtml(words.slice(0, 10).join(" "))}...</p>
-${options.map(opt => `
-<div class="option" onclick="checkAnswer(this, '${escapeForClick(opt)}', '${escapeForClick(correctAnswer)}')">${escapeHtml(opt)}</div>
-`).join("")}
-`;
+      document.getElementById("notePreviewText").textContent = selectedNote.content || "(No content)";
+      document.getElementById("notePreview").style.display = "block";
+      generateBtn.disabled = false;
+    }
 
-quizArea.appendChild(div);
-});
+    // ── GENERATE QUIZ ──
+    async function generateQuiz() {
+      if (!selectedNote) {
+        document.getElementById("emptyMessage").innerText = "Please select a note first.";
+        return;
+      }
 
-updateScore();
+      const quizArea    = document.getElementById("quizArea");
+      const empty       = document.getElementById("emptyMessage");
+      const scoreBox    = document.getElementById("score");
+      const status      = document.getElementById("aiStatus");
 
-} catch (error) {
-empty.innerText = "Could not connect to the backend. Make sure dotnet run is running.";
-console.error(error);
-}
-}
+      quizArea.innerHTML = "";
+      empty.innerText    = "";
+      scoreBox.innerText = "";
+      status.innerText   = "Generating AI quiz...";
 
-function checkAnswer(element, selected, correct) {
-if (element.classList.contains("answered")) return;
+      score = 0;
+      total = 0;
+      currentQuestions = [];
 
-const options = element.parentElement.querySelectorAll(".option");
-options.forEach(opt => opt.classList.add("answered"));
+      const topic = document.getElementById("topicInput").value.trim()
+        || selectedNote.title
+        || selectedCourse
+        || "General study topic";
 
-if (selected === correct) {
-element.classList.add("correct");
-score++;
-} else {
-element.classList.add("wrong");
+      const difficulty = document.getElementById("difficultySelect").value;
 
-options.forEach(opt => {
-if (opt.innerText === correct) {
-opt.classList.add("correct");
-}
-});
-}
+      currentTopic      = topic;
+      currentDifficulty = difficulty;
 
-updateScore();
-}
+      document.getElementById("difficultyInfo").innerText =
+        AIDifficultyAdjustment.getDifficultyLabel(difficulty);
 
-function updateScore() {
-document.getElementById("score").innerText =
-`Score: ${score} / ${total}`;
-}
+      try {
+        const result = await AIQuestionGenerator.generateQuestions({
+          topic:    topic,
+          difficulty: difficulty,
+          notes:    [selectedNote],   
+          apiBase:  API_BASE
+        });
 
-function shuffle(array) {
-return array.sort(() => Math.random() - 0.5);
-}
+        currentQuestions = result.questions;
+        total = currentQuestions.length;
 
-function escapeHtml(str) {
-return String(str || "")
-.replace(/&/g, "&amp;")
-.replace(/</g, "&lt;")
-.replace(/>/g, "&gt;")
-.replace(/"/g, "&quot;");
-}
+        status.innerText = result.usedFallback
+          ? "AI could not connect on this device, so a local quiz was generated from your notes."
+          : "AI quiz generated successfully.";
 
-function escapeForClick(str) {
-return String(str || "")
-.replace(/\\/g, "\\\\")
-.replace(/'/g, "\\'");
-}
+        renderQuestions();
+        updateScore();
 
-function goDashboard() {
-window.location.href = "studentdashboard.html";
-}
-</script>
+      } catch (error) {
+        console.error(error);
+        status.innerText = "";
+        empty.innerText  = "Could not connect to the backend. Make sure dotnet run is running.";
+      }
+    }
+
+    // ── RENDER QUESTIONS ──
+    function renderQuestions() {
+      const quizArea = document.getElementById("quizArea");
+      quizArea.innerHTML = "";
+
+      currentQuestions.forEach((question, index) => {
+        const div = document.createElement("div");
+        div.className = "question-box";
+
+        const questionText = document.createElement("p");
+        questionText.innerHTML = `<strong>Q${index + 1}:</strong> `;
+        questionText.appendChild(document.createTextNode(question.question));
+        div.appendChild(questionText);
+
+        question.options.forEach(option => {
+          const optionDiv = document.createElement("div");
+          optionDiv.className = "option";
+          optionDiv.textContent = option;
+          optionDiv.addEventListener("click", () => checkAnswer(optionDiv, index, option));
+          div.appendChild(optionDiv);
+        });
+
+        const feedbackDiv = document.createElement("div");
+        feedbackDiv.id = `feedback-${index}`;
+        div.appendChild(feedbackDiv);
+
+        quizArea.appendChild(div);
+      });
+    }
+
+    // ── CHECK ANSWER ──
+    async function checkAnswer(element, questionIndex, selectedAnswer) {
+      if (element.classList.contains("answered")) return;
+
+      const question   = currentQuestions[questionIndex];
+      const result     = AIQuestionGenerator.checkAnswer(selectedAnswer, question.correctAnswer);
+      const feedbackBox = document.getElementById(`feedback-${questionIndex}`);
+
+      const options = element.parentElement.querySelectorAll(".option");
+      options.forEach(opt => opt.classList.add("answered"));
+
+      if (result.isCorrect) {
+        element.classList.add("correct");
+        score++;
+
+        feedbackBox.className = "correct-feedback";
+        feedbackBox.innerHTML = `<strong>Correct!</strong> Good job, you selected the right answer.`;
+
+        AIExaminationHistory.saveAttempt({
+          topic: currentTopic, difficulty: currentDifficulty,
+          question: question.question, selectedAnswer: result.selectedAnswer,
+          correctAnswer: result.correctAnswer, isCorrect: true, explanation: ""
+        });
+
+      } else {
+        element.classList.add("wrong");
+        options.forEach(opt => {
+          if (opt.innerText === result.correctAnswer) opt.classList.add("correct");
+        });
+
+        feedbackBox.className = "mistake-feedback";
+        feedbackBox.innerHTML = `<strong>Generating personalised mistake explanation...</strong>`;
+
+        const explanationResult = await AIMistakeExplanations.generateMistakeExplanation({
+          question: question.question, selectedAnswer: result.selectedAnswer,
+          correctAnswer: result.correctAnswer, topic: currentTopic,
+          difficulty: currentDifficulty, apiBase: API_BASE
+        });
+
+        feedbackBox.innerHTML = `
+          <strong>Personalised Mistake Explanation</strong>
+          <p><b>Your answer:</b> ${escapeHtml(result.selectedAnswer)}</p>
+          <p><b>Correct answer:</b> ${escapeHtml(result.correctAnswer)}</p>
+          <p>${escapeHtml(explanationResult.explanation)}</p>
+          <button class="follow-up-btn" onclick="generateAdaptiveFollowUpQuestion(${questionIndex})">
+            Generate Follow-up Question
+          </button>
+          <div id="follow-up-${questionIndex}"></div>
+        `;
+
+        AIExaminationHistory.saveAttempt({
+          topic: currentTopic, difficulty: currentDifficulty,
+          question: question.question, selectedAnswer: result.selectedAnswer,
+          correctAnswer: result.correctAnswer, isCorrect: false,
+          explanation: explanationResult.explanation
+        });
+      }
+
+      AIExaminationHistory.renderHistory("historyArea");
+      updateScore();
+    }
+
+    // ── FOLLOW-UP ──
+    async function generateAdaptiveFollowUpQuestion(questionIndex) {
+      const question          = currentQuestions[questionIndex];
+      const followUpContainer = document.getElementById(`follow-up-${questionIndex}`);
+      const feedbackBox       = document.getElementById(`feedback-${questionIndex}`);
+
+      if (!followUpContainer || !question) return;
+
+      followUpContainer.innerHTML = `<div class="follow-up-box"><strong>Generating adaptive follow-up question...</strong></div>`;
+
+      const selectedAnswerText = feedbackBox.querySelector("p:nth-of-type(1)")?.innerText.replace("Your answer:", "").trim() || "";
+      const correctAnswerText  = feedbackBox.querySelector("p:nth-of-type(2)")?.innerText.replace("Correct answer:", "").trim() || "";
+      const explanationText    = feedbackBox.querySelector("p:nth-of-type(3)")?.innerText.trim() || "";
+
+      const followUpResult = await AIFollowUpQuestions.generateFollowUpQuestion({
+        topic: currentTopic, difficulty: currentDifficulty,
+        question: question.question, selectedAnswer: selectedAnswerText,
+        correctAnswer: correctAnswerText, explanation: explanationText,
+        apiBase: API_BASE
+      });
+
+      AIFollowUpQuestions.renderFollowUpQuestion({
+        container: followUpContainer,
+        followUpQuestion: followUpResult.question
+      });
+    }
+
+    // ── HELPERS ──
+    function updateScore() {
+      document.getElementById("score").innerText = `Score: ${score} / ${total}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function clearExaminationHistory() {
+      AIExaminationHistory.clearHistory();
+      AIExaminationHistory.renderHistory("historyArea");
+    }
+
+    // ── INIT ──
+    window.addEventListener("DOMContentLoaded", () => {
+      loadNotes();
+      AIExaminationHistory.renderHistory("historyArea");
+    });
+  </script>
 
 </body>
 </html>

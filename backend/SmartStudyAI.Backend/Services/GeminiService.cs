@@ -28,8 +28,12 @@ namespace SmartStudyAI.Backend.Services
                 $"{GeminiUrl}?key={apiKey}";
 
             // AI prompt sent to Gemini
-            string prompt =
-                $"Summarize these study notes clearly and simply for a student:\n\n{content}";
+             string prompt =
+    $"Summarize the following student study notes.\n" +
+    $"Return ONLY the summary — no preamble, no meta-commentary.\n" +
+    $"Format: 3–5 concise bullet points covering the key concepts.\n" +
+    $"Each bullet should be one sentence. Use plain language.\n\n" +
+    $"Notes:\n{content}";
 
             // Request body sent to Gemini API
             var requestBody = new
@@ -52,7 +56,7 @@ namespace SmartStudyAI.Backend.Services
                 generationConfig = new
                 {
                     temperature = 0.7,
-                    maxOutputTokens = 300
+                    maxOutputTokens = 1024
                 }
             };
 

@@ -1,71 +1,87 @@
 const AIQuestionGenerator = (() => {
+
   async function generateQuestions({ topic, difficulty, notes, apiBase }) {
     const noteContent = notes
-      .map(note => `${note.title}: ${note.content}`)
-      .join("\n\n");
+      .map(note => `Title: ${note.title}\nContent: ${note.content}`)
+      .join("\n\n---\n\n");
 
+    const count = 5;
+    const difficultyInstruction = AIDifficultyAdjustment.getQuestionDifficultyInstruction(difficulty);
+
+    // FIX 1: Use the same endpoint as the working flash card generator
+    // FIX 2: Much stronger prompt that anchors every question to the note content
     const prompt = `
-Create 3 multiple-choice quiz questions for a student.
+You are an expert quiz generator for students.
+
+Your job is to create ${count} multiple-choice quiz questions based STRICTLY on the study notes provided below.
+Every question must be directly answerable from the notes. Do not use outside knowledge or invent facts.
 
 Topic: ${topic}
 Difficulty: ${difficulty}
-${AIDifficultyAdjustment.getQuestionDifficultyInstruction(difficulty)}
+${difficultyInstruction}
 
-Use these study notes:
+--- STUDY NOTES START ---
 ${noteContent}
+--- STUDY NOTES END ---
 
-Return ONLY valid JSON in this exact format:
+Rules you MUST follow:
+1. Every question must test something explicitly stated in the study notes above.
+2. Every question must have exactly 4 answer options.
+3. The "correctAnswer" value must be the EXACT text of one of the 4 options — copy it precisely.
+4. All 4 options must be plausible — do not make wrong answers obviously silly or unrelated.
+5. Questions should vary in style: definitions, cause/effect, comparisons, applications.
+6. Do NOT repeat the same question in different wording.
+7. Return ONLY a valid JSON array — no markdown, no code fences, no explanation before or after.
+
+Required JSON format:
 [
   {
-    "question": "question text here",
-    "options": ["option A", "option B", "option C", "option D"],
-    "correctAnswer": "exact correct option text"
+    "question": "Question text here",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correctAnswer": "Option A"
   }
 ]
-
-Rules:
-- Each question must have exactly 4 options.
-- The correctAnswer must exactly match one of the options.
-- Do not include markdown.
-- Do not include explanation.
 `;
 
     try {
-      const response = await fetch(`${apiBase}/AI/summarize`, {
+      const response = await fetch(`${apiBase}/AI/flashcards`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          content: prompt
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: prompt })
       });
 
-      if (!response.ok) {
-        throw new Error("AI request failed.");
-      }
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
       const data = await response.json();
-      const aiText = data.result || data.Result || "";
+
+      // Handle both array response and {raw: "..."} response (same as flash card)
+      let aiText = "";
+      if (Array.isArray(data)) {
+        // Backend already parsed it — but it's flashcard format, so fall through to re-prompt
+        // This shouldn't happen for quiz, so treat as raw
+        aiText = JSON.stringify(data);
+      } else if (data.raw) {
+        aiText = data.raw;
+      } else if (data.result || data.Result) {
+        aiText = data.result || data.Result;
+      } else {
+        aiText = JSON.stringify(data);
+      }
 
       if (!aiText || aiText.includes("Gemini API Error")) {
-        throw new Error("Gemini unavailable.");
+        throw new Error("AI returned an error response.");
       }
 
       const parsedQuestions = parseAIQuestions(aiText);
 
       if (parsedQuestions.length === 0) {
-        throw new Error("AI response could not be converted into quiz questions.");
+        throw new Error("AI response could not be parsed into quiz questions.");
       }
 
-      return {
-        questions: parsedQuestions,
-        usedFallback: false
-      };
+      return { questions: parsedQuestions, usedFallback: false };
 
     } catch (error) {
       console.warn("AI question generator fallback used:", error.message);
-
       return {
         questions: createFallbackQuestions(topic, difficulty, notes),
         usedFallback: true
@@ -77,13 +93,12 @@ Rules:
     try {
       let cleaned = String(aiText).trim();
 
-      cleaned = cleaned.replace(/^```json/i, "");
-      cleaned = cleaned.replace(/^```/i, "");
-      cleaned = cleaned.replace(/```$/i, "");
-      cleaned = cleaned.trim();
+      // Strip markdown code fences
+      cleaned = cleaned.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
 
+      // Extract the JSON array
       const firstBracket = cleaned.indexOf("[");
-      const lastBracket = cleaned.lastIndexOf("]");
+      const lastBracket  = cleaned.lastIndexOf("]");
 
       if (firstBracket !== -1 && lastBracket !== -1) {
         cleaned = cleaned.substring(firstBracket, lastBracket + 1);
@@ -92,16 +107,17 @@ Rules:
       const parsed = JSON.parse(cleaned);
 
       return parsed
-        .filter(question =>
-          question.question &&
-          Array.isArray(question.options) &&
-          question.options.length === 4 &&
-          question.correctAnswer
+        .filter(q =>
+          q.question &&
+          Array.isArray(q.options) &&
+          q.options.length === 4 &&
+          q.correctAnswer &&
+          q.options.includes(q.correctAnswer)   // FIX 3: Validate correctAnswer actually matches an option
         )
-        .map(question => ({
-          question: question.question,
-          options: question.options,
-          correctAnswer: question.correctAnswer
+        .map(q => ({
+          question:      q.question,
+          options:       q.options,
+          correctAnswer: q.correctAnswer
         }));
 
     } catch (error) {
@@ -110,41 +126,60 @@ Rules:
     }
   }
 
+  // FIX 4: Fallback questions that are actually meaningful and educational
   function createFallbackQuestions(topic, difficulty, notes) {
     const questions = [];
 
-    notes.slice(0, 3).forEach(note => {
-      const words = (note.content || "")
-        .split(/\s+/)
-        .map(word => word.replace(/[^\w]/g, ""))
-        .filter(word => word.length > 3);
+    notes.slice(0, 5).forEach(note => {
+      if (!note.content || note.content.trim().length < 20) return;
 
-      const correctAnswer = words[0] || note.title || topic;
-      const optionTwo = words[1] || "Revision";
-      const optionThree = words[2] || "Practice";
-      const optionFour = words[3] || "Learning";
+      // Extract meaningful sentences from the note
+      const sentences = note.content
+        .split(/[.!?]+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 30 && s.split(" ").length >= 5);
+
+      if (sentences.length === 0) return;
+
+      // Pick a sentence to build a question from
+      const sentence = sentences[0];
+      const words    = sentence.split(/\s+/).filter(w => w.length > 4);
+
+      if (words.length < 2) return;
+
+      // Pick a key word to blank out as the answer
+      const answerWord  = words[Math.floor(words.length / 2)];
+      const questionText = sentence.replace(answerWord, "_____");
+
+      // Build 3 plausible distractors from other words in the notes
+      const allWords = (note.content || "")
+        .split(/\s+/)
+        .map(w => w.replace(/[^\w]/g, ""))
+        .filter(w => w.length > 4 && w !== answerWord);
+
+      const uniqueWords = [...new Set(allWords)];
+      const distractors = uniqueWords.slice(0, 3);
+
+      // Pad distractors if needed
+      while (distractors.length < 3) {
+        distractors.push(["concept", "process", "method"][distractors.length] || "term");
+      }
+
+      const options = shuffle([answerWord, ...distractors.slice(0, 3)]);
 
       questions.push({
-        question: `(${difficulty}) What key term best represents this ${topic} note?`,
-        options: shuffle([
-          correctAnswer,
-          optionTwo,
-          optionThree,
-          optionFour
-        ]),
-        correctAnswer: correctAnswer
+        question:      `(${difficulty}) Fill in the blank from your ${topic} notes: "${questionText}"`,
+        options:       options,
+        correctAnswer: answerWord
       });
     });
 
+    // Final safety fallback if we still have nothing
     if (questions.length === 0) {
+      const note = notes[0] || {};
       questions.push({
-        question: `(${difficulty}) What topic is this quiz mainly about?`,
-        options: shuffle([
-          topic,
-          "Cooking",
-          "Travel",
-          "Shopping"
-        ]),
+        question:      `What is the main subject of the "${note.title || topic}" notes?`,
+        options:       shuffle([topic, "Unrelated Subject A", "Unrelated Subject B", "Unrelated Subject C"]),
         correctAnswer: topic
       });
     }
@@ -154,14 +189,19 @@ Rules:
 
   function checkAnswer(selectedAnswer, correctAnswer) {
     return {
-      isCorrect: selectedAnswer === correctAnswer,
-      selectedAnswer: selectedAnswer,
-      correctAnswer: correctAnswer
+      isCorrect:     selectedAnswer === correctAnswer,
+      selectedAnswer,
+      correctAnswer
     };
   }
 
   function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   return {

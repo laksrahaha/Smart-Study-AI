@@ -143,11 +143,68 @@
     line-height: 1.6;
   }
 
+  /* Flash Cards card gets a subtle teal accent to stand out */
+  .card-flashcards {
+    border-color: rgba(20, 184, 166, 0.25);
+    background: linear-gradient(135deg, #ffffff, #f0fdfb);
+  }
+
+  .card-flashcards:hover {
+    box-shadow: 0 18px 40px rgba(20, 184, 166, 0.18);
+  }
+
+  .card-translation {
+    border-color: rgb(221, 252, 216);
+    background: linear-gradient(135deg, #ffffff, #f9fff9);
+  }
+
+  .card-translation:hover {
+    box-shadow: 0 18px 40px rgba(171, 233, 195, 0.39);
+  }
+
+  .card-courses {
+  border-color: rgba(59, 130, 246, 0.18);
+  background: linear-gradient(135deg, #ffffff, #f5f9ff);
+}
+
+.card-courses:hover {
+  box-shadow: 0 18px 40px rgba(59, 130, 246, 0.12);
+}
+
+.card-notes {
+  border-color: rgba(249, 115, 22, 0.18);
+  background: linear-gradient(135deg, #ffffff, #fffaf5);
+}
+
+.card-notes:hover {
+  box-shadow: 0 18px 40px rgba(249, 115, 22, 0.12);
+}
+
+.card-community {
+  border-color: rgba(168, 85, 247, 0.18);
+  background: linear-gradient(135deg, #ffffff, #faf7ff);
+}
+
+.card-community:hover {
+  box-shadow: 0 18px 40px rgba(168, 85, 247, 0.12);
+}
+
+.card-quiz {
+  border-color: rgba(239, 68, 68, 0.18);
+  background: linear-gradient(135deg, #ffffff, #fff6f6);
+}
+
+.card-quiz:hover {
+  box-shadow: 0 18px 40px rgba(239, 68, 68, 0.12);
+}
+
+
+
   .sidebar-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(251, 234, 255, 0.35);
     z-index: 10;
   }
 
@@ -375,7 +432,7 @@
     z-index: 30;
     box-shadow: 0 10px 25px rgba(0,0,0,0.18);
   }
- 
+
   .calendar-popup {
     display: none;
     position: fixed;
@@ -391,34 +448,33 @@
     z-index: 31;
     overflow-y: auto;
   }
- 
+
   .calendar-popup.show-calendar {
     display: block;
   }
- 
+
   .calendar-popup #calendar-widget {
     max-height: 550px;
     overflow: hidden;
     margin-bottom: 20px;
   }
- 
-  /* Event Form Styles */
+
   .event-form {
     border-top: 2px solid #e0e0e0;
     padding-top: 20px;
     margin-top: 20px;
   }
- 
+
   .event-form h4 {
     margin-bottom: 14px;
     color: #202842;
     font-size: 16px;
   }
- 
+
   .form-group {
     margin-bottom: 12px;
   }
- 
+
   .form-group label {
     display: block;
     font-size: 13px;
@@ -426,7 +482,7 @@
     margin-bottom: 5px;
     color: #202842;
   }
- 
+
   .form-group input,
   .form-group textarea {
     width: 100%;
@@ -436,25 +492,25 @@
     font-size: 13px;
     font-family: Arial, sans-serif;
   }
- 
+
   .form-group textarea {
     resize: vertical;
     min-height: 60px;
   }
- 
+
   .form-group input:focus,
   .form-group textarea:focus {
     outline: none;
     border-color: #7c6df0;
     box-shadow: 0 0 4px rgba(124, 109, 240, 0.3);
   }
- 
+
   .form-buttons {
     display: flex;
     gap: 10px;
     margin-top: 14px;
   }
- 
+
   .form-buttons button {
     flex: 1;
     padding: 10px;
@@ -465,38 +521,37 @@
     font-size: 13px;
     transition: 0.3s;
   }
- 
+
   .add-event-btn {
     background: #7c6df0;
     color: white;
   }
- 
+
   .add-event-btn:hover {
     background: #6757dc;
   }
- 
+
   .cancel-event-btn {
     background: #e0e0e0;
     color: #202842;
   }
- 
+
   .cancel-event-btn:hover {
     background: #d0d0d0;
   }
- 
-  /* Event List Styles */
+
   .events-list {
     margin-top: 20px;
     max-height: 250px;
     overflow-y: auto;
   }
- 
+
   .events-list h4 {
     margin-bottom: 12px;
     color: #202842;
     font-size: 14px;
   }
- 
+
   .event-item {
     background: #f9f9f9;
     padding: 12px;
@@ -507,30 +562,30 @@
     justify-content: space-between;
     align-items: start;
   }
- 
+
   .event-item-content {
     flex: 1;
   }
- 
+
   .event-item-title {
     font-weight: bold;
     color: #202842;
     font-size: 13px;
   }
- 
+
   .event-item-date {
     font-size: 12px;
     color: #5d6678;
     margin-top: 3px;
   }
- 
+
   .event-item-desc {
     font-size: 12px;
     color: #5d6678;
     margin-top: 4px;
     font-style: italic;
   }
- 
+
   .delete-event-btn {
     background: #ff6b6b;
     color: white;
@@ -542,11 +597,11 @@
     font-weight: bold;
     transition: 0.3s;
   }
- 
+
   .delete-event-btn:hover {
     background: #e63946;
   }
- 
+
   .no-events {
     color: #5d6678;
     font-size: 13px;
@@ -606,10 +661,13 @@
     <a href="studentdashboard.html" class="nav-link active-link">🏠 Dashboard</a>
     <a href="coursedashboard.html" class="nav-link">📚 Course Workspace</a>
     <a href="notes-board.html" class="nav-link">📝 Notes Board</a>
+    <a href="flashcards.html" class="nav-link">🃏 Flash Cards</a>
     <a href="quizdashboard.html" class="nav-link">🧠 Quiz Dashboard</a>
-    <a href="#" class="nav-link" onclick="goToTimer(); return false;">⏱️ Session Timer</a>
+    <a href="translation.html" class="nav-link">🌐 Translation</a>
+  
     <a href="account-settings.html" class="nav-link">⚙️ Account Settings</a>
     <a href="BasicWebsiteFileUpload.html" class="nav-link">📁 File Uploads</a>
+    <a href="Community.html" class="nav-link">💬 Neuron Network</a>
 
     <a href="login.html" class="nav-link logout-link">🚪 Logout</a>
   </aside>
@@ -640,10 +698,7 @@
 
     <section class="dashboard-panel">
 
-      <div class="calendar-card">
- 
-      </div>
-      
+      <div class="calendar-card"></div>
 
       <section class="welcome-box">
         <h1>Welcome to Your Dashboard</h1>
@@ -653,69 +708,77 @@
       </section>
 
       <section class="grid">
-        <div class="card" onclick="goToCourses()">
+        <div class="card card-courses" onclick="goToCourses()">
           <span>📚</span>
           <h3 id="courseCardTitle">Course Workspace</h3>
           <p>Open your course workspace and manage study content.</p>
         </div>
 
-        <div class="card" onclick="goToNotesBoard()">
+        <div class="card card-notes" onclick="goToNotesBoard()">
           <span>📝</span>
           <h3>Notes Board</h3>
           <p>View and organise your saved study notes.</p>
         </div>
 
-        <div class="card" onclick="goToQuiz()">
+        <!-- ✅ NEW: Flash Cards card -->
+        <div class="card card-flashcards" onclick="goToFlashCards()">
+          <span>🃏</span>
+          <h3>Flash Cards</h3>
+          <p>Create and review flash cards to reinforce your study material.</p>
+        </div>
+
+        <!-- ✅ NEW: Translation Tool card -->
+        <div class="card card-translation" onclick="goToTranslation()">
+          <span>🌐</span>
+          <h3>Translation Tool</h3>
+          <p>Translate study materials into different languages.</p>
+        
+        </div>  
+
+        <div class="card card-community" onclick="goToCommunity()">
+          <span>💬</span>
+          <h3>Neuron Network</h3>
+          <p>Ask questions, share answers, and help each other study.</p>
+        </div>
+
+        <div class="card card-quiz" onclick="goToQuiz()">
           <span>🧠</span>
           <h3>Quiz Dashboard</h3>
           <p>Generate quiz questions from your saved study notes.</p>
         </div>
 
-        <div class="card" onclick="goToTimer()">
-          <span>⏱️</span>
-          <h3>Session Timer</h3>
-          <p>Start a focused study timer for your revision sessions.</p>
-        </div>
+        
       </section>
 
     </section>
 
     <button class="timer-floating-icon" onclick="toggleTimer()">⏱️</button>
-
     <button class="calendar-floating-icon" onclick="toggleCalendar()">📅</button>
 
     <div id="calendarPopup" class="calendar-popup">
-      
       <button class="timer-close-btn" onclick="closeCalendar()">×</button>
-      
       <div id="calendar-widget"></div>
- 
-      <!-- EVENT FORM -->
+
       <div class="event-form">
         <h4>Add New Event</h4>
-        
         <div class="form-group">
           <label for="eventDate">Date</label>
           <input type="date" id="eventDate" required>
         </div>
- 
         <div class="form-group">
           <label for="eventTitle">Event Title</label>
           <input type="text" id="eventTitle" placeholder="e.g., Math Exam, Project Deadline" required>
         </div>
- 
         <div class="form-group">
           <label for="eventDescription">Description (optional)</label>
           <textarea id="eventDescription" placeholder="Add notes about this event..."></textarea>
         </div>
- 
         <div class="form-buttons">
           <button class="add-event-btn" onclick="addEvent()">Add Event</button>
           <button class="cancel-event-btn" onclick="closeCalendar()">Close</button>
         </div>
       </div>
- 
-      <!-- EVENTS LIST -->
+
       <div class="events-list">
         <h4>Your Events</h4>
         <div id="eventsList"></div>
@@ -726,9 +789,7 @@
       <button class="timer-close-btn" onclick="closeTimer()">×</button>
       <h3>Session Timer</h3>
       <h1 id="timerDisplay">00:00</h1>
-
       <input type="number" id="minutesInput" placeholder="Minutes" min="1">
-
       <div>
         <button onclick="startTimer()">Start</button>
         <button onclick="resetTimer()">Reset</button>
@@ -742,7 +803,7 @@
       document.getElementById("sidebar").classList.add("open-sidebar");
       document.getElementById("sidebarOverlay").classList.add("show-overlay");
     }
-  
+
     function closeSidebar() {
       document.getElementById("sidebar").classList.remove("open-sidebar");
       document.getElementById("sidebarOverlay").classList.remove("show-overlay");
@@ -752,17 +813,12 @@
       document.getElementById("backgroundPanel").classList.toggle("show-panel");
     }
 
-    function goToCourses() {
-      window.location.href = "coursedashboard.html";
-    }
-
-    function goToNotesBoard() {
-      window.location.href = "notes-board.html";
-    }
-
-    function goToQuiz() {
-      window.location.href = "quizdashboard.html";
-    }
+    function goToCourses()    { window.location.href = "coursedashboard.html"; }
+    function goToNotesBoard() { window.location.href = "notes-board.html"; }
+    function goToQuiz()       { window.location.href = "quizdashboard.html"; }
+    function goToCommunity()  { window.location.href = "community.html"; }
+    function goToFlashCards() { window.location.href = "flashcards.html"; }
+    function goToTranslation() { window.location.href = "translation.html"; }  // ✅ NEW
 
     function goToTimer() {
       closeSidebar();
@@ -770,38 +826,36 @@
     }
 
     function applyBackground() {
-      const dashboardMain = document.getElementById("dashboardMain");
+      const dashboardMain    = document.getElementById("dashboardMain");
       const backgroundSelect = document.getElementById("backgroundSelect");
-      const imageUpload = document.getElementById("imageUpload");
-      const selectedFile = imageUpload.files[0];
+      const imageUpload      = document.getElementById("imageUpload");
+      const selectedFile     = imageUpload.files[0];
 
       if (selectedFile) {
         const imageUrl = URL.createObjectURL(selectedFile);
         dashboardMain.style.background =
           "linear-gradient(rgba(20,24,40,0.55), rgba(20,24,40,0.55)), url('" + imageUrl + "')";
-        dashboardMain.style.backgroundSize = "cover";
+        dashboardMain.style.backgroundSize    = "cover";
         dashboardMain.style.backgroundPosition = "center";
       } else {
-        if (backgroundSelect.value === "default") {
-          dashboardMain.style.background = "linear-gradient(to right, #2d2d2d, #4e73df)";
-        } else if (backgroundSelect.value === "minimal") {
-          dashboardMain.style.background = "linear-gradient(to right, #3f51b5, #7c6df0)";
-        } else if (backgroundSelect.value === "purple") {
-          dashboardMain.style.background = "linear-gradient(to right, #6b5ce7, #b8a7ff)";
-        } else if (backgroundSelect.value === "dark") {
-          dashboardMain.style.background = "linear-gradient(to right, #141824, #30364f)";
-        }
+        const gradients = {
+          default: "linear-gradient(to right, #2d2d2d, #4e73df)",
+          minimal: "linear-gradient(to right, #3f51b5, #7c6df0)",
+          purple:  "linear-gradient(to right, #6b5ce7, #b8a7ff)",
+          dark:    "linear-gradient(to right, #141824, #30364f)"
+        };
+        dashboardMain.style.background = gradients[backgroundSelect.value] || gradients.default;
       }
 
       document.getElementById("backgroundPanel").classList.remove("show-panel");
     }
 
+    // ── Timer ──────────────────────────────────────────────────────
     let totalSeconds = 0;
     let timerInterval;
 
     function toggleTimer() {
-      const popup = document.getElementById("timerPopup");
-      popup.classList.toggle("show-timer");
+      document.getElementById("timerPopup").classList.toggle("show-timer");
     }
 
     function closeTimer() {
@@ -811,25 +865,16 @@
     function updateTimerDisplay() {
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
-
       document.getElementById("timerDisplay").textContent =
         `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     }
 
     function startTimer() {
-      const minutesInput = document.getElementById("minutesInput");
-      const minutes = Number(minutesInput.value);
-
-      if (!minutes || minutes <= 0) {
-        alert("Enter a valid number of minutes.");
-        return;
-      }
-
+      const minutes = Number(document.getElementById("minutesInput").value);
+      if (!minutes || minutes <= 0) { alert("Enter a valid number of minutes."); return; }
       totalSeconds = minutes * 60;
-
       clearInterval(timerInterval);
       updateTimerDisplay();
-
       timerInterval = setInterval(() => {
         if (totalSeconds > 0) {
           totalSeconds--;
@@ -850,149 +895,94 @@
 
     updateTimerDisplay();
 
+    // ── Calendar ───────────────────────────────────────────────────
     let calendar;
     let calendarReady = false;
-    let events = []; // Store events locally
- 
-    // Load events from localStorage on page load
+    let events = [];
+
     function loadEvents() {
       const stored = localStorage.getItem('calendarEvents');
-      if (stored) {
-        events = JSON.parse(stored);
-      }
+      if (stored) events = JSON.parse(stored);
     }
- 
-    // Save events to localStorage
+
     function saveEvents() {
       localStorage.setItem('calendarEvents', JSON.stringify(events));
     }
- 
-    // Initialize calendar and load events
+
     document.addEventListener('DOMContentLoaded', function () {
       loadEvents();
- 
-      const el = document.getElementById('calendar-widget');
- 
-      calendar = new FullCalendar.Calendar(el, {
+
+      calendar = new FullCalendar.Calendar(document.getElementById('calendar-widget'), {
         initialView: 'dayGridMonth',
         height: 'auto',
         contentHeight: 'auto',
         fixedWeekCount: false,
-        headerToolbar: {
-          left: 'prev,next',
-          center: 'title',
-          right: 'today'
-        },
-        events: events.map(event => ({
-          id: event.id,
-          title: event.title,
-          start: event.date,
-          extendedProps: {
-            description: event.description
-          }
+        headerToolbar: { left: 'prev,next', center: 'title', right: 'today' },
+        events: events.map(e => ({
+          id: e.id,
+          title: e.title,
+          start: e.date,
+          extendedProps: { description: e.description }
         })),
-        eventClick: function(info) {
-          showEventDetails(info.event);
-        }
+        eventClick: function(info) { showEventDetails(info.event); }
       });
- 
-      // Set today's date in the date input
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('eventDate').value = today;
- 
+
+      document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
       displayEvents();
     });
- 
+
     function toggleCalendar() {
-      const popup = document.getElementById("calendarPopup");
-      popup.classList.toggle("show-calendar");
- 
-      if (!calendarReady) {
-        calendar.render();
-        calendarReady = true;
-      } else {
-        calendar.updateSize();
-      }
+      document.getElementById("calendarPopup").classList.toggle("show-calendar");
+      if (!calendarReady) { calendar.render(); calendarReady = true; }
+      else { calendar.updateSize(); }
     }
- 
+
     function closeCalendar() {
       document.getElementById("calendarPopup").classList.remove("show-calendar");
     }
- 
+
     function addEvent() {
-      const date = document.getElementById('eventDate').value;
-      const title = document.getElementById('eventTitle').value;
+      const date        = document.getElementById('eventDate').value;
+      const title       = document.getElementById('eventTitle').value;
       const description = document.getElementById('eventDescription').value;
- 
-      if (!date || !title) {
-        alert('Please fill in the date and title fields.');
-        return;
-      }
- 
-      const newEvent = {
-        id: Date.now().toString(),
-        title: title,
-        date: date,
-        description: description
-      };
- 
+
+      if (!date || !title) { alert('Please fill in the date and title fields.'); return; }
+
+      const newEvent = { id: Date.now().toString(), title, date, description };
       events.push(newEvent);
       saveEvents();
- 
-      // Add event to calendar
+
       calendar.addEvent({
-        id: newEvent.id,
-        title: newEvent.title,
-        start: newEvent.date,
-        extendedProps: {
-          description: newEvent.description
-        }
+        id: newEvent.id, title: newEvent.title, start: newEvent.date,
+        extendedProps: { description: newEvent.description }
       });
- 
-      // Clear form
-      document.getElementById('eventTitle').value = '';
+
+      document.getElementById('eventTitle').value       = '';
       document.getElementById('eventDescription').value = '';
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('eventDate').value = today;
- 
-      // Refresh event list
+      document.getElementById('eventDate').value        = new Date().toISOString().split('T')[0];
       displayEvents();
- 
       alert('Event added successfully!');
     }
- 
+
     function deleteEvent(eventId) {
       events = events.filter(e => e.id !== eventId);
       saveEvents();
- 
       const calEvent = calendar.getEventById(eventId);
-      if (calEvent) {
-        calEvent.remove();
-      }
- 
+      if (calEvent) calEvent.remove();
       displayEvents();
     }
- 
+
     function displayEvents() {
       const eventsList = document.getElementById('eventsList');
-      
       if (events.length === 0) {
         eventsList.innerHTML = '<div class="no-events">No events scheduled yet. Add one above!</div>';
         return;
       }
- 
-      // Sort events by date
-      const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
- 
-      eventsList.innerHTML = sortedEvents.map(event => {
-        const eventDate = new Date(event.date);
-        const formattedDate = eventDate.toLocaleDateString('en-US', { 
-          weekday: 'short', 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric' 
+      const sorted = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+      eventsList.innerHTML = sorted.map(event => {
+        const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
+          weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
         });
- 
         return `
           <div class="event-item">
             <div class="event-item-content">
@@ -1001,11 +991,9 @@
               ${event.description ? `<div class="event-item-desc">${event.description}</div>` : ''}
             </div>
             <button class="delete-event-btn" onclick="deleteEvent('${event.id}')">Delete</button>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
-
   </script>
 
 </body>

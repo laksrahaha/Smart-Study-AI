@@ -44,7 +44,7 @@ Required JSON format:
 `;
 
     try {
-      const response = await fetch(`${apiBase}/AI/flashcards`, {
+      const response = await fetch(`${apiBase}/AI/quiz`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: prompt })
@@ -54,19 +54,7 @@ Required JSON format:
 
       const data = await response.json();
 
-      // Handle both array response and {raw: "..."} response (same as flash card)
-      let aiText = "";
-      if (Array.isArray(data)) {
-        // Backend already parsed it — but it's flashcard format, so fall through to re-prompt
-        // This shouldn't happen for quiz, so treat as raw
-        aiText = JSON.stringify(data);
-      } else if (data.raw) {
-        aiText = data.raw;
-      } else if (data.result || data.Result) {
-        aiText = data.result || data.Result;
-      } else {
-        aiText = JSON.stringify(data);
-      }
+      const aiText = data.result || data.Result || "";
 
       if (!aiText || aiText.includes("Gemini API Error")) {
         throw new Error("AI returned an error response.");
@@ -80,8 +68,9 @@ Required JSON format:
 
       return { questions: parsedQuestions, usedFallback: false };
 
-    } catch (error) {
-      console.warn("AI question generator fallback used:", error.message);
+    }  catch (error) {
+  alert("QUIZ ERROR: " + error.message);
+  console.warn("AI question generator fallback used:", error.message);
       return {
         questions: createFallbackQuestions(topic, difficulty, notes),
         usedFallback: true

@@ -12,6 +12,29 @@
       color: #1a1a1a;
     }
 
+
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 16px 36px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      gap: 14px;
+    }
+    .nav-logo { width: 36px; height: 36px; object-fit: contain; }
+    .nav-brand { font-size: 15px; font-weight: 800; letter-spacing: 1.5px; flex: 1; }
+    .nav-back {
+      font-size: 14px; color: rgba(0, 0, 0, 0.75);
+      cursor: pointer; padding: 6px 14px; border-radius: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.25); transition: all 0.2s;
+      text-decoration: none;
+    }
+    .nav-back:hover { background: rgba(98, 44, 122, 0.336); color: #fff; }
+
     .sidebar {
       width: 220px;
       background: white;
@@ -178,7 +201,8 @@
 <body>
 
 <div class="sidebar">
-  <h2>Smart Study AI</h2>
+  <h2><img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
+    <span class="nav-brand">Super Smart Study Assistant</span></h2>
 
   <div class="menu-item" onclick="goBack()">Dashboard</div>
   <div class="menu-item active-menu">Courses</div>
@@ -188,14 +212,17 @@
   <div class="menu-item" onclick="goTimer()">Timer</div>
 </div>
 
+
+
 <div class="main">
 
+  
   <div class="header">
     <h2>My Courses</h2>
 
     <div class="header-right">
       <div id="studentName">Student</div>
-      <div class="settings-btn" onclick="toggleSettings()">Settings</div>
+      <a class="nav-back" href="studentdashboard.html">← Dashboard</a>
 
       <div class="settings-menu" id="settingsMenu">
         <div>Profile</div>

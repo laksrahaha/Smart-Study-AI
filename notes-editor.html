@@ -276,6 +276,115 @@
       color: var(--text-light);
       font-weight: 700;
     }
+
+    /* ── STUDY MODE ── */
+.study-toggle-btn {
+  padding: 10px 22px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  border: 1.5px solid #dde0f0;
+  background: transparent;
+  color: var(--text-dark);
+}
+.study-toggle-btn.active {
+  background: #eafaf1;
+  border-color: #a9dfbf;
+  color: #1d5c2f;
+}
+
+#studyModal {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+#studyModal.active { display: flex; }
+
+.study-quiz-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 28px 22px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+.study-quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.study-quiz-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #eafaf1;
+  color: #1d5c2f;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+.study-quiz-close-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.2rem; color: #aaa; line-height: 1;
+}
+.study-quiz-q {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.study-quiz-opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 14px;
+  margin-bottom: 9px;
+  border-radius: 10px;
+  border: 1px solid #e0e0f0;
+  background: #fff;
+  color: var(--text-dark);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.study-quiz-opt:hover:not(:disabled) { background: #f0f4ff; }
+.study-quiz-opt.correct { background: #eafaf1; border-color: #a9dfbf; color: #1d5c2f; }
+.study-quiz-opt.wrong   { background: #fdecea; border-color: #f5b7b1; color: #7b1a1a; }
+.study-quiz-loading {
+  text-align: center;
+  color: var(--text-mid);
+  font-weight: 700;
+  padding: 20px 0;
+  font-size: 0.9rem;
+}
+.study-quiz-feedback {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin-top: 8px;
+  min-height: 18px;
+}
+.study-timer-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  margin-left: 4px;
+}
+
   </style>
 </head>
 
@@ -286,6 +395,116 @@
     <span class="nav-brand">Super Smart Study Assistant</span>
     <a class="nav-back" onclick="goBack()">← Back to Notes</a>
   </nav>
+
+  <script>
+  // ── STUDY MODE ──
+  let studyModeActive = false;
+  let studyTimer = null;
+  let studyCountdown = 0;
+  let studyCountdownTimer = null;
+
+  function toggleStudyMode() {
+    studyModeActive = !studyModeActive;
+    const btn = document.getElementById('studyModeBtn');
+    if (studyModeActive) {
+      btn.textContent = '🧠 Study Mode: On';
+      btn.classList.add('active');
+      scheduleNextQuiz();
+    } else {
+      btn.textContent = '🧠 Study Mode: Off';
+      btn.classList.remove('active');
+      clearTimeout(studyTimer);
+      clearInterval(studyCountdownTimer);
+      document.getElementById('studyTimerBadge').textContent = '';
+    }
+  }
+
+  function scheduleNextQuiz() {
+    clearTimeout(studyTimer);
+    clearInterval(studyCountdownTimer);
+    const mins = parseInt(document.getElementById('studyIntervalSelect').value);
+    studyCountdown = mins * 60;
+    updateStudyBadge();
+    studyCountdownTimer = setInterval(() => {
+      studyCountdown--;
+      updateStudyBadge();
+      if (studyCountdown <= 0) clearInterval(studyCountdownTimer);
+    }, 1000);
+    studyTimer = setTimeout(fireStudyQuiz, mins * 60 * 1000);
+  }
+
+  function updateStudyBadge() {
+    const m = Math.floor(studyCountdown / 60);
+    const s = studyCountdown % 60;
+    document.getElementById('studyTimerBadge').textContent =
+      studyCountdown > 0 ? `(quiz in ${m}:${String(s).padStart(2,'0')})` : '';
+  }
+
+  async function fireStudyQuiz() {
+  const content = document.getElementById('noteEditor').value.trim();
+  const title   = document.getElementById('noteTitleInput').value.trim() || 'these notes';
+  if (!content || content.length < 80) {
+    if (studyModeActive) scheduleNextQuiz();
+    return;
+  }
+
+  const modal = document.getElementById('studyModal');
+  document.getElementById('studyQuizBody').innerHTML =
+    '<p class="study-quiz-loading">Generating question from your notes...</p>';
+  document.getElementById('studyQuizFeedback').textContent = '';
+  modal.classList.add('active');
+
+  try {
+    const result = await AIQuestionGenerator.generateQuestions({
+      topic:      title,
+      difficulty: 'Medium',
+      notes:      [{ title, content }],
+      apiBase:    API_BASE
+    });
+
+    // Just use the first question for the popup
+    const q = result.questions[0];
+    if (!q) throw new Error('No question returned');
+    renderStudyQuestion(q);
+
+  } catch (e) {
+    document.getElementById('studyQuizBody').innerHTML =
+      '<p class="study-quiz-loading" style="color:#c0392b">Could not generate question.</p>';
+  }
+}
+
+  function renderStudyQuestion(q) {
+    const body = document.getElementById('studyQuizBody');
+    body.innerHTML = `<p class="study-quiz-q">${escapeHtml(q.question)}</p>` +
+      q.options.map(opt =>
+        `<button class="study-quiz-opt" onclick="studyPickOpt(this,'${escapeHtml(opt).replace(/'/g,"\\'")}','${escapeHtml(q.answer).replace(/'/g,"\\'")}')">
+          ${escapeHtml(opt)}
+        </button>`
+      ).join('');
+  }
+
+  function studyPickOpt(el, selected, correct) {
+    document.querySelectorAll('.study-quiz-opt').forEach(o => o.disabled = true);
+    const feedback = document.getElementById('studyQuizFeedback');
+    if (selected === correct) {
+      el.classList.add('correct');
+      feedback.textContent = '✓ Correct! Great work.';
+      setTimeout(closeStudyQuiz, 1800);
+    } else {
+      el.classList.add('wrong');
+      document.querySelectorAll('.study-quiz-opt').forEach(o => {
+        if (o.textContent.trim() === correct) o.classList.add('correct');
+      });
+      feedback.textContent = 'Not quite — closing in a moment.';
+      setTimeout(closeStudyQuiz, 2200);
+    }
+  }
+
+  function closeStudyQuiz() {
+    document.getElementById('studyModal').classList.remove('active');
+    if (studyModeActive) scheduleNextQuiz();
+  }
+</script>
 
   <main>
     <div class="page-wrapper">
@@ -315,6 +534,17 @@
           <div class="toolbar-left">
             <button class="btn btn-primary" onclick="saveNotes()">💾 Save</button>
             <button class="btn btn-outline" onclick="clearNotes()">Clear</button>
+            <button class="btn study-toggle-btn" id="studyModeBtn" onclick="toggleStudyMode()">
+  🧠 Study Mode: Off
+</button>
+<select id="studyIntervalSelect" style="padding:8px 12px;border-radius:10px;border:1.5px solid #dde0f0;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;color:var(--text-dark);background:#f7f8fc;outline:none;">
+
+  <option value="1">Every 1 min</option>
+  <option value="3" selected>Every 3 min</option>
+  <option value="5">Every 5 min</option>
+  <option value="10">Every 10 min</option>
+</select>
+<span class="study-timer-badge" id="studyTimerBadge"></span>
             <button class="btn btn-outline" id="summarizeBtn" onclick="summarizeNote()">✨ AI Summary</button>
           </div>
           <div class="toolbar-right">
@@ -345,6 +575,19 @@
           <span id="wordCount">0 words</span>
           <p class="status-msg" id="statusMsg"></p>
         </div>
+
+        <div id="studyModal">
+  <div class="study-quiz-card">
+    <div class="study-quiz-header">
+      <span class="study-quiz-badge">🧠 Study Check</span>
+      <button class="study-quiz-close-btn" onclick="closeStudyQuiz()" aria-label="Close">✕</button>
+    </div>
+    <div id="studyQuizBody">
+      <p class="study-quiz-loading">Generating question from your notes...</p>
+    </div>
+    <p class="study-quiz-feedback" id="studyQuizFeedback"></p>
+  </div>
+</div>
 
       </div>
 
@@ -579,6 +822,9 @@ function saveSummary() {
 
     window.addEventListener("load", loadExistingNote);
   </script>
+
+  <script src="AI-difficulty-adjustment.js"></script>
+<script src="AI-question-generator.js"></script>
 
 </body>
 </html>

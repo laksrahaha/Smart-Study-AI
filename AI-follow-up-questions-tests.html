@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Adaptive Follow-up Questions TDD Tests</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6fb;
+      padding: 25px;
+    }
+
+    .test-box {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+
+    .pass {
+      color: green;
+      font-weight: bold;
+    }
+
+    .fail {
+      color: red;
+      font-weight: bold;
+    }
+
+    .note {
+      background: #fff7e6;
+      border: 1px solid #ffd28a;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Adaptive Follow-up Questions - TDD Tests</h1>
+
+  <div class="note">
+    <strong>User Story:</strong><br>
+    As a student, I want the system to generate follow-up questions based on my mistakes,
+    so that I can practise the concepts I struggled with.
+  </div>
+
+  <div id="testResults"></div>
+
+  <script src="AI-follow-up-questions.js"></script>
+
+  <script>
+    const results = document.getElementById("testResults");
+
+    function assert(condition, message) {
+      if (!condition) {
+        throw new Error(message);
+      }
+    }
+
+    function showResult(testName, passed, message) {
+      const div = document.createElement("div");
+      div.className = "test-box";
+
+      div.innerHTML = `
+        <p class="${passed ? "pass" : "fail"}">
+          ${passed ? "PASS" : "FAIL"}: ${testName}
+        </p>
+        <p>${message}</p>
+      `;
+
+      results.appendChild(div);
+    }
+
+    function runTest(testName, testFunction) {
+      try {
+        testFunction();
+        showResult(testName, true, "Test passed successfully.");
+      } catch (error) {
+        showResult(testName, false, error.message);
+      }
+    }
+
+    // TEST 1
+    runTest("FollowUpButton_ShowsAfterWrongAnswer", () => {
+      const shouldShow = AIFollowUpQuestions.shouldShowFollowUpButton(false);
+
+      assert(
+        shouldShow === true,
+        "Follow-up button should show after a wrong answer."
+      );
+    });
+
+    // TEST 2
+    runTest("GenerateFollowUpQuestion_WithMistakeDetails_ReturnsQuestion", () => {
+      const followUpQuestion = AIFollowUpQuestions.createFallbackFollowUpQuestion({
+        topic: "Photosynthesis",
+        difficulty: "Medium",
+        selectedAnswer: "Moonlight",
+        correctAnswer: "Sunlight"
+      });
+
+      assert(
+        followUpQuestion.length > 20,
+        "Follow-up question should not be empty."
+      );
+
+      assert(
+        followUpQuestion.includes("Sunlight"),
+        "Follow-up question should include the correct answer."
+      );
+    });
+
+    // TEST 3
+    runTest("FollowUpQuestion_DisplaysWithStudentAnswerBox", () => {
+      const container = document.createElement("div");
+
+      AIFollowUpQuestions.renderFollowUpQuestion({
+        container: container,
+        followUpQuestion: "Explain why sunlight is important for photosynthesis."
+      });
+
+      const questionText = container.querySelector(".follow-up-question-text");
+      const answerBox = container.querySelector("textarea");
+
+      assert(
+        questionText !== null,
+        "Follow-up question text should be displayed."
+      );
+
+      assert(
+        answerBox !== null,
+        "Student answer box should be displayed."
+      );
+    });
+  </script>
+</body>
+</html>

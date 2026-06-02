@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using SmartStudyAI.Backend.Models;
 
 namespace SmartStudyAI.Backend.Services
@@ -232,5 +233,59 @@ Generate 5-10 checklist items depending on assignment complexity.";
 
             return checklistResponse;
         }
+        public async Task<List<FlashCard>> GenerateFlashcards(string content, int count)
+{
+    string apiKey = _configuration["Gemini:ApiKey"] ?? "";
+    string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
+
+    string prompt =
+        $"Create exactly {count} flashcards from the following study notes.\n" +
+        $"Return ONLY a valid JSON array. Each element must have exactly two string fields: " +
+        $"\"front\" (a concise question) and \"back\" (a clear answer).\n" +
+        $"Do not wrap the JSON in markdown code blocks. Output the raw JSON array only.\n\n" +
+        $"Study notes:\n{content}";
+
+    var requestBody = new
+    {
+        contents = new[]
+        {
+            new { role = "user", parts = new[] { new { text = prompt } } }
+        },
+        generationConfig = new
+        {
+            temperature = 0.7,
+            maxOutputTokens = 2048,
+            responseMimeType = "application/json"
+        }
+    };
+
+    var json = JsonSerializer.Serialize(requestBody);
+    var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+    var response = await _httpClient.PostAsync(url, httpContent);
+
+    if (!response.IsSuccessStatusCode)
+    {
+        var error = await response.Content.ReadAsStringAsync();
+        throw new Exception($"Gemini API Error: {response.StatusCode} — {error}");
+    }
+
+    var responseString = await response.Content.ReadAsStringAsync();
+    using JsonDocument doc = JsonDocument.Parse(responseString);
+
+    var rawText = doc.RootElement
+        .GetProperty("candidates")[0]
+        .GetProperty("content")
+        .GetProperty("parts")[0]
+        .GetProperty("text")
+        .GetString() ?? "[]";
+
+    rawText = rawText.Trim();
+    rawText = Regex.Replace(rawText, @"^```[a-z]*\n?", "", RegexOptions.Multiline).Trim();
+    rawText = rawText.TrimEnd('`').Trim();
+
+    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    return JsonSerializer.Deserialize<List<FlashCard>>(rawText, options) ?? new List<FlashCard>();
+}
+
     }
 }

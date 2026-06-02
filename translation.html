@@ -298,7 +298,7 @@
   <nav>
     <img src="sss-logo.png" alt="SSS Logo" class="nav-logo" />
     <span class="nav-brand">Super Smart Study Assistant</span>
-    <a class="nav-back" href="dashboard.html">← Dashboard</a>
+    <a class="nav-back" href="studentdashboard.html">← Dashboard</a>
   </nav>
 
   <!-- Main -->
@@ -309,7 +309,7 @@
       <div class="header-row">
         <div class="header-titles">
           <h1>📖 Contextual Translation</h1>
-          <div class="subtitle">Upload your document — complex vocabulary is highlighted automatically</div>
+          <div class="subtitle">Upload a document or load a note from your library — complex vocabulary is highlighted automatically</div>
         </div>
       </div>
 
@@ -322,6 +322,16 @@
           <button class="btn btn-ghost" onclick="loadSample()">✨ Load Sample Text</button>
           <button class="btn btn-ghost" id="clearBtn" onclick="clearDoc()" style="display:none">🗑 Clear</button>
           <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" />
+        </div>
+
+        <div class="action-row" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+          <span class="lang-label">📚 From Notes:</span>
+          <select id="noteSelect" onchange="onNoteSelected()" style="flex:1; min-width:180px;">
+            <option value="">-- Loading notes... --</option>
+          </select>
+          <button class="btn btn-accent" id="loadNoteBtn" onclick="loadFromNote()" disabled>
+            📖 Load Note
+          </button>
         </div>
 
         <div class="lang-row">

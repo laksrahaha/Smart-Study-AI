@@ -38,7 +38,7 @@ Keep the explanation clear, supportive, and easy to understand.
 `;
 
     try {
-      const response = await fetch(`${apiBase}/AI/summarize`, {
+      const response = await fetch(`${apiBase}/AI/quiz`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

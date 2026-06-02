@@ -1,0 +1,24 @@
+
+Q: What is Photosynthesis?
+A: The process by which plants convert sunlight, CO2 and water into glucose and oxygen.
+
+Q: Where does photosynthesis occur?
+A: In the chloroplasts of plant cells, using chlorophyll to absorb light energy.
+
+Q: What are the two stages of photosynthesis?
+A: The light-dependent reactions and the Calvin cycle (light-independent reactions).
+
+Q: What is Mitosis?
+A: A type of cell division that produces two genetically identical daughter cells.
+
+Q: What are the stages of Mitosis?
+A: Prophase, Metaphase, Anaphase, and Telophase (PMAT).
+
+Q: What happens before Mitosis begins?
+A: DNA replication occurs during interphase to ensure each daughter cell receives a complete genome.
+
+Q: What is Osmosis?
+A: The movement of water molecules across a semipermeable membrane from low to high solute concentration.
+
+Q: What is an Algorithm?
+A: A step-by-step set of instructions designed to solve a specific problem or complete a task.

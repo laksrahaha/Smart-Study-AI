@@ -38,7 +38,7 @@ Only return the follow-up question.
 `;
 
     try {
-      const response = await fetch(`${apiBase}/AI/summarize`, {
+      const response = await fetch(`${apiBase}/AI/quiz`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -88,20 +88,16 @@ Only return the follow-up question.
     return `In your own words, explain why "${correctAnswer}" is the better answer for this ${difficulty} ${topic} question, and why "${selectedAnswer}" was not correct.`;
   }
 
-  function renderFollowUpQuestion({
-    container,
-    followUpQuestion
-  }) {
-    container.innerHTML = `
-      <div class="follow-up-box">
-        <strong>Adaptive Follow-up Question</strong>
-        <p class="follow-up-question-text">${escapeHtml(followUpQuestion)}</p>
-
-        <label for="followUpAnswer">Your Answer:</label>
-        <textarea id="followUpAnswer" rows="4" placeholder="Type your answer here..."></textarea>
-      </div>
-    `;
-  }
+  function renderFollowUpQuestion({ container, followUpQuestion }) {
+  container.innerHTML = `
+    <div class="follow-up-box">
+      <strong>Adaptive Follow-up Question</strong>
+      <p class="follow-up-question-text">${escapeHtml(followUpQuestion)}</p>
+      <label for="followUpAnswer">Your Answer:</label>
+      <textarea id="followUpAnswer" rows="4" placeholder="Type your answer here..."></textarea>
+    </div>
+  `;
+}
 
   function escapeHtml(str) {
     return String(str || "")

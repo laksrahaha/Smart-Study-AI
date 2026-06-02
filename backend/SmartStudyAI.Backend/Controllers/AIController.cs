@@ -35,6 +35,17 @@ namespace SmartStudyAI.Backend.Controllers
             });
         }
 
+        [HttpPost("quiz")]
+        public async Task<IActionResult> GenerateQuiz([FromBody] AIRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Content))
+                return BadRequest(new { error = "Content is required." });
+
+            var result = await _geminiService.GenerateWithPrompt(request.Content);
+            return Ok(new AIResponse { Result = result });
+        }
+
+
         [HttpPost("flashcards")]
         public async Task<IActionResult> GenerateFlashcards([FromBody] AIRequest request)
         {

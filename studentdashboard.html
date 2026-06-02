@@ -609,6 +609,323 @@
     padding: 20px 0;
   }
 
+  /* Assignment Helper Styles */
+  .assignment-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  .assignment-modal.show-modal {
+    display: flex;
+  }
+
+  .assignment-modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .assignment-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 16px;
+  }
+
+  .assignment-modal-header h2 {
+    font-size: 28px;
+    color: #202842;
+  }
+
+  .close-modal-btn {
+    background: transparent;
+    border: none;
+    font-size: 32px;
+    color: #202842;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .assignment-upload-section {
+    margin-bottom: 24px;
+  }
+
+  .assignment-upload-section h3 {
+    font-size: 16px;
+    color: #202842;
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+
+  .file-upload-area {
+    border: 2px dashed #7c6df0;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #f9f7ff;
+  }
+
+  .file-upload-area:hover {
+    background: #f0edff;
+    border-color: #6757dc;
+  }
+
+  .file-upload-area.dragover {
+    background: #e8e3ff;
+    border-color: #6757dc;
+  }
+
+  .file-upload-area input[type="file"] {
+    display: none;
+  }
+
+  .file-upload-area-text {
+    color: #202842;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  .file-upload-area-hint {
+    color: #5d6678;
+    font-size: 13px;
+  }
+
+  .upload-btn {
+    width: 100%;
+    padding: 12px;
+    background: #7c6df0;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: 0.3s;
+  }
+
+  .upload-btn:hover:not(:disabled) {
+    background: #6757dc;
+  }
+
+  .upload-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    color: #7c6df0;
+  }
+
+  .loading-spinner.active {
+    display: block;
+  }
+
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #7c6df0;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .checklist-result {
+    display: none;
+    margin-top: 24px;
+  }
+
+  .checklist-result.show {
+    display: block;
+  }
+
+  .checklist-header {
+    background: linear-gradient(135deg, #7c6df0, #b8a7ff);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .checklist-header h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .checklist-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  .meta-item {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+
+  .guidance-box {
+    background: #f9f7ff;
+    padding: 16px;
+    border-left: 4px solid #7c6df0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: #202842;
+    line-height: 1.6;
+  }
+
+  .checklist-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .checklist-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 16px;
+    transition: 0.3s;
+  }
+
+  .checklist-item:hover {
+    box-shadow: 0 4px 12px rgba(124, 109, 240, 0.1);
+  }
+
+  .checklist-item-header {
+    display: flex;
+    align-items: start;
+    gap: 12px;
+  }
+
+  .checklist-item-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #7c6df0;
+  }
+
+  .checklist-item-content {
+    flex: 1;
+  }
+
+  .checklist-item-title {
+    font-weight: bold;
+    color: #202842;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .priority-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .priority-1 {
+    background: #ff6b6b;
+    color: white;
+  }
+
+  .priority-2 {
+    background: #ffa500;
+    color: white;
+  }
+
+  .priority-3 {
+    background: #7c6df0;
+    color: white;
+  }
+
+  .checklist-item-guide {
+    color: #5d6678;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    margin-top: 8px;
+  }
+
+  .checklist-item.completed {
+    background: #f0fff4;
+    border-color: #4caf50;
+    opacity: 0.75;
+  }
+
+  .checklist-item.completed .checklist-item-title {
+    text-decoration: line-through;
+    color: #9ca3af;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c6df0, #b8a7ff);
+    border-radius: 4px;
+    transition: width 0.3s;
+  }
+
+  .progress-text {
+    font-size: 12px;
+    color: #5d6678;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .download-checklist-btn {
+    width: 100%;
+    padding: 12px;
+    background: #198754;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: 0.3s;
+  }
+
+  .download-checklist-btn:hover {
+    background: #157347;
+  }
+
   @media (max-width: 900px) {
     .dashboard-main {
       padding: 25px;
@@ -744,6 +1061,17 @@
           <p>Generate quiz questions from your saved study notes.</p>
         </div>
 
+        <div class="card" onclick="goToTimer()">
+          <span>⏱️</span>
+          <h3>Session Timer</h3>
+          <p>Start a focused study timer for your revision sessions.</p>
+        </div>
+
+        <div class="card" onclick="openAssignmentHelper()">
+          <span>📋</span>
+          <h3>Assignment Helper</h3>
+          <p>Upload assignments and convert them into interactive checklists.</p>
+        </div>
         
       </section>
 
@@ -790,6 +1118,59 @@
       <div>
         <button onclick="startTimer()">Start</button>
         <button onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENT HELPER MODAL -->
+    <div id="assignmentModal" class="assignment-modal">
+      <div class="assignment-modal-content">
+        <div class="assignment-modal-header">
+          <h2>📋 Assignment Helper</h2>
+          <button class="close-modal-btn" onclick="closeAssignmentHelper()">×</button>
+        </div>
+
+        <!-- UPLOAD SECTION -->
+        <div class="assignment-upload-section">
+          <h3>Upload Assignment Document</h3>
+          <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
+            <div class="file-upload-area-text">📁 Click to upload or drag and drop</div>
+            <div class="file-upload-area-hint">PDF or TXT files up to 25MB</div>
+            <input type="file" id="fileInput" accept=".pdf,.txt" onchange="handleFileSelect(event)">
+          </div>
+          <button class="upload-btn" id="uploadBtn" onclick="uploadAssignment()" disabled>Process with AI</button>
+        </div>
+
+        <!-- LOADING SPINNER -->
+        <div class="loading-spinner" id="loadingSpinner">
+          <div class="spinner"></div>
+          <p style="margin-top: 12px; color: #202842;">Processing your assignment...</p>
+        </div>
+
+        <!-- CHECKLIST RESULT -->
+        <div class="checklist-result" id="checklistResult">
+          <div class="checklist-header">
+            <h3 id="checklistTitle">Assignment Title</h3>
+            <div class="checklist-meta">
+              <div class="meta-item">📅 Due: <span id="checklistDue">TBD</span></div>
+              <div class="meta-item">⏱️ Est. Time: <span id="checklistTime">0 mins</span></div>
+            </div>
+          </div>
+
+          <div class="guidance-box" id="guidanceBox">
+            Guidance text will appear here
+          </div>
+
+          <div class="checklist-items" id="checklistItems"></div>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progressText">0/0 tasks completed</span>
+          </div>
+
+          <button class="download-checklist-btn" onclick="downloadChecklist()">📥 Download Checklist</button>
+        </div>
       </div>
     </div>
 
@@ -991,6 +1372,208 @@
           </div>`;
       }).join('');
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ASSIGNMENT HELPER FUNCTIONS
+    // ═══════════════════════════════════════════════════════════════
+
+    let selectedFile = null;
+    let currentChecklist = null;
+
+    function openAssignmentHelper() {
+      document.getElementById("assignmentModal").classList.add("show-modal");
+    }
+
+    function closeAssignmentHelper() {
+      document.getElementById("assignmentModal").classList.remove("show-modal");
+      resetAssignmentForm();
+    }
+
+    function resetAssignmentForm() {
+      document.getElementById("fileInput").value = "";
+      document.getElementById("uploadBtn").disabled = true;
+      document.getElementById("checklistResult").classList.remove("show");
+      document.getElementById("loadingSpinner").classList.remove("active");
+      selectedFile = null;
+    }
+
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      if (files && files.length > 0) {
+        selectedFile = files[0];
+        document.getElementById("uploadBtn").disabled = false;
+      }
+    }
+
+    // Drag and drop functionality
+    const fileUploadArea = document.getElementById("fileUploadArea");
+    fileUploadArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.add("dragover");
+    });
+
+    fileUploadArea.addEventListener("dragleave", () => {
+      fileUploadArea.classList.remove("dragover");
+    });
+
+    fileUploadArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.remove("dragover");
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        selectedFile = files[0];
+        document.getElementById("fileInput").files = files;
+        document.getElementById("uploadBtn").disabled = false;
+      }
+    });
+
+    async function uploadAssignment() {
+      if (!selectedFile) {
+        alert("Please select a file first.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      document.getElementById("uploadBtn").disabled = true;
+      document.getElementById("loadingSpinner").classList.add("active");
+      document.getElementById("checklistResult").classList.remove("show");
+
+      try {
+        const response = await fetch("http://localhost:5000/api/ai/upload-document-checklist", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to process assignment");
+        }
+
+        const result = await response.json();
+        currentChecklist = result.checklist;
+        displayChecklist(result.checklist);
+      } catch (error) {
+        console.error("Error:", error);
+        alert(`Error: ${error.message}`);
+      } finally {
+        document.getElementById("loadingSpinner").classList.remove("active");
+        document.getElementById("uploadBtn").disabled = false;
+      }
+    }
+
+    function displayChecklist(checklist) {
+      // Set header info
+      document.getElementById("checklistTitle").textContent = checklist.assignmentTitle;
+      document.getElementById("checklistDue").textContent = checklist.dueDate;
+      document.getElementById("checklistTime").textContent = `${checklist.estimatedTimeMinutes} mins`;
+
+      // Set guidance
+      document.getElementById("guidanceBox").textContent = checklist.overallGuidance;
+
+      // Display checklist items
+      const checklistItemsContainer = document.getElementById("checklistItems");
+      checklistItemsContainer.innerHTML = "";
+
+      const priorityLabels = {
+        1: "HIGH",
+        2: "MEDIUM",
+        3: "LOW"
+      };
+
+      checklist.checklist.forEach((item, index) => {
+        const itemElement = document.createElement("div");
+        itemElement.className = "checklist-item";
+        itemElement.dataset.index = index;
+
+        const priorityLabel = priorityLabels[item.priority] || "MEDIUM";
+        const priorityClass = `priority-${item.priority}`;
+
+        itemElement.innerHTML = `
+          <div class="checklist-item-header">
+            <input type="checkbox" class="checklist-item-checkbox" 
+              ${item.isCompleted ? "checked" : ""} 
+              onchange="toggleChecklistItem(${index})">
+            <div class="checklist-item-content">
+              <div class="checklist-item-title">
+                ${item.task}
+                <span class="priority-badge ${priorityClass}">${priorityLabel}</span>
+              </div>
+              <div class="checklist-item-guide">${item.guide}</div>
+            </div>
+          </div>
+        `;
+
+        if (item.isCompleted) {
+          itemElement.classList.add("completed");
+        }
+
+        checklistItemsContainer.appendChild(itemElement);
+      });
+
+      updateProgress();
+      document.getElementById("checklistResult").classList.add("show");
+    }
+
+    function toggleChecklistItem(index) {
+      if (currentChecklist && currentChecklist.checklist[index]) {
+        currentChecklist.checklist[index].isCompleted = !currentChecklist.checklist[index].isCompleted;
+
+        // Update UI
+        const checkbox = document.querySelectorAll(".checklist-item-checkbox")[index];
+        const itemElement = document.querySelectorAll(".checklist-item")[index];
+
+        if (checkbox.checked) {
+          itemElement.classList.add("completed");
+        } else {
+          itemElement.classList.remove("completed");
+        }
+
+        updateProgress();
+        saveChecklistToLocalStorage();
+      }
+    }
+
+    function updateProgress() {
+      if (!currentChecklist) return;
+
+      const total = currentChecklist.checklist.length;
+      const completed = currentChecklist.checklist.filter(item => item.isCompleted).length;
+      const percentage = total > 0 ? (completed / total) * 100 : 0;
+
+      document.getElementById("progressFill").style.width = `${percentage}%`;
+      document.getElementById("progressText").textContent = `${completed}/${total} tasks completed`;
+    }
+
+    function saveChecklistToLocalStorage() {
+      if (currentChecklist) {
+        localStorage.setItem("currentChecklist", JSON.stringify(currentChecklist));
+      }
+    }
+
+    function downloadChecklist() {
+      if (!currentChecklist) return;
+
+      let csvContent = "Task,Guide,Priority,Completed\n";
+
+      currentChecklist.checklist.forEach(item => {
+        const priority = ["HIGH", "MEDIUM", "LOW"][item.priority - 1] || "MEDIUM";
+        const completed = item.isCompleted ? "✓" : "✗";
+        const guide = item.guide.replace(/"/g, '""').replace(/\n/g, " ");
+        
+        csvContent += `"${item.task}","${guide}","${priority}","${completed}"\n`;
+      });
+
+      const element = document.createElement("a");
+      element.setAttribute("href", "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent));
+      element.setAttribute("download", `${currentChecklist.assignmentTitle.replace(/\s+/g, "_")}_checklist.csv`);
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
   </script>
 
 </body>

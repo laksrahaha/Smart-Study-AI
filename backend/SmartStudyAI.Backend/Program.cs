@@ -10,6 +10,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddScoped<GeminiService>();
+builder.Services.AddScoped<PDFExtractionService>();
 
 builder.Services.AddControllers();
 

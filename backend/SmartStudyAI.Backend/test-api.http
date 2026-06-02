@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:5000
+@contentType = application/json
+
+### Test 1: Check if API is running
+GET {{baseUrl}}/
+
+### Test 2: Generate checklist from text (Simple assignment)
+POST {{baseUrl}}/api/ai/assignment-checklist
+Content-Type: {{contentType}}
+
+{
+  "assignmentContent": "Write a 5-page essay on climate change. Include introduction, 3 body paragraphs with evidence, and conclusion. Due December 15. Use at least 5 academic sources."
+}
+
+### Test 3: Generate checklist from complex assignment
+POST {{baseUrl}}/api/ai/assignment-checklist
+Content-Type: {{contentType}}
+
+{
+  "assignmentContent": "Complete a research project on renewable energy sources. Requirements: 1) Introduction explaining the importance of renewable energy 2) Detailed analysis of solar energy (types, efficiency, advantages/disadvantages) 3) Detailed analysis of wind energy (technology, scalability, environmental impact) 4) Comparison section analyzing pros and cons of both 5) Conclusion with recommendations. Submit as PDF with at least 8 academic sources. Due: December 20, 2026. This should be 10-15 pages long."
+}
+
+### Test 4: Get all users
+GET {{baseUrl}}/api/users
+
+### Test 5: Get all courses
+GET {{baseUrl}}/api/courses

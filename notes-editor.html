@@ -480,53 +480,6 @@
       }
     }
 
-    // ── Auto-save to backend ──
-    let autoSaveTimer;
-    function scheduleAutoSave() {
-      clearTimeout(autoSaveTimer);
-      statusMsg.textContent = 'Saving...';
-      statusMsg.className = 'status-msg';
-      autoSaveTimer = setTimeout(async () => {
-        const userId = Number(localStorage.getItem("userId") || "1");
-        const noteData = {
-          userId,
-          title: noteTitleInput.value.trim() || 'Untitled',
-          content: noteEditor.value,
-          courseName: courseSelect.value,
-          courseId: null
-        };
-        try {
-          let res;
-          if (currentNoteId) {
-            res = await fetch(`${API_BASE}/notes/${currentNoteId}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(noteData)
-            });
-          } else {
-            res = await fetch(`${API_BASE}/notes`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(noteData)
-            });
-            if (res.ok) {
-              const saved = await res.json();
-              currentNoteId = saved.id;
-              localStorage.setItem("editingNoteId", currentNoteId);
-            }
-          }
-          if (!res.ok) throw new Error();
-          fileName.textContent = noteData.title;
-          showStatus('Auto-saved ✓', true);
-        } catch {
-          showStatus('Auto-save failed.', false);
-        }
-      }, 1500);
-    }
-
-    noteEditor.addEventListener('input', () => { scheduleAutoSave(); updateWordCount(); });
-    noteTitleInput.addEventListener('input', scheduleAutoSave);
-
     function clearNotes() {
       if (confirm('Clear all content in this note?')) {
         noteEditor.value = '';

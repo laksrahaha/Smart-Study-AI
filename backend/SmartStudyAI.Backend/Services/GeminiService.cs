@@ -96,6 +96,45 @@ namespace SmartStudyAI.Backend.Services
 
             return result ?? "No summary generated.";
         }
+        public async Task<string> GenerateWithPrompt(string prompt)
+{
+    string apiKey = _configuration["Gemini:ApiKey"] ?? "";
+    string url = $"{GeminiUrl}?key={apiKey}";
+
+    var requestBody = new
+    {
+        contents = new[]
+        {
+            new { role = "user", parts = new[] { new { text = prompt } } }
+        },
+        generationConfig = new
+        {
+            temperature = 0.7,
+            maxOutputTokens = 2048,
+            responseMimeType = "application/json"  // ← forces valid JSON back
+        }
+    };
+
+    var json = JsonSerializer.Serialize(requestBody);
+    var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+    var response = await _httpClient.PostAsync(url, httpContent);
+
+    if (!response.IsSuccessStatusCode)
+    {
+        var error = await response.Content.ReadAsStringAsync();
+        throw new Exception($"Gemini API Error: {response.StatusCode} — {error}");
+    }
+
+    var responseString = await response.Content.ReadAsStringAsync();
+    using JsonDocument doc = JsonDocument.Parse(responseString);
+
+    return doc.RootElement
+        .GetProperty("candidates")[0]
+        .GetProperty("content")
+        .GetProperty("parts")[0]
+        .GetProperty("text")
+        .GetString() ?? "[]";
+}
 
         public async Task<List<FlashCard>> GenerateFlashcards(string content, int count)
 {
